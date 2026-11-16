@@ -523,15 +523,33 @@ test("the German start page promotes the map", async ({ page }) => {
   await expect(teaser.locator(`a[href="${MAP}"] img`)).toBeVisible();
   await expect(teaser.getByText("Hintergrund: © basemap.de / BKG, CC BY 4.0", { exact: true })).toBeVisible();
   await expect(teaser.getByRole("link", { name: "basemap.de" })).toHaveAttribute("href", "https://basemap.de");
-  // Order: next events, then the teaser, then "Mitmachen".
+  // Order: next events, then "Mitmachen", then the teaser as the last block of main.
   const order = await page.evaluate(() => {
-    const at = (sel) => document.querySelector(sel);
-    const follows = (a, b) => Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
-    const teaser = at("section.map-teaser");
-    return { afterNext: follows(at("[data-next]"), teaser), beforeJoin: follows(teaser, at("#mitmachen")) };
+    const teaser = document.querySelector("section.map-teaser");
+    return {
+      afterJoin: teaser.previousElementSibling?.id === "mitmachen",
+      last: teaser === document.querySelector("main").lastElementChild,
+    };
   });
-  expect(order).toEqual({ afterNext: true, beforeJoin: true });
+  expect(order).toEqual({ afterJoin: true, last: true });
 });
+
+// The blocks below the flyer stand far apart, like on current campaign sites (genz-regelt.de, campact.de).
+// The space between two blocks is --section-space: clamp(96px, 12vw, 160px). It also holds before the band.
+for (const [home, blocks] of [
+  ["/", ["[data-next]", "#mitmachen", "section.map-teaser", "#bleib-informiert"]],
+  ["/en/", ["[data-next]", "#get-involved", "#stay-informed"]],
+]) {
+  test(`the blocks of ${home} stand --section-space apart`, async ({ page }) => {
+    await page.goto(home);
+    const { width, gaps } = await page.evaluate((sels) => {
+      const boxes = sels.map((sel) => document.querySelector(sel).getBoundingClientRect());
+      return { width: window.innerWidth, gaps: boxes.slice(1).map((box, i) => box.top - boxes[i].bottom) };
+    }, blocks);
+    const space = Math.min(160, Math.max(96, 0.12 * width));
+    for (const gap of gaps) expect(gap).toBeCloseTo(space, 0);
+  });
+}
 
 test("the English start page has no map teaser", async ({ page }) => {
   await page.goto("/en/");

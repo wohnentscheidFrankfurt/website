@@ -72,8 +72,11 @@
   The QR codes `src/assets/brand/signal-qr-1x.png` and `-2x.png` encode the Signal link. A new link needs new ones.
   They were redrawn from Signal's export: module grid read from the finder patterns, 2 or 4 px per module,
   two-colour palette PNG of about 1 KB. They are served unscaled, so the modules stay sharp.
-- The German start page shows a teaser for the map (`src/components/MapTeaser.astro`). It has no English twin,
-  because the map is German only. It links to `/sozialraum-frankfurt/`.
+- The German start page shows a teaser for the map (`src/components/MapTeaser.astro`) below "Mitmachen", as the
+  last block. It has no English twin, because the map is German only. It links to `/sozialraum-frankfurt/`.
+- The blocks below the hero stand `--section-space` apart (`src/styles/global.css`): `clamp(96px, 12vw, 160px)`,
+  also before the band. Current campaign sites leave this much air (genz-regelt.de about 220 px, campact.de about
+  190 px on desktop).
   The image `src/assets/map/teaser.png` is a screenshot of the map. To refresh it, run
   `tests/browser/tools/teaser_image.mjs` in the map repo and copy the result to `src/assets/map/teaser.png`.
   The tool needs network: it loads tiles from basemap.de.
@@ -253,7 +256,8 @@ Projects: `desktop-chrome` and `chrome-390` use the system Chrome, `webkit-iphon
   Tiles come from a `page.route` stub.
 - `tests/unit/map.spec.ts`: the integration's checks. `tests/unit/tiles-proxy.spec.ts`: starts a real Caddy with
   `server/Caddyfile` against an echo server and checks what reaches upstream (needs Caddy: `brew install caddy`).
-  The teaser is checked in `tests/home.spec.mjs`, its place in `tests/join.spec.mjs`, the privacy texts in
+  The teaser, its place and the space between the start page blocks are checked in `tests/home.spec.mjs`,
+  the place of "Mitmachen" in `tests/join.spec.mjs`, the privacy texts in
   `tests/legal.spec.mjs`.
 - `tests/unit/`: date logic, menu items, no EXIF in `dist/` and the server files in `server/`
   (Caddyfile, units, `deploy.sh`).

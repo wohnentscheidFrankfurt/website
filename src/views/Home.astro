@@ -1,8 +1,9 @@
 ---
 // Start page like the b-side start: the red logo half on a big drawing, the intro lower right beside it.
 // Below it the flyer of the next event with a countdown. Without a flyer the next events as compact cards.
-// Then, on the German page only, the teaser of the map "Sozialraum Frankfurt".
 // Then "Mitmachen", the target of the menu item.
+// Then, on the German page only, the teaser of the map "Sozialraum Frankfurt".
+// The blocks below the hero stand --section-space apart.
 import { Picture } from "astro:assets";
 import { getCollection } from "astro:content";
 import Base from "../layouts/Base.astro";
@@ -72,8 +73,8 @@ const next = upcoming.slice(0, 3);
       </div>
     </section>
   )}
-  {lang === "de" && <MapTeaser />}
   <Join lang={lang} />
+  {lang === "de" && <MapTeaser />}
 </Base>
 
 <style>
@@ -118,7 +119,7 @@ const next = upcoming.slice(0, 3);
   }
 
   .next {
-    margin: 40px 0 64px;
+    margin: 40px 0 var(--section-space);
   }
 
   .next > h2 {

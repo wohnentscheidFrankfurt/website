@@ -60,6 +60,9 @@
   --wide: 85%;
   --sans: "Mulish", system-ui, sans-serif;
   --gutter: 16px;
+  /* Space between the blocks of the start page, and before the band "Bleib informiert". Wide, like current
+     campaign sites (genz-regelt.de, campact.de): 96 px on phones, up to 160 px on desktop. */
+  --section-space: clamp(96px, 12vw, 160px);
   --width: 1120px;
 }
 
