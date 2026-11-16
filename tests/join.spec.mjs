@@ -140,8 +140,11 @@ for (const path of ["/", "/veranstaltungen/"]) {
         return { bg: s.backgroundColor, color: s.color, marginBottom: s.marginBottom };
       });
       expect(style).toEqual({ bg: "rgb(17, 17, 17)", color: "rgb(255, 255, 255)", marginBottom: "0px" });
-      // The footer has no black link bar: its columns follow the band directly.
+      // The footer has no black link bar: its columns follow the band without a gap.
       await expect(page.locator("footer nav")).toHaveCount(0);
+      const bandBox = await band(page).boundingBox();
+      const footerBox = await page.locator("footer").boundingBox();
+      expect(Math.abs(footerBox.y - (bandBox.y + bandBox.height))).toBeLessThanOrEqual(1);
     });
 
     test("has the texts", async ({ page }) => {
