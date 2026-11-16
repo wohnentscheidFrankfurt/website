@@ -523,24 +523,24 @@ test("the German start page promotes the map", async ({ page }) => {
   await expect(teaser.locator(`a[href="${MAP}"] img`)).toBeVisible();
   await expect(teaser.getByText("Hintergrund: © basemap.de / BKG, CC BY 4.0", { exact: true })).toBeVisible();
   await expect(teaser.getByRole("link", { name: "basemap.de" })).toHaveAttribute("href", "https://basemap.de");
-  // Order: next events, then "Mitmachen", then the teaser as the last block of main.
+  // Order: next events, then "Mitmachen", then the teaser as the last block of the stack, the last block of main.
   const order = await page.evaluate(() => {
     const teaser = document.querySelector("section.map-teaser");
     return {
       afterJoin: teaser.previousElementSibling?.id === "mitmachen",
-      last: teaser === document.querySelector("main").lastElementChild,
+      last: !teaser.nextElementSibling && teaser.parentElement === document.querySelector("main").lastElementChild,
     };
   });
   expect(order).toEqual({ afterJoin: true, last: true });
 });
 
-// The blocks of the start page below the flyer stand --section-space apart: clamp(96px, 12vw, 160px).
+// The blocks of the start page below the flyer stand --space-l apart: clamp(96px, 12vw, 160px).
 // It also holds before the band.
 for (const [home, blocks] of [
   ["/", ["[data-next]", "#mitmachen", "section.map-teaser", "#bleib-informiert"]],
   ["/en/", ["[data-next]", "#get-involved", "#stay-informed"]],
 ]) {
-  test(`the blocks of ${home} stand --section-space apart`, async ({ page }) => {
+  test(`the blocks of ${home} stand --space-l apart`, async ({ page }) => {
     await page.goto(home);
     const { width, gaps } = await page.evaluate((sels) => {
       const boxes = sels.map((sel) => document.querySelector(sel).getBoundingClientRect());

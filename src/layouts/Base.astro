@@ -11,8 +11,10 @@ interface Props {
   lang: Lang;
   noindex?: boolean;
   stayInformed?: boolean;
+  /** Step of the spacing scale before the band or footer: "l" on the start page, "m" elsewhere. */
+  space?: "m" | "l";
 }
-const { title, lang, noindex = false, stayInformed = true } = Astro.props;
+const { title, lang, noindex = false, stayInformed = true, space = "m" } = Astro.props;
 const origin = Astro.site!.origin;
 const here = Astro.url.pathname;
 const other = noindex ? undefined : counterpart(here);
@@ -32,7 +34,7 @@ const english = lang === "en" ? here : other;
   </head>
   <body>
     <Header lang={lang} />
-    <main id="main">
+    <main id="main" data-space={space}>
       <slot />
     </main>
     {stayInformed && <StayInformed lang={lang} />}

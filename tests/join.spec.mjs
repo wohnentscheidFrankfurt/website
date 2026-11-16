@@ -26,7 +26,8 @@ async function expectBelowHeader(page) {
 }
 
 test.describe("Mitmachen", () => {
-  // Directly after the flyer (or the event rows). On "/" the map teaser follows as the last block of main.
+  // Directly after the flyer (or the event rows). On "/" the map teaser follows as the last block.
+  // The blocks sit in one stack, the last element of main.
   // "/en/" has no teaser, so there "Get involved" is the last block.
   for (const [home, last] of [["/", false], ["/en/", true]]) {
     test(`sits on ${home} directly after the next events${last ? ", as the last block" : ""}`, async ({ page }) => {
@@ -34,7 +35,7 @@ test.describe("Mitmachen", () => {
       const section = page.locator(`main section#${home === "/" ? "mitmachen" : "get-involved"}`);
       await expect(section).toHaveCount(1);
       const order = await section.evaluate((el) => ({
-        last: el === document.querySelector("main").lastElementChild,
+        last: !el.nextElementSibling && el.parentElement === document.querySelector("main").lastElementChild,
         after: Boolean(el.previousElementSibling?.matches("section[data-next]")),
       }));
       expect(order).toEqual({ last, after: true });

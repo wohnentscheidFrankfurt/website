@@ -25,6 +25,7 @@ const pastEntries = past.map((e) => byId.get(e.id)!);
 <Base lang={lang} title={t.titles.events}>
   <div data-build-day={today}>
     <h1>{t.events.title}</h1>
+    <div class="stack-m">
     <section data-list="upcoming">
       <h2>{t.events.upcoming}</h2>
       {upcomingEntries.length === 0
@@ -37,10 +38,14 @@ const pastEntries = past.map((e) => byId.get(e.id)!);
         {pastEntries.map((event) => <EventCard event={event} variant="past" lang={lang} />)}
       </section>
     )}
+    </div>
   </div>
 </Base>
 <style>
   /* The long word must fit at 390 px. */
   h1 { margin: 32px 0 24px; font-size: clamp(2.25rem, 9vw, 4rem); overflow-wrap: anywhere; }
   h2 { font-size: clamp(1.625rem, 4vw, 2rem); }
+  /* The sections stand --space-m apart. Inside, the cards stand 40 px apart, the last one flush. */
+  section > :last-child { margin-bottom: 0; }
+  section > :global(.event + .event) { margin-top: 40px; }
 </style>

@@ -77,9 +77,17 @@
   The image `src/assets/map/teaser.png` is a screenshot of the map. To refresh it, run
   `tests/browser/tools/teaser_image.mjs` in the map repo and copy the result to `src/assets/map/teaser.png`.
   The tool needs network: it loads tiles from basemap.de.
-- The blocks of the start page below the hero stand `--section-space` apart (`src/styles/global.css`),
-  also before the band: `clamp(96px, 12vw, 160px)`. Current campaign sites leave this much air or more
-  (genz-regelt.de, campact.de). Other pages keep their own margins.
+- Spacing: one scale with two steps in `src/styles/global.css`. The frame sets the space, not the block.
+  - `--space-l: clamp(96px, 12vw, 160px)`: the start page. Its blocks below the hero stand this far apart
+    (`.stack-l`), and it ends this far before the band (`Base` prop `space="l"`). Landing pages leave much air
+    (genz-regelt.de, campact.de).
+  - `--space-m`, half of it (48–80 px): every other page. Its sections stand this far apart (`.stack-m`), and it
+    ends this far before the band or the footer. Pages you read leave less air, so the text holds together.
+  - `main` is a flow root with the step as bottom padding. Blocks have no outer margin, and their last child no
+    bottom margin. So a new block fits without new numbers. Inside blocks, spacing is the block's own.
+  - Exceptions: the top of a page (32 px from the header to the heading) and the hero, which keeps the next
+    events 40 px close.
+  - `tests/spacing.spec.mjs` measures the page end on every page.
 - Impressum (`/impressum/`) and Datenschutz (`/datenschutz/`) are plain text pages. They share the class `.prose`
   in `src/styles/global.css`: one left-aligned column of at most 42rem.
   Their texts are legal texts. The checks pin them word for word.

@@ -60,9 +60,11 @@
   --wide: 85%;
   --sans: "Mulish", system-ui, sans-serif;
   --gutter: 16px;
-  /* Start page only: space between its blocks below the hero, and before the band "Bleib informiert".
-     96 px on phones, up to 160 px on desktop (docs/architecture.md). */
-  --section-space: clamp(96px, 12vw, 160px);
+  /* The spacing scale (docs/architecture.md, Spacing). The frame sets the space, not the block.
+     --space-l: start page, between its blocks and before the band. 96 px on phones, up to 160 px on desktop.
+     --space-m: every other page, between its sections and before the band or the footer. 48 px up to 80 px. */
+  --space-l: clamp(96px, 12vw, 160px);
+  --space-m: calc(var(--space-l) / 2);
   --width: 1120px;
 }
 
@@ -79,11 +81,26 @@ body {
   line-height: 1.55;
 }
 
+/* A flow root, so the margins of its children stay inside. The padding is the space before the band or footer. */
 main {
   box-sizing: border-box;
+  display: flow-root;
   max-width: var(--width);
   margin: 0 auto;
-  padding: 0 var(--gutter);
+  padding: 0 var(--gutter) var(--space-m);
+}
+
+main[data-space="l"] {
+  padding-bottom: var(--space-l);
+}
+
+/* Stacks: the space between blocks. Blocks have no outer margin, and their last child no bottom margin. */
+.stack-m > * + * {
+  margin-top: var(--space-m);
+}
+
+.stack-l > * + * {
+  margin-top: var(--space-l);
 }
 
 h1,
@@ -127,8 +144,11 @@ h1 {
 /* Text pages like the imprint: one narrow, left-aligned column. Long words and addresses wrap at 320 px. */
 .prose {
   max-width: 42rem;
-  margin-bottom: 48px;
   overflow-wrap: break-word;
+}
+
+.prose > :last-child {
+  margin-bottom: 0;
 }
 
 .prose h1 {

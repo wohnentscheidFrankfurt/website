@@ -3,7 +3,7 @@
 // Below it the flyer of the next event with a countdown. Without a flyer the next events as compact cards.
 // Then "Mitmachen", the target of the menu item.
 // Then, on the German page only, the teaser of the map "Sozialraum Frankfurt".
-// The blocks below the hero stand --section-space apart.
+// The blocks below the hero stand --space-l apart, and --space-l before the band (the stack and Base's space="l").
 import { Picture } from "astro:assets";
 import { getCollection } from "astro:content";
 import Base from "../layouts/Base.astro";
@@ -35,7 +35,7 @@ const upcoming = splitEvents(
 const withFlyer = upcoming.find((event) => event.data.flyer);
 const next = upcoming.slice(0, 3);
 ---
-<Base lang={lang} title={t.titles.home}>
+<Base lang={lang} title={t.titles.home} space="l">
   <section class="hero" data-hero>
     <h1 class="logo">
       <Picture src={logoRed} formats={["avif", "webp"]} fallbackFormat="png" widths={[320, 640, 816]}
@@ -52,6 +52,7 @@ const next = upcoming.slice(0, 3);
       <p>{t.start.intro}</p>
     </div>
   </section>
+  <div class="stack-l">
   {withFlyer ? (
     <section class="next flyer-next" data-next aria-labelledby="next-title">
       <h2 id="next-title" class="visually-hidden">{t.start.nextOne}</h2>
@@ -75,6 +76,7 @@ const next = upcoming.slice(0, 3);
   )}
   <Join lang={lang} />
   {lang === "de" && <MapTeaser />}
+  </div>
 </Base>
 
 <style>
@@ -118,8 +120,9 @@ const next = upcoming.slice(0, 3);
     margin: 0;
   }
 
-  .next {
-    margin: 40px 0 var(--section-space);
+  /* The flyer belongs to the hero, so the stack starts 40 px below it. */
+  .stack-l {
+    margin-top: 40px;
   }
 
   .next > h2 {
@@ -137,8 +140,17 @@ const next = upcoming.slice(0, 3);
     white-space: nowrap;
   }
 
+  /* The compact cards stand 24 px apart, the side text 24 px below them on phones. */
+  .list > :global(.event + .event) {
+    margin-top: 24px;
+  }
+
   .none {
-    margin: 0 0 24px;
+    margin: 0;
+  }
+
+  .side {
+    margin-top: 24px;
   }
 
   .side p {
@@ -184,11 +196,18 @@ const next = upcoming.slice(0, 3);
       grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
       gap: 0 32px;
       align-items: start;
+    }
+
+    .stack-l:has(> .next:not(.flyer-next)) {
       margin-top: 24px;
     }
 
     .next > h2 {
       grid-column: 1 / -1;
+    }
+
+    .side {
+      margin-top: 0;
     }
   }
 

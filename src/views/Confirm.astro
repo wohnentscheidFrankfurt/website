@@ -82,7 +82,13 @@ const strings = {
     }
   </script>
   <style>
+    /* The page ends flush (spacing scale): the status has no bottom margin, the button keeps 1em above it. */
+    #status,
+    noscript > p {
+      margin-bottom: 0;
+    }
     .confirm-button {
+      margin-top: 1em;
       box-sizing: border-box;
       min-height: 48px;
       padding: 8px 24px;
