@@ -125,12 +125,24 @@ for (const path of [...PAGES, ...PAGES_EN, ...NOINDEX_PAGES]) {
     await expect(first.locator("a")).toHaveText(["Startseite", "Veranstaltungen", "Impressum", "Datenschutz"]);
     await expect(first.getByRole("link", { name: "Impressum" })).toHaveAttribute("href", "/impressum/");
     await expect(first.getByRole("link", { name: "Datenschutz" })).toHaveAttribute("href", "/datenschutz/");
+    await expectPlatforms(footer);
     const targets = await footer.locator('a[target="_blank"]')
       .evaluateAll((els) => els.map((el) => el.getAttribute("rel") ?? ""));
     for (const rel of targets) expect(rel).toContain("noopener");
     const image = await footer.evaluate((el) => getComputedStyle(el).backgroundImage);
     expect(image).toBe("none");
   });
+}
+
+// Third column, like b-side: Instagram and GitHub, each with its icon in front of the name.
+async function expectPlatforms(footer) {
+  const third = footer.locator(".footer-columns section").nth(2);
+  await expect(third.locator("a")).toHaveText(["Instagram", "GitHub"]);
+  await expect(third.getByRole("link", { name: "Instagram" }))
+    .toHaveAttribute("href", "https://www.instagram.com/wohnentscheidfrankfurt/");
+  await expect(third.getByRole("link", { name: "GitHub" })).toHaveAttribute("href", "https://github.com/wohnentscheidFrankfurt");
+  const first = await third.locator("a").evaluateAll((els) => els.map((el) => el.firstElementChild?.tagName));
+  expect(first).toEqual(["svg", "svg"]);
 }
 
 for (const path of [...PAGES_EN, "/en/thanks/", "/en/error/", "/en/confirm/"]) {
@@ -157,6 +169,7 @@ for (const path of [...PAGES_EN, "/en/thanks/", "/en/error/", "/en/confirm/"]) {
     await expect(first.getByRole("link", { name: "Imprint" })).toHaveAttribute("href", "/en/imprint/");
     await expect(first.getByRole("link", { name: "Privacy" })).toHaveAttribute("href", "/en/privacy/");
     await expect(footer.getByRole("link", { name: "Write to us" })).toHaveAttribute("href", "/en/#get-involved");
+    await expectPlatforms(footer);
     const targets = await footer.locator('a[target="_blank"]')
       .evaluateAll((els) => els.map((el) => el.getAttribute("rel") ?? ""));
     for (const rel of targets) expect(rel).toContain("noopener");

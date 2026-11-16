@@ -174,6 +174,8 @@ It flows into the footer's black bar.
 
 Footer: a black bar with "Veranstaltungen | Kontakt | Instagram", below three centred columns (stacked under
 720 px). The column "Wohnentscheid Frankfurt" links Startseite, Veranstaltungen, Impressum and Datenschutz.
+The column "Andere Plattformen" links Instagram and GitHub (the account `wohnentscheidFrankfurt`), each with its
+icon in front of the name, like b-side. Only the name is underlined.
 All links are plain, nothing loads from outside. "Schreib uns" in the column "Mitmachen" jumps to
 `/#mitmachen`. "Kontakt" in the bar opens a plain mail to info@. `wurzel-band.svg` stays in `src/assets/drawings/`, unused.
 
