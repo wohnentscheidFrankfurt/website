@@ -1,11 +1,16 @@
 # Wohnentscheid Frankfurt: website
 
-The source of https://wohnentscheid-frankfurt.de.
-A static site built with Astro, in German and English.
+We are a non-partisan initiative for affordable housing in Frankfurt, and we want to launch a citizens' referendum.
+This is our [website](https://wohnentscheid-frankfurt.de).
+
+We've also built a [tool](https://wohnentscheid-frankfurt.de/sozialraum-frankfurt/) that breaks down Frankfurt's
+neighbourhoods to support a different approach to housing and climate policy.
+It has its [own repo](https://github.com/wohnentscheidFrankfurt/sozialraum-frankfurt).
+Feel free to take a look and discover new perspectives!
+
+The website is a static site built with Astro, in German and English.
 A small Node service (`api/`) runs the newsletter sign-up with double opt-in.
 `server/` holds the Caddyfile and the systemd units of the live server.
-The map [Sozialraum Frankfurt](https://wohnentscheid-frankfurt.de/sozialraum-frankfurt/) comes from its own repo,
-[wohnentscheidFrankfurt/sozialraum-frankfurt](https://github.com/wohnentscheidFrankfurt/sozialraum-frankfurt).
 
 The site loads nothing from other origins: no tracking, no external fonts, scripts or CDNs.
 The tests check this.
