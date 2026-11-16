@@ -534,8 +534,8 @@ test("the German start page promotes the map", async ({ page }) => {
   expect(order).toEqual({ afterJoin: true, last: true });
 });
 
-// The blocks below the flyer stand far apart, like on current campaign sites (genz-regelt.de, campact.de).
-// The space between two blocks is --section-space: clamp(96px, 12vw, 160px). It also holds before the band.
+// The blocks of the start page below the flyer stand --section-space apart: clamp(96px, 12vw, 160px).
+// It also holds before the band.
 for (const [home, blocks] of [
   ["/", ["[data-next]", "#mitmachen", "section.map-teaser", "#bleib-informiert"]],
   ["/en/", ["[data-next]", "#get-involved", "#stay-informed"]],

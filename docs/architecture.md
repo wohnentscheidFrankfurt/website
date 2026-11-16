@@ -74,12 +74,12 @@
   two-colour palette PNG of about 1 KB. They are served unscaled, so the modules stay sharp.
 - The German start page shows a teaser for the map (`src/components/MapTeaser.astro`) below "Mitmachen", as the
   last block. It has no English twin, because the map is German only. It links to `/sozialraum-frankfurt/`.
-- The blocks below the hero stand `--section-space` apart (`src/styles/global.css`): `clamp(96px, 12vw, 160px)`,
-  also before the band. Current campaign sites leave this much air (genz-regelt.de about 220 px, campact.de about
-  190 px on desktop).
   The image `src/assets/map/teaser.png` is a screenshot of the map. To refresh it, run
   `tests/browser/tools/teaser_image.mjs` in the map repo and copy the result to `src/assets/map/teaser.png`.
   The tool needs network: it loads tiles from basemap.de.
+- The blocks of the start page below the hero stand `--section-space` apart (`src/styles/global.css`),
+  also before the band: `clamp(96px, 12vw, 160px)`. Current campaign sites leave this much air or more
+  (genz-regelt.de, campact.de). Other pages keep their own margins.
 - Impressum (`/impressum/`) and Datenschutz (`/datenschutz/`) are plain text pages. They share the class `.prose`
   in `src/styles/global.css`: one left-aligned column of at most 42rem.
   Their texts are legal texts. The checks pin them word for word.
