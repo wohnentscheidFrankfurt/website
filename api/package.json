@@ -1,0 +1,19 @@
+{
+  "name": "wohnentscheid-api",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "nodemailer": "10.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.6",
+    "@types/nodemailer": "8.0.2",
+    "typescript": "7.0.2"
+  }
+}

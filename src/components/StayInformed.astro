@@ -1,0 +1,210 @@
+---
+// "Bleib informiert": a black band above the footer on every page. It flows into the footer's black bar.
+// Mail column: a sign-up form that posts to /api/anmelden, English: /api/en/signup
+// (the API answers 303 to /danke/ or /fehler/, English: /en/thanks/ or /en/error/), plus the address
+// as a plain link. Signal column: a button. The honeypot field "website" sits off-screen and is hidden from screen readers.
+// The QR code shows from 900 px only: on a phone the button is the way in.
+// The QR files were redrawn from Signal's 1650 px export: module grid read from the finder patterns (53 modules),
+// each module 2 px (1x) or 4 px (2x), 4 modules quiet zone, logo cut to two colours, palette PNG.
+// They are served unscaled (no astro:assets), so every module lands on whole device pixels.
+// A new link needs a new QR code.
+import qr1x from "../assets/brand/signal-qr-1x.png?url&no-inline";
+import qr2x from "../assets/brand/signal-qr-2x.png?url&no-inline";
+
+import { route, type Lang } from "../i18n/routes";
+import { ui, ANCHORS } from "../i18n/ui";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = ui[lang].stay;
+const id = ANCHORS[lang].band;
+const action = lang === "de" ? "/api/anmelden" : "/api/en/signup";
+const address = "info@wohnentscheid-frankfurt.de";
+const signal = "https://signal.group/#CjQKIIiNsPhSGdlNpSkehrM5mYB13XqwFJ2rm7IonLVXxOz3EhB5ayvfqtF6wFS1DHmWpuiQ";
+---
+<section id={id} class="band" data-band aria-labelledby={`${id}-title`}>
+  <div class="inner">
+    <h2 id={`${id}-title`}>{t.title}</h2>
+    <div>
+      <h3>{t.mailTitle}</h3>
+      <p>{t.mailText}</p>
+      <form method="post" action={action}>
+        <label for="band-email">{t.label}</label>
+        <input id="band-email" class="field" type="email" name="email" autocomplete="email" required />
+        <div class="trap" aria-hidden="true">
+          <label for="band-website">Website</label>
+          <input id="band-website" type="text" name="website" tabindex="-1" autocomplete="off" />
+        </div>
+        <button class="band-button" type="submit">{t.button}</button>
+      </form>
+      <p class="small">{t.small1.before}<a href={`${route(lang, "privacy")}#newsletter`}>{t.small1.link}</a>{t.small1.after}</p>
+      <p class="small">{t.small2}<a href={`mailto:${address}`}>{address}</a></p>
+    </div>
+    <div>
+      <h3>{t.signalTitle}</h3>
+      <p>{t.signalText}</p>
+      <a class="band-button" href={signal}>{t.signalButton}</a>
+      <img class="qr" src={qr1x} srcset={`${qr1x} 1x, ${qr2x} 2x`} width="122" height="122" loading="lazy"
+        decoding="async" alt={t.qrAlt} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .band {
+    margin-top: 48px;
+    background: var(--ink);
+    color: #fff;
+  }
+
+  .inner {
+    box-sizing: border-box;
+    display: grid;
+    gap: 40px;
+    max-width: var(--width);
+    margin: 0 auto;
+    padding: 48px var(--gutter);
+  }
+
+  h2 {
+    margin: 0;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1;
+  }
+
+  h3 {
+    margin: 0 0 8px;
+    font-family: var(--slab);
+    font-stretch: var(--wide);
+    font-weight: 700;
+    font-size: 1.5rem;
+    line-height: 1.2;
+  }
+
+  p {
+    margin: 0 0 16px;
+  }
+
+  .band-button {
+    display: inline-flex;
+    box-sizing: border-box;
+    align-items: center;
+    min-height: 48px;
+    padding: 8px 24px;
+    background: #fff;
+    color: var(--ink);
+    font-family: var(--slab);
+    font-stretch: var(--wide);
+    font-weight: 700;
+    font-size: 1.125rem;
+    line-height: 1.2;
+    text-decoration: none;
+  }
+
+  button.band-button {
+    border: 0;
+    cursor: pointer;
+  }
+
+  form {
+    display: grid;
+    gap: 12px;
+    justify-items: start;
+  }
+
+  label {
+    font-weight: 700;
+  }
+
+  .field {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 24rem;
+    height: 48px;
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 0;
+    background: #fff;
+    color: var(--ink);
+    font: inherit;
+  }
+
+  /* Off-screen, not display:none, so bots still fill it. */
+  .trap {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .band-button:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .small {
+    margin: 12px 0 0;
+    font-size: 0.9375rem;
+    overflow-wrap: anywhere;
+  }
+
+  .small a {
+    color: inherit;
+    text-underline-offset: 3px;
+  }
+
+  /* White rings on the black band. */
+  a:focus-visible,
+  .field:focus-visible,
+  button:focus-visible {
+    outline: 3px solid #fff;
+    outline-offset: 3px;
+  }
+
+  /* The white quiet zone is in the image. The width keeps one module at 2 px; pixelated covers zoom and 3x screens. */
+  .qr {
+    display: none;
+    width: 122px;
+    height: 122px;
+    margin-top: 24px;
+    background: #fff;
+    image-rendering: pixelated;
+  }
+
+  /* Three columns: the heading as narrow as its longest word, then mail and Signal. */
+  @media (min-width: 900px) {
+    .inner {
+      grid-template-columns: min-content 1fr 1fr;
+      gap: 48px;
+      align-items: start;
+      padding: 56px var(--gutter);
+    }
+
+    .qr {
+      display: block;
+    }
+
+    /* Label on top, then field and button in one row. */
+    form {
+      grid-template-columns: 1fr auto;
+      align-items: end;
+    }
+
+    label,
+    .field {
+      grid-column: 1;
+    }
+
+    .band-button {
+      grid-column: 2;
+      grid-row: 2;
+    }
+
+    .field {
+      max-width: none;
+    }
+  }
+</style>

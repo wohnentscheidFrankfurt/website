@@ -1,0 +1,168 @@
+---
+import { Picture, getImage } from "astro:assets";
+import { render, type CollectionEntry } from "astro:content";
+import { berlinDay, formatDateBar, formatTimeLine } from "../lib/events";
+import { englishBody, localized } from "../lib/event-english";
+import { route, type Lang } from "../i18n/routes";
+
+// Variants: "upcoming" and "past" on /veranstaltungen/ (each article is an anchor, id = event id).
+// "compact" on the start page: one row per event, the whole card links to that anchor.
+// Its thumbnail has an empty alt: the title names the link, the events page shows the drawing with its text.
+interface Props {
+  event: CollectionEntry<"events">;
+  variant: "upcoming" | "past" | "compact";
+  lang: Lang;
+}
+const { event, variant, lang } = Astro.props;
+const d = event.data;
+const text = localized(d, lang);
+// German: the Markdown body. English: the paragraphs of en.body. A German body needs an English one.
+if (lang === "en" && event.body?.trim() && !d.en.body?.trim()) {
+  throw new Error(`Event ${event.id} has a German body but no en.body`);
+}
+const { Content } = variant === "upcoming" && lang === "de" ? await render(event) : { Content: null };
+const paragraphs = variant === "upcoming" && lang === "en" ? englishBody(d.en.body ?? "") : [];
+const events = route(lang, "events");
+const gallery = await Promise.all(
+  (variant === "past" ? (d.gallery ?? []) : []).map(async (item, i) => ({
+    ...item,
+    alt: text.gallery[i].alt,
+    caption: text.gallery[i].caption,
+    // Do not read item.src.src: it would copy the original JPEG with EXIF into dist.
+    large: item.kind === "photo" ? null : (await getImage({ src: item.src, format: "webp", width: 1600 })).src,
+  })),
+);
+---
+{variant === "compact" ? (
+  <article data-event={event.id} data-day={berlinDay(d.start)} class="event compact">
+    <p class="bar" id={`${event.id}-date`}>{formatDateBar(d.start, lang)}</p>
+    <a class="card" href={`${events}#${event.id}`} aria-labelledby={`${event.id}-title ${event.id}-date`}>
+      <span class="thumb">
+        <Picture src={d.image} formats={["avif", "webp"]} fallbackFormat="webp" widths={[240, 480, 720]}
+          sizes="(min-width: 600px) 225px, 180px" alt="" loading="lazy" />
+      </span>
+      <div class="text">
+        <h3 id={`${event.id}-title`}>{text.title}</h3>
+        {text.subtitle && <span class="subtitle">{text.subtitle}</span>}
+        <span class="when">{formatTimeLine(d, lang)}</span>
+        <span class="where">{d.place}</span>
+      </div>
+      <svg class="chevron" viewBox="0 0 12 20" width="10" height="17" aria-hidden="true">
+        <polyline points="2,2 10,10 2,18" />
+      </svg>
+    </a>
+  </article>
+) : (
+<article id={event.id} data-event={event.id} data-day={berlinDay(d.start)} class:list={["event", variant]}>
+  <p class="bar">{formatDateBar(d.start, lang)}</p>
+  <div class="card">
+    <div class="drawing">
+      <Picture src={d.image} formats={["avif", "webp"]} fallbackFormat="webp" widths={[480, 960, 1440]}
+        sizes="(min-width: 720px) 45vw, 100vw"
+        alt={text.imageAlt} loading="lazy" />
+    </div>
+    <div class="text">
+      <h3>{text.title}</h3>
+      {text.subtitle && <p class="subtitle">{text.subtitle}</p>}
+      <p class="when">{formatTimeLine(d, lang)}</p>
+      <p class="where"><strong>{d.place}</strong>{text.address && <><br />{text.address}</>}</p>
+      {Content && <div class="body"><Content /></div>}
+      {paragraphs.length > 0 && <div class="body">{paragraphs.map((p) => <p>{p}</p>)}</div>}
+      {variant === "upcoming" && text.callout && (
+        <p class="callout">
+          {text.callout.split("|").map((part, i) => (
+            <>{i > 0 && <> <span class="sep" aria-hidden="true">|</span> </>}{part.trim()}</>
+          ))}
+        </p>
+      )}
+      {variant === "past" && text.review && <p class="review">{text.review}</p>}
+      {gallery.length > 0 && (
+        <ul class="gallery">
+          {gallery.map((item) => (
+            <li class={item.kind}>
+              <figure>
+                {item.kind === "flipchart" ? (
+                  <a href={item.large!}>
+                    <Picture src={item.src} formats={["avif", "webp"]} widths={[240, 480]}
+                      sizes="(min-width: 720px) 20vw, 45vw" alt={item.alt} loading="lazy" />
+                  </a>
+                ) : (
+                  <Picture src={item.src} formats={["avif", "webp"]} widths={[480, 960]}
+                    sizes="(min-width: 720px) 90vw, 100vw" alt={item.alt} loading="lazy" />
+                )}
+                {item.caption && <figcaption>{item.caption}</figcaption>}
+              </figure>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </div>
+</article>
+)}
+<style>
+  /* Anchor target: the sticky header (64 px) and its cut corners (44 px) stay clear of the date bar. */
+  .event { margin: 0 0 40px; scroll-margin-top: 112px; }
+  .bar {
+    margin: 0; padding: 8px var(--gutter);
+    background: var(--ink); color: #fff;
+    font-family: var(--slab); font-stretch: var(--tight); font-weight: 800; font-size: 1.25rem; line-height: 1.3;
+    text-transform: uppercase; letter-spacing: 0.02em;
+  }
+  .card { display: grid; gap: 16px; padding: 16px 0; }
+  .drawing :global(img) { display: block; width: 100%; height: auto; }
+  h3 {
+    margin: 0; font-family: var(--slab); font-stretch: var(--wide); line-height: 1.1; font-weight: 700;
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+  }
+  .text p { margin: 8px 0; }
+  .subtitle { font-family: var(--slab); font-stretch: var(--wide); font-weight: 700; font-size: 1.375rem; line-height: 1.2; }
+  .where { margin-bottom: 16px; }
+  .body :global(p) { margin: 12px 0; }
+  /* Red stays in the logo and the drawings. The callout is black and bold. */
+  .callout {
+    margin: 16px 0 0; color: var(--ink);
+    font-family: var(--slab); font-stretch: var(--wide); font-weight: 700; font-size: 1.75rem; line-height: 1.15;
+  }
+  /* More air around the separators "|" than a space gives. */
+  .callout .sep { margin: 0 0.2em; }
+  .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 24px 0 0; padding: 0; list-style: none; }
+  .gallery li.photo { grid-column: 1 / -1; }
+  .gallery figure { margin: 0; }
+  .gallery :global(img) { display: block; width: 100%; height: auto; }
+  .photo :global(img) { filter: sepia(0.35); }
+  .gallery a { display: block; }
+  figcaption { margin-top: 4px; font-size: 0.9375rem; line-height: 1.3; }
+  /* Compact rows on the start page, like the b-side list: a white card with a soft shadow,
+     a square thumbnail on the left, the chevron on the right. */
+  .compact { margin-bottom: 24px; }
+  .compact .card {
+    display: grid; grid-template-columns: 120px minmax(0, 1fr) 10px; gap: 14px; align-items: center;
+    margin-top: 10px; padding: 0 16px 0 0;
+    background: #fff; box-shadow: 0 2px 8px rgb(0 0 0 / 0.12);
+    color: var(--ink); text-decoration: none;
+  }
+  .compact .card:hover h3 { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+  .compact .card:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+  .thumb { align-self: stretch; }
+  .thumb :global(picture) { display: block; height: 100%; }
+  .thumb :global(img) { display: block; width: 100%; height: 100%; min-height: 120px; aspect-ratio: 1; object-fit: cover; }
+  .compact .text { display: flex; flex-direction: column; gap: 2px; padding: 12px 0; }
+  .compact h3 { font-family: var(--sans); font-weight: 400; font-size: 1.125rem; line-height: 1.3; }
+  .compact .subtitle { font-family: var(--sans); font-weight: 400; font-size: 0.875rem; line-height: 1.4; }
+  .compact .when, .compact .where { font-size: 0.875rem; line-height: 1.4; }
+  .compact .when { margin-top: 10px; }
+  .compact .where { margin: 0; font-weight: 700; }
+  .chevron { fill: none; stroke: #555; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  @media (min-width: 600px) {
+    .compact .card { grid-template-columns: 150px minmax(0, 1fr) 10px; gap: 16px; padding-right: 20px; }
+    .thumb :global(img) { min-height: 150px; }
+    .compact h3 { font-size: 1.25rem; }
+    .compact .subtitle, .compact .when, .compact .where { font-size: 0.9375rem; }
+  }
+  @media (min-width: 720px) {
+    .upcoming .bar, .past .bar { font-size: 1.5rem; }
+    .upcoming .card, .past .card { grid-template-columns: 5fr 6fr; gap: 32px; padding: 24px 0; }
+    .gallery { grid-template-columns: repeat(4, 1fr); }
+  }
+</style>

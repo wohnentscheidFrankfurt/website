@@ -1,0 +1,41 @@
+---
+// Frame of every page: language, meta tags, base styles, main area, the band "Bleib informiert" and footer.
+// Indexable pages link their counterpart in the other language (hreflang). x-default is the German page.
+import "../styles/global.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import StayInformed from "../components/StayInformed.astro";
+import { counterpart, type Lang } from "../i18n/routes";
+interface Props {
+  title: string;
+  lang: Lang;
+  noindex?: boolean;
+  stayInformed?: boolean;
+}
+const { title, lang, noindex = false, stayInformed = true } = Astro.props;
+const origin = Astro.site!.origin;
+const here = Astro.url.pathname;
+const other = noindex ? undefined : counterpart(here);
+const german = lang === "de" ? here : other;
+const english = lang === "en" ? here : other;
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {noindex && <meta name="robots" content="noindex" />}
+    {!noindex && <link rel="alternate" hreflang="de" href={origin + german} />}
+    {!noindex && <link rel="alternate" hreflang="en" href={origin + english} />}
+    {!noindex && <link rel="alternate" hreflang="x-default" href={origin + german} />}
+    <title>{title}</title>
+  </head>
+  <body>
+    <Header lang={lang} />
+    <main id="main">
+      <slot />
+    </main>
+    {stayInformed && <StayInformed lang={lang} />}
+    <Footer lang={lang} />
+  </body>
+</html>

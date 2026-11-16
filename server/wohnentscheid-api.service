@@ -1,0 +1,30 @@
+[Unit]
+Description=Wohnentscheid sign-up API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+DynamicUser=yes
+ExecStart=/usr/bin/node /opt/wohnentscheid-api/src/main.ts
+# Secrets are encrypted credentials. The API reads them from $CREDENTIALS_DIRECTORY.
+LoadCredentialEncrypted=smtp-password:/etc/credstore.encrypted/wohnentscheid-api-smtp-password
+LoadCredentialEncrypted=token-secret:/etc/credstore.encrypted/wohnentscheid-api-token-secret
+Restart=on-failure
+RestartSec=5
+MemoryMax=128M
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=yes
+LockPersonality=yes
+SystemCallArchitectures=native
+CapabilityBoundingSet=
+
+[Install]
+WantedBy=multi-user.target

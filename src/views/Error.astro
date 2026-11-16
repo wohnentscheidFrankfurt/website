@@ -1,0 +1,20 @@
+---
+import Base from "../layouts/Base.astro";
+import type { Lang } from "../i18n/routes";
+import { ui } from "../i18n/ui";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = ui[lang];
+const mail = "info@wohnentscheid-frankfurt.de";
+const subject = encodeURIComponent(t.signup.fallbackSubject);
+const text = encodeURIComponent(t.signup.fallbackBody);
+---
+<Base lang={lang} title={t.titles.error} noindex stayInformed={false}>
+  <div class="prose">
+    <h1>{t.signup.errorTitle}</h1>
+    <p>{t.signup.errorP.before}<a href={`mailto:${mail}?subject=${subject}&body=${text}`}>{mail}</a>{t.signup.errorP.after}</p>
+  </div>
+</Base>

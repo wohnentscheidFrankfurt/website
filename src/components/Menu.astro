@@ -1,0 +1,237 @@
+---
+// The phone menu: a black house that slides in from the right. The script below opens and closes it.
+// From 900 px the header shows the desktop bar instead, and this menu is not rendered (display: none).
+import { navItems, isCurrent } from "../lib/nav";
+import { counterpart, route, type Lang } from "../i18n/routes";
+import { ui } from "../i18n/ui";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = ui[lang].frame;
+const ITEMS = [{ href: route(lang, "home"), label: t.menuHome }, ...navItems(lang)];
+const target: Lang = lang === "de" ? "en" : "de";
+---
+<nav id="menu" aria-label={t.phoneMenu}>
+  <!-- Our house: the ridge sits left of centre, the left wall leans, a short eave sticks out on the left. -->
+  <svg class="house" viewBox="0 0 360 900" preserveAspectRatio="none" aria-hidden="true">
+    <polygon points="138,8 360,168 360,900 0,900 30,214 2,226" />
+  </svg>
+  <button id="menu-close" type="button" aria-label={t.closeMenu}>✕</button>
+  <ul>
+    {ITEMS.map((item) => (
+      <li>
+        <a href={item.href} aria-current={isCurrent(Astro.url.pathname, item.href) ? "page" : undefined}>{item.label}</a>
+      </li>
+    ))}
+    <li class="switch-item">
+      <a class="switch-link" data-lang-switch-phone href={counterpart(Astro.url.pathname)} lang={target}
+        hreflang={target}>{t.switchPhone}</a>
+    </li>
+  </ul>
+</nav>
+
+<script>
+  const PASTELS = ["#ccffcc", "#ffd6e0", "#fff3b0", "#cde7ff", "#e6d5ff", "#ffdcc2"];
+  const menu = document.getElementById("menu")!;
+  const button = document.getElementById("menu-button")!;
+  const closeButton = document.getElementById("menu-close")!;
+  const outside = () => document.querySelectorAll<HTMLElement>("main, [data-band], footer");
+
+  menu.style.setProperty("--pastel", PASTELS[Math.floor(Math.random() * PASTELS.length)]);
+
+  const isOpen = () => menu.hasAttribute("data-open");
+  const focusables = () => [...menu.querySelectorAll<HTMLElement>("a[href], button")];
+
+  function open() {
+    menu.setAttribute("data-open", "");
+    button.setAttribute("aria-expanded", "true");
+    outside().forEach((el) => (el.inert = true));
+    menu.querySelector<HTMLElement>("a[href]")?.focus();
+  }
+
+  // refocus: where focus goes if it was inside the menu. The burger is hidden on desktop, so the resize path
+  // passes the brand link instead. Without it, focus stays where it is.
+  function close(refocus: HTMLElement | null = button) {
+    // The browser may already have dropped focus to <body> when the menu got display: none.
+    const active = document.activeElement;
+    const hadFocus = menu.contains(active) || active === document.body;
+    menu.removeAttribute("data-open");
+    button.setAttribute("aria-expanded", "false");
+    outside().forEach((el) => (el.inert = false));
+    if (hadFocus || refocus === button) refocus?.focus();
+  }
+
+  button.addEventListener("click", () => (isOpen() ? close() : open()));
+
+  // A window that grows to desktop width hides the menu. Close it, or main and footer stay inert.
+  matchMedia("(min-width: 900px)").addEventListener("change", (event) => {
+    if (event.matches && isOpen()) close(document.querySelector<HTMLElement>("header a.brand"));
+  });
+  closeButton.addEventListener("click", () => close());
+
+  // "Mitmachen" jumps within the start page, so no new page closes the menu. Close it before the jump.
+  // No refocus: the jump moves the focus start to the target.
+  menu.querySelectorAll("a[href]").forEach((link) => link.addEventListener("click", () => close(null)));
+
+  // Capture phase on document: inert main and footer may change the event target, the document still sees the click.
+  document.addEventListener(
+    "click",
+    (event) => {
+      const target = event.target as Node;
+      if (isOpen() && !menu.contains(target) && !button.contains(target)) close();
+    },
+    true,
+  );
+
+  document.addEventListener("keydown", (event) => {
+    if (!isOpen()) return;
+    if (event.key === "Escape") {
+      close();
+      return;
+    }
+    if (event.key !== "Tab") return;
+    const items = focusables();
+    const first = items[0];
+    const last = items[items.length - 1];
+    const active = document.activeElement;
+    if (event.shiftKey && (active === first || !menu.contains(active))) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && (active === last || !menu.contains(active))) {
+      event.preventDefault();
+      first.focus();
+    }
+  });
+</script>
+
+<style>
+  #menu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 100;
+    box-sizing: border-box;
+    width: min(360px, 92vw);
+    height: 100vh;
+    height: 100dvh;
+    transform: translateX(105%);
+    visibility: hidden;
+    pointer-events: none; /* the box is a rectangle, only the house, the button and the links take clicks */
+    transition:
+      transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
+      visibility 0.45s;
+  }
+
+  #menu[data-open] {
+    transform: none;
+    visibility: visible;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #menu {
+      transition: none;
+    }
+  }
+
+  @media (min-width: 900px) {
+    #menu {
+      display: none;
+    }
+  }
+
+  .house {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    fill: var(--ink);
+  }
+
+  .house polygon,
+  #menu-close,
+  a {
+    pointer-events: auto;
+  }
+
+  #menu-close {
+    position: absolute;
+    z-index: 1; /* above the list, which spans the full width */
+    top: calc(25% + 12px);
+    left: -10px;
+    box-sizing: border-box;
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    padding: 0;
+    appearance: none;
+    border: 4px solid var(--ink);
+    border-radius: 50%;
+    background: #fff;
+    color: var(--ink);
+    font-family: system-ui, sans-serif;
+    font-size: 1.75rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  ul {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin: 0;
+    padding: calc(25vh + 100px) 32px 0 0;
+    list-style: none;
+    text-align: right;
+    pointer-events: none;
+  }
+
+  a {
+    display: inline-block;
+    padding: 4px 0;
+    color: #fff;
+    font-family: var(--slab);
+    font-stretch: var(--wide);
+    font-weight: 700;
+    font-size: 1.75rem;
+    line-height: 1.2;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+  }
+
+  /* The language link: smaller than the items, set apart at the bottom. */
+  .switch-item {
+    margin-top: 1rem;
+  }
+
+  .switch-link {
+    font-size: 1.125rem;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  a[aria-current="page"] {
+    font-style: italic;
+    color: var(--pastel, #ccffcc);
+  }
+
+  a:focus-visible,
+  #menu-close:focus-visible {
+    outline: 3px solid #fff;
+    outline-offset: 4px;
+  }
+
+  /* Black ring for the white page, white ring for the black house. */
+  #menu-close:focus-visible {
+    outline-color: var(--ink);
+    outline-offset: 3px;
+    box-shadow: 0 0 0 3px #fff;
+  }
+</style>

@@ -1,0 +1,197 @@
+---
+// Flyer of the next event on the start page, with a countdown above it.
+// The clock is in the markup from the start, so the script does not shift the flyer. It fills it every 30 s.
+// Without JavaScript (scripting: none) the date line shows instead of the clock.
+// role="timer" is not live, so screen readers do not hear every update.
+import { Picture } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import { formatDateBar, formatTimeLine } from "../lib/events";
+import { flyerFor, localized } from "../lib/event-english";
+import { route, type Lang } from "../i18n/routes";
+import { ui } from "../i18n/ui";
+
+interface Props {
+  event: CollectionEntry<"events">;
+  lang: Lang;
+}
+const { event, lang } = Astro.props;
+const d = event.data;
+const c = ui[lang].countdown;
+const text = localized(d, lang);
+const image = flyerFor(d, lang)!;
+// "Sa. 28. November 2026 · 14:00 Uhr" or "Sat 28 November 2026 · 2 pm": the date and the start time only.
+const dateLine = `${formatDateBar(d.start, lang)} · ${formatTimeLine({ start: d.start }, lang)}`;
+// The image's alt is the whole flyer text. The link gets a short name, like the event cards.
+const linkName = `${text.title} – ${formatDateBar(d.start, lang)}`;
+---
+<div class="countdown" role="timer" data-countdown data-start={d.start.toISOString()}
+  data-end={d.end?.toISOString()}
+  data-days-one={c.days[0]} data-days-many={c.days[1]}
+  data-hours-one={c.hours[0]} data-hours-many={c.hours[1]}
+  data-minutes-one={c.minutes[0]} data-minutes-many={c.minutes[1]}>
+  <p class="date" data-date>{dateLine}</p>
+  <p class="clock" data-clock>
+    <span class="noch">{c.before}</span>
+    <span class="unit"><span class="num" data-days></span> <span class="label" data-days-label></span></span>
+    <span class="unit"><span class="num" data-hours></span> <span class="label" data-hours-label></span></span>
+    <span class="unit"><span class="num" data-minutes></span> <span class="label" data-minutes-label></span></span>
+  </p>
+  <p class="running" data-running hidden>{c.running}</p>
+</div>
+<a class="flyer" data-flyer href={`${route(lang, "events")}#${event.id}`} aria-label={linkName}>
+  <Picture src={image.src} formats={["avif", "webp"]} fallbackFormat="webp" widths={[440, 880, 1060]}
+    sizes="(min-width: 472px) 440px, calc(100vw - 32px)" loading="eager" alt={image.alt} />
+</a>
+
+<script>
+  import { countdown, plural } from "../lib/events";
+
+  const UNITS = ["days", "hours", "minutes"] as const;
+
+  for (const box of document.querySelectorAll<HTMLElement>("[data-countdown]")) {
+    const start = new Date(box.dataset.start!);
+    const end = box.dataset.end ? new Date(box.dataset.end) : undefined;
+    const part = (name: string) => box.querySelector<HTMLElement>(`[data-${name}]`)!;
+    let timer: ReturnType<typeof setInterval> | undefined;
+    const tick = () => {
+      const left = countdown(start, end, new Date());
+      part("clock").hidden = left.state !== "before";
+      part("running").hidden = left.state !== "running";
+      box.hidden = left.state === "over";
+      if (left.state === "over") clearInterval(timer);
+      if (left.state !== "before") return;
+      for (const key of UNITS) {
+        const one = box.dataset[`${key}One`]!;
+        const many = box.dataset[`${key}Many`]!;
+        const [num, label] = plural(left[key], one, many).split(" ");
+        part(key).textContent = num;
+        part(`${key}-label`).textContent = label;
+      }
+    };
+    tick();
+    timer = setInterval(tick, 30_000);
+    // Background tabs throttle timers. Catch up when the tab shows again.
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") tick();
+    });
+  }
+</script>
+
+<style>
+  .countdown {
+    margin: 0 0 28px;
+    text-align: center;
+    font-family: var(--slab);
+    color: var(--ink);
+  }
+
+  .countdown[hidden],
+  .countdown [hidden] {
+    display: none;
+  }
+
+  .countdown p {
+    margin: 0;
+  }
+
+  /* With JavaScript the clock shows, without it the date line. */
+  .date {
+    display: none;
+    font-stretch: var(--wide);
+    font-weight: 700;
+    font-size: clamp(1.5rem, 5vw, 2.25rem);
+    line-height: 1.15;
+  }
+
+  .clock {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 0 clamp(14px, 4vw, 36px);
+  }
+
+  .noch {
+    font-stretch: var(--wide);
+    font-weight: 700;
+    font-style: italic;
+    font-size: clamp(1.5rem, 5vw, 2.25rem);
+    line-height: 1;
+  }
+
+  .unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* The min-height keeps the empty spans one line high until the script fills them. */
+  .num {
+    min-height: 0.9em;
+    font-stretch: var(--tight);
+    font-weight: 900;
+    font-size: clamp(3rem, 12vw, 5.5rem);
+    line-height: 0.9;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .label {
+    min-height: 1.2em;
+    font-stretch: var(--wide);
+    font-weight: 700;
+    font-size: clamp(1rem, 3vw, 1.375rem);
+    line-height: 1.2;
+  }
+
+  .running {
+    font-stretch: var(--tight);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: clamp(2.25rem, 8vw, 3.5rem);
+    line-height: 1;
+  }
+
+  @media (scripting: none) {
+    .date {
+      display: block;
+    }
+
+    .clock {
+      display: none;
+    }
+  }
+
+  /* Like the b-side "Mittagstisch": rounded corners, it grows a little with a soft shadow on hover.
+     Red stays in the logo and the drawings, so the focus ring is ink. */
+  .flyer {
+    display: block;
+    max-width: 440px;
+    margin: 0 auto;
+    border-radius: 8px;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  }
+
+  .flyer :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+  }
+
+  .flyer:focus-visible {
+    outline: 3px solid var(--ink);
+    outline-offset: 4px;
+  }
+
+  @media (hover: hover) {
+    .flyer:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 32px rgb(0 0 0 / 0.25);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .flyer:hover {
+      transform: none;
+    }
+  }
+</style>

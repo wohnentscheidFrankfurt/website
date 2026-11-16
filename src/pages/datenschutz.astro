@@ -1,0 +1,106 @@
+---
+import Base from "../layouts/Base.astro";
+import { ui } from "../i18n/ui";
+
+const mail = "info@wohnentscheid-frankfurt.de";
+---
+<Base lang="de" title={ui.de.titles.privacy}>
+  <div class="prose">
+    <h1>Datenschutz</h1>
+
+    <h2>Kurz gesagt</h2>
+    <p>
+      Diese Website setzt keine Cookies. Sie hat kein Tracking und keine Statistik. Sie lädt nichts von anderen
+      Servern. Schriften und Bilder liegen auf unserem eigenen Server.
+    </p>
+
+    <h2>Verantwortlich</h2>
+    <address>
+      Sven Nagel<br />
+      Ostendstraße 9<br />
+      60314&nbsp;Frankfurt am Main<br />
+      <a href={`mailto:${mail}`}>{mail}</a>
+    </address>
+
+    <h2>Server und Protokoll</h2>
+    <p>
+      Die Website liegt auf einem Server der Hetzner Online GmbH in Nürnberg. Hetzner verarbeitet die Daten in
+      unserem Auftrag. Die Verbindung ist mit HTTPS verschlüsselt.
+    </p>
+    <p>
+      Bei jedem Aufruf schreibt der Server einen Eintrag ins Protokoll: Zeitpunkt, aufgerufene Seite, Art der
+      Anfrage, Antwort des Servers, Datenmenge, Dauer und eine gekürzte IP-Adresse. Die IP-Adresse kürzt der Server
+      vor dem Speichern. Bei IPv4 bleiben die ersten zwei von vier Teilen, bei IPv6 die ersten 32 Bit. Browser und
+      Herkunftsseite speichern wir nicht.
+    </p>
+    <p>
+      Wir brauchen das Protokoll, um Fehler und Angriffe zu erkennen. Rechtsgrundlage ist Art.&nbsp;6 Abs.&nbsp;1
+      lit.&nbsp;f DSGVO. Unser berechtigtes Interesse ist ein sicherer Betrieb. Nach spätestens sieben Tagen löscht
+      der Server die Einträge.
+    </p>
+
+    <h2>Karte „Sozialraum Frankfurt“</h2>
+    <p>
+      Unter wohnentscheid-frankfurt.de/sozialraum-frankfurt/ zeigen wir eine Karte. Die Hintergrundkarte kommt von
+      basemap.de. Das ist ein Dienst des Bundesamts für Kartographie und Geodäsie (BKG). Dein Browser lädt die
+      Kacheln der Hintergrundkarte von unserem Server. Unser Server holt sie beim BKG ab. Das BKG sieht dabei nur
+      unseren Server. Es bekommt weder deine IP-Adresse noch Angaben über deinen Browser. Die Abrufe der Kacheln
+      schreiben wir nicht ins Protokoll.
+    </p>
+
+    <h2>E-Mail</h2>
+    <p>
+      Wenn du uns schreibst, verarbeiten wir deine Adresse und deine Nachricht. Wir nutzen sie nur, um dir zu
+      antworten. Unser Postfach liegt bei der IONOS SE in Montabaur. Rechtsgrundlage ist Art.&nbsp;6 Abs.&nbsp;1
+      lit.&nbsp;f DSGVO. Unser berechtigtes Interesse ist, deine Fragen zu beantworten. Wir löschen deine Mail, wenn
+      wir sie nicht mehr brauchen.
+    </p>
+
+    <h2 id="newsletter">Newsletter</h2>
+    <p>
+      Du kannst dich über das Formular auf unserer Website eintragen. Dann schicken wir dir eine Mail mit einem
+      Link. Erst wenn du dort bestätigst, tragen wir dich ein. So kann niemand eine fremde Adresse eintragen. Für
+      das Formular verarbeitet unser Server bei Hetzner deine Adresse und deine IP-Adresse. Er speichert sie nicht.
+      Für die Sperre gegen Missbrauch hält er sie höchstens 24 Stunden im Arbeitsspeicher. Die Mails verschicken
+      wir über IONOS.
+    </p>
+    <p>
+      Nach der Bestätigung bekommen wir eine Mail mit deiner Adresse. Darin steht auch, ob du dich auf der deutschen
+      oder der englischen Seite eingetragen hast. Wir speichern deine Adresse, deine Themen und das Datum der
+      Anmeldung. Damit schicken wir dir ab und zu unseren Newsletter. Wir messen nicht, ob du ihn öffnest oder auf Links klickst. Rechtsgrundlage
+      ist deine Einwilligung nach Art.&nbsp;6 Abs.&nbsp;1 lit.&nbsp;a DSGVO. Wir speichern die Daten, bis du dich
+      abmeldest. Für die Sperre gegen Missbrauch ist die Rechtsgrundlage Art.&nbsp;6 Abs.&nbsp;1 lit.&nbsp;f DSGVO.
+      Unser berechtigtes Interesse ist, das Formular vor Missbrauch zu schützen.
+    </p>
+    <p>
+      Du kannst dich jederzeit abmelden: über den Link in jeder Mail oder mit einer Mail an uns. Nach der Abmeldung
+      behalten wir deine Adresse mit dem Vermerk „abgemeldet“. So bekommst du nicht aus Versehen wieder Post.
+      Rechtsgrundlage dafür ist Art.&nbsp;6 Abs.&nbsp;1 lit.&nbsp;f DSGVO.
+    </p>
+
+    <h2>Signal und Instagram</h2>
+    <p>
+      Wir verlinken unsere Signal-Gruppe und unser Instagram-Profil. Das sind einfache Links. Erst mit dem Klick
+      verlässt du unsere Website. Dann gelten die Datenschutzregeln von Signal oder Instagram. In der Signal-Gruppe
+      sehen die anderen Mitglieder deinen Signal-Namen.
+    </p>
+
+    <h2>Deine Rechte</h2>
+    <p>
+      Du hast das Recht auf Auskunft, Berichtigung, Löschung und Einschränkung der Verarbeitung. Du hast das Recht
+      auf Datenübertragbarkeit (Art.&nbsp;15 bis 20 DSGVO). Eine Einwilligung kannst du jederzeit für die Zukunft
+      widerrufen. Schreib dazu an <a href={`mailto:${mail}`}>{mail}</a>.
+    </p>
+    <p>
+      <strong>Widerspruch:</strong> Wo wir uns auf Art.&nbsp;6 Abs.&nbsp;1 lit.&nbsp;f DSGVO stützen, kannst du
+      jederzeit widersprechen (Art.&nbsp;21 DSGVO). Eine Mail an uns genügt.
+    </p>
+    <p>
+      Du kannst dich auch bei einer Aufsichtsbehörde beschweren. Für uns zuständig ist der Hessische Beauftragte für
+      Datenschutz und Informationsfreiheit, Gustav-Stresemann-Ring 1,
+      65189&nbsp;Wiesbaden, <a href="https://datenschutz.hessen.de/">datenschutz.hessen.de</a>.
+    </p>
+
+    <p><small>Stand: November 2026</small></p>
+  </div>
+</Base>

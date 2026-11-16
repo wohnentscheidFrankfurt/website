@@ -1,0 +1,18 @@
+---
+import Base from "../layouts/Base.astro";
+import type { Lang } from "../i18n/routes";
+import { ui } from "../i18n/ui";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = ui[lang];
+---
+<Base lang={lang} title={t.titles.thanks} noindex stayInformed={false}>
+  <div class="prose">
+    <h1>{t.signup.thanksTitle}</h1>
+    <p>{t.signup.thanksP1}</p>
+    <p>{t.signup.thanksP2}</p>
+  </div>
+</Base>

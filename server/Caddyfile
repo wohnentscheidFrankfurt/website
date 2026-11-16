@@ -1,0 +1,85 @@
+# Source of truth. Copy to /etc/caddy/Caddyfile as root, then: caddy validate --config /etc/caddy/Caddyfile
+# and systemctl reload caddy. Trap: after `caddy validate` as root run: chown caddy:caddy /var/log/caddy/access.log
+
+# The default logger goes to journald. Keep requests out of it: unmatched hosts and errors would log full IPs.
+{
+	log default {
+		exclude http.log.access http.log.error
+	}
+}
+
+# The site. Caddy gets the HTTPS certificates on its own and redirects HTTP to HTTPS.
+wohnentscheid-frankfurt.de {
+	# /api/* goes to the sign-up API on this machine, everything else is the static site.
+	# Do not add trusted_proxies anywhere: without it reverse_proxy replaces a client-sent X-Forwarded-For
+	# with the real address. The API trusts the first entry of that header for its rate limit.
+	handle /api/* {
+		request_body {
+			max_size 4KB
+		}
+		reverse_proxy 127.0.0.1:8787
+	}
+	# Map tiles from basemap.de (BKG) through our origin: the BKG never sees a visitor.
+	# Only GET or HEAD of z/y/x.png goes upstream, without query and without a single client header.
+	# Not even If-None-Match or If-Modified-Since: an ETag could track a browser. Upstream cookies are dropped.
+	# No access log for tiles.
+	handle_path /sozialraum-frankfurt/kacheln/* {
+		log_skip
+		@tile {
+			method GET HEAD
+			path_regexp ^/[0-9]{1,2}/[0-9]{1,7}/[0-9]{1,7}\.png$
+		}
+		handle @tile {
+			rewrite * /wmts_basemapde/tile/1.0.0/de_basemapde_web_raster_grau/default/GLOBAL_WEBMERCATOR{path}?
+			reverse_proxy https://sgx.geodatenzentrum.de {
+				header_up -*
+				header_up Host {upstream_hostport}
+				# Empty, so Go does not add its own User-Agent.
+				header_up User-Agent ""
+				header_down -Set-Cookie
+			}
+		}
+		handle {
+			respond 404
+		}
+	}
+	handle {
+		root * /var/www/wohnentscheid
+		file_server
+	}
+	# API down: the sign-up form still ends on /fehler/ (English: /en/error/) instead of an empty 502.
+	handle_errors 502 503 504 {
+		@signup path /api/anmelden
+		redir @signup /fehler/ 303
+		@signupEn path /api/en/signup
+		redir @signupEn /en/error/ 303
+	}
+	encode zstd gzip
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		X-Frame-Options DENY
+		-Server
+	}
+	log {
+		# Roll daily, keep 6 old files: no entry is older than 7 days.
+		output file /var/log/caddy/access.log {
+			roll_interval 24h
+			roll_keep_for 144h
+		}
+		# Only time, request line, status, size and a masked IP. No headers (browser, referrer), no port, no TLS data.
+		format filter {
+			request>headers delete
+			request>tls delete
+			request>remote_port delete
+			resp_headers delete
+			request>remote_ip ip_mask 16 32
+			request>client_ip ip_mask 16 32
+		}
+	}
+}
+
+# www only redirects to the domain without www.
+www.wohnentscheid-frankfurt.de {
+	redir https://wohnentscheid-frankfurt.de{uri} permanent
+}

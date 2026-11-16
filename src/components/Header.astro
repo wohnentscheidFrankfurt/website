@@ -1,0 +1,214 @@
+---
+// Sticky header. Left the red heart of the brand links home, like the heart on b-side.ms.
+// The name stands on the start page: the big red logo (see src/views/Home.astro). The link name keeps it here.
+// From 900 px the desktop bar follows the heart in one line. Below, the roof burger opens the house menu.
+// The heart blinks softly three times and stops (WCAG 2.2.2).
+import Heart from "./Heart.astro";
+import Menu from "./Menu.astro";
+import LangSwitch from "./LangSwitch.astro";
+import { navItems, isCurrent } from "../lib/nav";
+import { route, type Lang } from "../i18n/routes";
+import { ui } from "../i18n/ui";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = ui[lang].frame;
+---
+<header>
+  <a class="brand" href={route(lang, "home")} aria-label={t.homeLink}>
+    <Heart class="brand-heart" />
+  </a>
+  <nav class="desktop-nav" aria-label={t.desktopNav}>
+    <ul>
+      {navItems(lang).map((item) => (
+        <li>
+          <a href={item.href} aria-current={isCurrent(Astro.url.pathname, item.href) ? "page" : undefined}>
+            {item.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+  <LangSwitch lang={lang} />
+  <button id="menu-button" type="button" aria-controls="menu" aria-expanded="false" aria-label={t.openMenu}>
+    <svg viewBox="0 0 66 55" width="44" height="37" aria-hidden="true">
+      <polyline points="3,17 13,6 25,17 44,3 63,17" />
+      <line x1="3" y1="33" x2="63" y2="33" />
+      <line x1="3" y1="49" x2="63" y2="49" />
+    </svg>
+  </button>
+  <Menu lang={lang} />
+</header>
+
+<style>
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-sizing: border-box;
+    height: 64px;
+    /* The content lines up with main: at most --width wide, centred. */
+    padding: 0 max(var(--gutter), calc((100% - var(--width)) / 2 + var(--gutter)));
+    background: var(--paper);
+  }
+
+  /* Cut corners: two white triangles hang under the bar. Content that scrolls under the header shows them. */
+  header::before,
+  header::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    width: 0;
+    height: 0;
+    border-top: 44px solid var(--paper);
+    pointer-events: none;
+  }
+
+  header::before {
+    left: 0;
+    border-right: 44px solid transparent;
+  }
+
+  header::after {
+    right: 0;
+    border-left: 44px solid transparent;
+  }
+
+  /* A 48 px target around a 34 px heart. */
+  .brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    min-height: 48px;
+    margin-left: -7px;
+  }
+
+  .brand :global(.brand-heart) {
+    width: 34px;
+    height: auto;
+    /* Three soft blinks, then it stays. WCAG 2.2.2: blinking that starts by itself stops within 5 seconds. */
+    animation: blink 1.6s ease-in-out 3;
+  }
+
+  @keyframes blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.3;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .brand :global(.brand-heart) {
+      animation: none;
+    }
+  }
+
+  /* The items follow the heart with the gap between items (the header gap counts). */
+  .desktop-nav {
+    display: none;
+    margin-left: calc(2.5rem - 16px);
+  }
+
+  .desktop-nav ul {
+    display: flex;
+    gap: 2.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .desktop-nav a {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    color: var(--ink);
+    font-family: var(--slab);
+    font-stretch: var(--wide);
+    font-weight: 700;
+    font-size: 1.375rem;
+    text-decoration: none;
+    text-underline-offset: 6px;
+    text-decoration-thickness: 2px;
+  }
+
+  .desktop-nav a:hover {
+    text-decoration-line: underline;
+  }
+
+  .desktop-nav a[aria-current="page"] {
+    font-style: italic;
+    text-decoration-line: underline;
+  }
+
+  #menu-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    min-height: 48px;
+    margin-right: -6px;
+    padding: 0 2px;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+
+  #menu-button svg {
+    stroke: var(--ink);
+    stroke-width: 6;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .brand:focus-visible,
+  .desktop-nav a:focus-visible,
+  #menu-button:focus-visible {
+    outline: 3px solid var(--ink);
+    outline-offset: 2px;
+  }
+
+  /* Phones without JavaScript: heart and bar share one narrow row, so the bar gets smaller. */
+  @media (max-width: 899px) {
+    .desktop-nav {
+      margin-left: auto;
+    }
+
+    .desktop-nav a {
+      font-size: 1.0625rem;
+    }
+  }
+
+  /* The items wrap into two short lines inside the 64 px header. */
+  @media (max-width: 899px) and (scripting: none) {
+    .desktop-nav ul {
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 0 1rem;
+    }
+
+    .desktop-nav a {
+      min-height: 28px;
+    }
+  }
+
+  /* Desktop, and phones without JavaScript: the bar instead of the burger. */
+  @media (min-width: 900px), (scripting: none) {
+    .desktop-nav {
+      display: block;
+    }
+
+    #menu-button {
+      display: none;
+    }
+  }
+</style>

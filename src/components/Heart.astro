@@ -1,0 +1,18 @@
+---
+// The red heart of the brand. Only the header makes it blink (see Header.astro).
+// The size comes from the CSS of the place that uses it.
+import { Image } from "astro:assets";
+import heart from "../assets/brand/heart.svg";
+
+interface Props {
+  class?: string;
+}
+const { class: cls } = Astro.props;
+---
+<Image src={heart} format="svg" alt="" loading="eager" width={80} height={80} class:list={["heart", cls]} />
+
+<style is:global>
+  .heart {
+    display: block;
+  }
+</style>

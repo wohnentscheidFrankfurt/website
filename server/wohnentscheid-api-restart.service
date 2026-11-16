@@ -1,0 +1,6 @@
+[Unit]
+Description=Restart the sign-up API
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl restart wohnentscheid-api.service

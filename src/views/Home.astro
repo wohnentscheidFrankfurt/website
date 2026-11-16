@@ -1,0 +1,199 @@
+---
+// Start page like the b-side start: the red logo half on a big drawing, the intro lower right beside it.
+// Below it the flyer of the next event with a countdown. Without a flyer the next events as compact cards.
+// Then, on the German page only, the teaser of the map "Sozialraum Frankfurt".
+// Then "Mitmachen", the target of the menu item.
+import { Picture } from "astro:assets";
+import { getCollection } from "astro:content";
+import Base from "../layouts/Base.astro";
+import EventCard from "../components/EventCard.astro";
+import Flyer from "../components/Flyer.astro";
+import Join from "../components/Join.astro";
+import MapTeaser from "../components/MapTeaser.astro";
+import { berlinDay, splitEvents } from "../lib/events";
+import { flyerFor } from "../lib/event-english";
+import { route, type Lang } from "../i18n/routes";
+import { ui } from "../i18n/ui";
+import utopie from "../assets/drawings/utopie.png";
+// logo-red.png: logo.png recoloured with sharp. Ink and heart red #ea1a1a, the house and its windows white inside,
+// the outside transparent. House and lettering cut apart and scaled up 2× with lanczos3 and a light sharpen,
+// the house then to 60 % (small house, big lettering). Then a 20 px white halo around it,
+// so the lettering reads on the drawing's lines.
+import logoRed from "../assets/brand/logo-red.png";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = ui[lang];
+const entries = await getCollection("events");
+const upcoming = splitEvents(
+  entries.map((entry) => ({ entry, start: entry.data.start })),
+  berlinDay(new Date()),
+).upcoming.map((e) => e.entry);
+const withFlyer = upcoming.find((event) => event.data.flyer);
+const next = upcoming.slice(0, 3);
+---
+<Base lang={lang} title={t.titles.home}>
+  <section class="hero" data-hero>
+    <h1 class="logo">
+      <Picture src={logoRed} formats={["avif", "webp"]} fallbackFormat="png" widths={[320, 640, 816]}
+        sizes="(min-width: 1120px) 305px, (min-width: 900px) 28vw, min(45vw, 280px)" loading="eager"
+        alt={t.start.logoAlt} />
+    </h1>
+    <div class="stage">
+      <Picture src={utopie} formats={["avif", "webp"]} fallbackFormat="webp" widths={[800, 1280, 1600, 2400]}
+        sizes="(min-width: 1120px) 780px, (min-width: 900px) 70vw, 100vw"
+        loading="eager" fetchpriority="high"
+        alt={t.start.drawingAlt} />
+    </div>
+    <div class="intro" data-intro>
+      <p>{t.start.intro}</p>
+    </div>
+  </section>
+  {withFlyer ? (
+    <section class="next flyer-next" data-next aria-labelledby="next-title">
+      <h2 id="next-title" class="visually-hidden">{t.start.nextOne}</h2>
+      <Flyer event={withFlyer} lang={lang} />
+    </section>
+  ) : (
+    <section class="next" data-next>
+      <h2>{t.start.nextMany}</h2>
+      <div class="list">
+        {next.length > 0
+          ? next.map((event) => <EventCard event={event} variant="compact" lang={lang} />)
+          : <p class="none">{t.start.none}</p>}
+      </div>
+      <div class="side">
+        {next.length > 0 && (
+          <p>{t.start.side}</p>
+        )}
+        <a class="button" href={route(lang, "events")}>{t.start.allEvents}</a>
+      </div>
+    </section>
+  )}
+  {lang === "de" && <MapTeaser />}
+  <Join lang={lang} />
+</Base>
+
+<style>
+  /* Phones: the drawing bleeds to the screen edges.
+     The red logo stands in its upper left, like on b-side: its upper half above the drawing, its lower half on it.
+     --logo is its width. The logo is 0.73 as high as wide, so the drawing starts 0.364 logo widths lower. */
+  .hero {
+    --logo: min(45%, 280px);
+    position: relative;
+    display: grid;
+    gap: 16px;
+  }
+
+  .logo {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    width: var(--logo);
+    margin: 0;
+    line-height: 0;
+  }
+
+  .logo img {
+    width: 100%;
+    height: auto;
+  }
+
+  .stage {
+    margin: calc(var(--logo) * 0.364) calc(-1 * var(--gutter)) 0;
+    overflow: clip;
+  }
+
+  .stage img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .intro p {
+    margin: 0;
+  }
+
+  .next {
+    margin: 40px 0 64px;
+  }
+
+  .next > h2 {
+    margin: 0 0 20px;
+    font-size: clamp(1.625rem, 4vw, 2rem);
+  }
+
+  /* The heading gives structure for screen readers. The countdown and the flyer speak for themselves. */
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .none {
+    margin: 0 0 24px;
+  }
+
+  .side p {
+    margin: 0 0 16px;
+  }
+
+  @media (min-width: 720px) {
+    .stage {
+      margin-right: 0;
+      margin-left: 0;
+    }
+  }
+
+  /* Desktop, like b-side: a big drawing (10/14 of the column) and the intro lower right.
+     The logo is 39 % as wide as the drawing (28 % of the column). It starts at the top of the hero, the drawing
+     56 px lower. Where the page has room, the logo sticks out 48 px left of the drawing.
+     The oval island fills the drawing's lower right, so the intro stands beside the drawing, not on it.
+     Its bottom sits on the drawing's bottom. A long intro grows upwards, beside the drawing.
+     Events left (2/3), side text and button right. */
+  @media (min-width: 900px) {
+    .hero {
+      grid-template-columns: minmax(0, 10fr) minmax(0, 4fr);
+      gap: 0;
+      align-items: end;
+      padding-top: 56px;
+    }
+
+    .hero {
+      --logo: 28%;
+    }
+
+    .stage {
+      margin: 0;
+    }
+
+    /* The padding keeps the text off the drawing. */
+    .intro {
+      padding-left: 24px;
+    }
+
+    .next:not(.flyer-next) {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+      gap: 0 32px;
+      align-items: start;
+      margin-top: 24px;
+    }
+
+    .next > h2 {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (min-width: 1216px) {
+    .logo {
+      left: -48px;
+    }
+  }
+</style>

@@ -1,0 +1,103 @@
+---
+import Base from "../../layouts/Base.astro";
+import { ui } from "../../i18n/ui";
+
+const mail = "info@wohnentscheid-frankfurt.de";
+---
+<Base lang="en" title={ui.en.titles.privacy}>
+  <div class="prose">
+    <h1>Privacy</h1>
+    <p>This is a translation. The German version is legally binding: <a href="/datenschutz/" hreflang="de" lang="de">Datenschutz</a>.</p>
+
+    <h2>In short</h2>
+    <p>
+      This website sets no cookies. It has no tracking and no statistics. It loads nothing from other servers.
+      Fonts and images are on our own server.
+    </p>
+
+    <h2>Responsible</h2>
+    <address>
+      Sven Nagel<br />
+      Ostendstraße 9<br />
+      60314&nbsp;Frankfurt am Main<br />
+      <a href={`mailto:${mail}`}>{mail}</a>
+    </address>
+
+    <h2>Server and log</h2>
+    <p>
+      The website is on a server of Hetzner Online GmbH in Nuremberg. Hetzner processes the data on our behalf.
+      The connection is encrypted with HTTPS.
+    </p>
+    <p>
+      Each time you open a page, the server writes an entry in the log: time, page, type of request, answer of the
+      server, amount of data, duration and a shortened IP address. The server shortens the IP address before it
+      saves it. For IPv4 the first two of four parts stay, for IPv6 the first 32 bits. We do not save your browser
+      or the page you came from.
+    </p>
+    <p>
+      We need the log to find errors and attacks. The legal basis is Art.&nbsp;6(1)(f) GDPR. Our legitimate
+      interest is a safe operation. The server deletes the entries after seven days at the latest.
+    </p>
+
+    <h2>Map “Sozialraum Frankfurt”</h2>
+    <p>
+      At wohnentscheid-frankfurt.de/sozialraum-frankfurt/ we show a map. The background map comes from basemap.de.
+      This is a service of the Federal Agency for Cartography and Geodesy (Bundesamt für Kartographie und Geodäsie,
+      BKG). Your browser loads the tiles of the background map from our server. Our server fetches them from the
+      BKG. The BKG only sees our server. It gets neither your IP address nor details about your browser. We do not
+      write the tile requests to the log.
+    </p>
+
+    <h2>Email</h2>
+    <p>
+      If you write to us, we process your address and your message. We use them only to answer you. Our mailbox is
+      at IONOS SE in Montabaur. The legal basis is Art.&nbsp;6(1)(f) GDPR. Our legitimate interest is to answer
+      your questions. We delete your email when we no longer need it.
+    </p>
+
+    <h2 id="newsletter">Newsletter</h2>
+    <p>
+      You can sign up with the form on our website. Then we send you an email with a link. We add you only when you
+      confirm there. This way nobody can sign up another person's address. For the form, our server at Hetzner
+      processes your address and your IP address. It does not save them. To block misuse, it keeps them in memory
+      for 24 hours at most. We send the emails through IONOS.
+    </p>
+    <p>
+      After you confirm, we get an email with your address. It also says if you signed up on the German or the
+      English page. We save your address, your topics and the date you signed up. We use them to send you our
+      newsletter now and then. We do not measure if you open it or click on links. The legal basis is your consent
+      according to Art.&nbsp;6(1)(a) GDPR. We keep the data until you unsubscribe. For blocking misuse, the legal
+      basis is Art.&nbsp;6(1)(f) GDPR. Our legitimate interest is to protect the form against misuse.
+    </p>
+    <p>
+      You can unsubscribe at any time: with the link in every email or with an email to us. After you unsubscribe,
+      we keep your address with the note “unsubscribed”. This way you do not get mail from us again by mistake.
+      The legal basis for this is Art.&nbsp;6(1)(f) GDPR.
+    </p>
+
+    <h2>Signal and Instagram</h2>
+    <p>
+      We link to our Signal group and our Instagram profile. These are simple links. You leave our website only
+      when you click. Then the privacy rules of Signal or Instagram apply. In the Signal group, the other members
+      see your Signal name.
+    </p>
+
+    <h2>Your rights</h2>
+    <p>
+      You have the right to access, correction, deletion and restriction of processing. You have the right to data
+      portability (Art.&nbsp;15 to 20 GDPR). You can withdraw your consent at any time for the future. To do so,
+      write to <a href={`mailto:${mail}`}>{mail}</a>.
+    </p>
+    <p>
+      <strong>Objection:</strong> Where we rely on Art.&nbsp;6(1)(f) GDPR, you can object at any time
+      (Art.&nbsp;21 GDPR). An email to us is enough.
+    </p>
+    <p>
+      You can also complain to a supervisory authority. The authority for us is the Hessian Commissioner for Data
+      Protection and Freedom of Information (Der Hessische Beauftragte für Datenschutz und Informationsfreiheit),
+      Gustav-Stresemann-Ring 1, 65189&nbsp;Wiesbaden, <a href="https://datenschutz.hessen.de/">datenschutz.hessen.de</a>.
+    </p>
+
+    <p><small>Last updated: November 2026</small></p>
+  </div>
+</Base>

@@ -1,0 +1,25 @@
+---
+import Base from "../../layouts/Base.astro";
+import { ui } from "../../i18n/ui";
+
+const mail = "info@wohnentscheid-frankfurt.de";
+---
+<Base lang="en" title={ui.en.titles.imprint}>
+  <div class="prose">
+    <h1>Imprint</h1>
+    <p>This is a translation. The German version is legally binding: <a href="/impressum/" hreflang="de" lang="de">Impressum</a>.</p>
+    <p>This website belongs to the initiative Wohnentscheid Frankfurt.</p>
+    <h2>Information according to §&nbsp;5 DDG (German Digital Services Act)</h2>
+    <address>
+      Sven Nagel<br />
+      Ostendstraße 9<br />
+      60314&nbsp;Frankfurt am Main
+    </address>
+    <h2>Contact</h2>
+    <p>Email: <a href={`mailto:${mail}`}>{mail}</a></p>
+    <h2>Responsible for the content according to §&nbsp;18(2) MStV (German Interstate Media Treaty)</h2>
+    <p>Sven Nagel, address as above.</p>
+    <h2>Images</h2>
+    <p>Drawings and photos: Wohnentscheid Frankfurt.</p>
+  </div>
+</Base>

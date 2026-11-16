@@ -1,0 +1,9 @@
+[Unit]
+Description=Restart the sign-up API after a deploy
+
+[Path]
+# deploy.sh writes this file last. So the deploy user needs no sudo.
+PathChanged=/opt/wohnentscheid-api/deployed
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,24 @@
+{
+  "name": "wohnentscheid-website",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "ASTRO_TELEMETRY_DISABLED=1 astro dev",
+    "build": "ASTRO_TELEMETRY_DISABLED=1 astro build",
+    "preview": "ASTRO_TELEMETRY_DISABLED=1 astro preview",
+    "test": "npm run test:api && playwright test",
+    "test:api": "node --test tests/api/*.test.ts",
+    "dev:api": "TOKEN_SECRET=dev-secret-0123456789 SITE_ORIGIN=http://localhost:4321 SMTP_HOST=127.0.0.1 SMTP_PORT=1025 SMTP_TLS=none node --watch api/src/main.ts"
+  },
+  "dependencies": {
+    "@fontsource-variable/archivo": "5.3.0",
+    "@fontsource/mulish": "5.3.0",
+    "astro": "7.4.11"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.0"
+  }
+}

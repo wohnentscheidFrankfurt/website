@@ -1,0 +1,46 @@
+---
+import { getCollection } from "astro:content";
+import Base from "../layouts/Base.astro";
+import EventCard from "../components/EventCard.astro";
+import { berlinDay, splitEvents } from "../lib/events";
+import type { Lang } from "../i18n/routes";
+import { ui } from "../i18n/ui";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = ui[lang];
+
+const today = berlinDay(new Date());
+const entries = await getCollection("events");
+const byId = new Map(entries.map((entry) => [entry.id, entry]));
+const { upcoming, past } = splitEvents(
+  entries.map((entry) => ({ id: entry.id, start: entry.data.start })),
+  today,
+);
+const upcomingEntries = upcoming.map((e) => byId.get(e.id)!);
+const pastEntries = past.map((e) => byId.get(e.id)!);
+---
+<Base lang={lang} title={t.titles.events}>
+  <div data-build-day={today}>
+    <h1>{t.events.title}</h1>
+    <section data-list="upcoming">
+      <h2>{t.events.upcoming}</h2>
+      {upcomingEntries.length === 0
+        ? <p>{t.events.none}</p>
+        : upcomingEntries.map((event) => <EventCard event={event} variant="upcoming" lang={lang} />)}
+    </section>
+    {pastEntries.length > 0 && (
+      <section data-list="past">
+        <h2>{t.events.past}</h2>
+        {pastEntries.map((event) => <EventCard event={event} variant="past" lang={lang} />)}
+      </section>
+    )}
+  </div>
+</Base>
+<style>
+  /* The long word must fit at 390 px. */
+  h1 { margin: 32px 0 24px; font-size: clamp(2.25rem, 9vw, 4rem); overflow-wrap: anywhere; }
+  h2 { font-size: clamp(1.625rem, 4vw, 2rem); }
+</style>

@@ -1,0 +1,58 @@
+---
+// The language switch in the header: "EN" on German pages, "DE" on English pages. It links the same page in the
+// other language. The visible text is short, the accessible name says it in the target language.
+import { counterpart, type Lang } from "../i18n/routes";
+import { ui } from "../i18n/ui";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const target: Lang = lang === "de" ? "en" : "de";
+const t = ui[lang].frame;
+---
+<a class="lang-switch" data-lang-switch href={counterpart(Astro.url.pathname)} lang={target} hreflang={target}
+  aria-label={t.switchName}>{t.switchVisible}</a>
+
+<style>
+  /* Right end of the bar on desktop, left of the burger on phones. Smaller than the items, a 48 px target. */
+  .lang-switch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-width: 48px;
+    min-height: 48px;
+    margin-left: auto;
+    color: var(--ink);
+    font-family: var(--slab);
+    font-stretch: var(--wide);
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-decoration: none;
+    text-underline-offset: 6px;
+    text-decoration-thickness: 2px;
+  }
+
+  .lang-switch:hover {
+    text-decoration-line: underline;
+  }
+
+  .lang-switch:focus-visible {
+    outline: 3px solid var(--ink);
+    outline-offset: 2px;
+  }
+
+  @media (min-width: 900px) {
+    .lang-switch {
+      font-size: 1rem;
+    }
+  }
+
+  /* Phones without JavaScript: the bar already takes the free space. */
+  @media (max-width: 899px) and (scripting: none) {
+    .lang-switch {
+      margin-left: 0;
+    }
+  }
+</style>

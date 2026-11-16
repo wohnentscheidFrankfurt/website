@@ -1,0 +1,65 @@
+---
+// "Mitmachen" on the start page: a short text and a black button that opens a mail.
+// The menu item "Mitmachen" jumps here (/#mitmachen). scroll-margin-top keeps the heading clear of the sticky header.
+import type { Lang } from "../i18n/routes";
+import { ui, ANCHORS } from "../i18n/ui";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = ui[lang].join;
+const id = ANCHORS[lang].join;
+const mail = `mailto:info@wohnentscheid-frankfurt.de?subject=${encodeURIComponent(t.mailSubject)}`;
+---
+<section id={id} class="join" aria-labelledby={`${id}-title`}>
+  <h2 id={`${id}-title`}>{t.title}</h2>
+  <p>{t.text}</p>
+  <a class="join-button" href={mail}>{t.button}</a>
+</section>
+
+<style>
+  .join {
+    margin: 56px 0 72px;
+    text-align: center;
+    /* Header 64 px plus air. The header's corner triangles hang at the edges, the heading sits in the middle. */
+    scroll-margin-top: 88px;
+  }
+
+  h2 {
+    margin: 0 0 16px;
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    line-height: 1;
+  }
+
+  p {
+    max-width: 34rem;
+    margin: 0 auto 24px;
+  }
+
+  .join-button {
+    display: inline-flex;
+    box-sizing: border-box;
+    align-items: center;
+    min-height: 48px;
+    padding: 8px 32px;
+    background: var(--ink);
+    color: #fff;
+    font-family: var(--slab);
+    font-stretch: var(--wide);
+    font-weight: 700;
+    font-size: 1.25rem;
+    line-height: 1.2;
+    text-decoration: none;
+  }
+
+  .join-button:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .join-button:focus-visible {
+    outline: 3px solid var(--ink);
+    outline-offset: 3px;
+  }
+</style>

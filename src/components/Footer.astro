@@ -1,0 +1,106 @@
+---
+// Footer like b-side: black link bar, below three centred columns. The band "Bleib informiert" sits right above it,
+// so the bar continues the band.
+import { route, type Lang } from "../i18n/routes";
+import { ui, ANCHORS } from "../i18n/ui";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = ui[lang].frame;
+const instagram = "https://www.instagram.com/wohnentscheidfrankfurt/";
+const mail = "mailto:info@wohnentscheid-frankfurt.de";
+---
+<footer>
+  <nav class="footer-bar" aria-label={t.footerNav}>
+    <a href={route(lang, "events")}>{t.footerEvents}</a>
+    <span aria-hidden="true">|</span>
+    <a href={mail}>{t.footerContact}</a>
+    <span aria-hidden="true">|</span>
+    <a href={instagram}>{t.footerInstagram}</a>
+  </nav>
+  <div class="footer-columns">
+    <section>
+      <h2>{t.footerColumn1}</h2>
+      <a href={route(lang, "home")}>{t.footerHome}</a>
+      <a href={route(lang, "events")}>{t.footerEvents}</a>
+      <a href={route(lang, "imprint")}>{t.footerImprint}</a>
+      <a href={route(lang, "privacy")}>{t.footerPrivacy}</a>
+    </section>
+    <section>
+      <h2>{t.footerColumn2}</h2>
+      <a href={`${route(lang, "home")}#${ANCHORS[lang].join}`}>{t.footerWriteUs}</a>
+    </section>
+    <section>
+      <h2>{t.footerColumn3}</h2>
+      <a href={instagram}>
+        {t.footerInstagram}
+        <svg class="icon" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false">
+          <rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2" />
+          <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2" />
+          <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" />
+        </svg>
+      </a>
+    </section>
+  </div>
+</footer>
+<style>
+  .footer-bar {
+    background: #111;
+    color: #fff;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0 10px;
+    padding: 0 var(--gutter);
+    font-family: var(--slab);
+    font-stretch: var(--wide);
+    font-weight: 700;
+    font-size: 1.125rem;
+  }
+  @media (min-width: 720px) {
+    .footer-bar { font-size: 1.25rem; gap: 0 14px; }
+  }
+  .footer-bar a {
+    color: inherit;
+    text-decoration: none;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .footer-bar a:hover { text-decoration: underline; text-underline-offset: 4px; }
+  .footer-columns {
+    display: grid;
+    gap: 28px;
+    padding: 32px var(--gutter) 40px;
+    text-align: center;
+    max-width: var(--width);
+    margin: 0 auto;
+  }
+  @media (min-width: 720px) {
+    .footer-columns { grid-template-columns: repeat(3, 1fr); }
+  }
+  .footer-columns section { display: flex; flex-direction: column; align-items: center; }
+  /* Normal case and wider, like the menu. */
+  .footer-columns h2 {
+    font-stretch: var(--wide);
+    font-weight: 700;
+    text-transform: none;
+    letter-spacing: normal;
+    font-size: 1.125rem;
+    margin: 0 0 4px;
+  }
+  .footer-columns a {
+    font-size: 1rem;
+    font-style: italic;
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+</style>

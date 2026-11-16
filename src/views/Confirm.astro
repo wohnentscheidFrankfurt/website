@@ -1,0 +1,108 @@
+---
+import Base from "../layouts/Base.astro";
+import type { Lang } from "../i18n/routes";
+import { route } from "../i18n/routes";
+import { ANCHORS, ui } from "../i18n/ui";
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = ui[lang];
+const mail = "info@wohnentscheid-frankfurt.de";
+const subject = encodeURIComponent(t.signup.fallbackSubject);
+const text = encodeURIComponent(t.signup.fallbackBody);
+const mailto = `mailto:${mail}?subject=${subject}&body=${text}`;
+const s = t.signup;
+// The strings for the script: it has no access to the dictionary.
+const strings = {
+  endpoint: lang === "de" ? "/api/bestaetigen" : "/api/en/confirm",
+  home: `${route(lang, "home")}#${ANCHORS[lang].band}`,
+  waiting: s.waiting,
+  done: s.done,
+  invalidBefore: s.invalid.before,
+  invalidLink: s.invalid.link,
+  invalidAfter: s.invalid.after,
+  failedBefore: s.failed.before,
+  failedLink: s.failed.link,
+  failedAfter: s.failed.after,
+};
+---
+<Base lang={lang} title={t.titles.confirm} noindex stayInformed={false}>
+  <div class="prose">
+    <h1>{s.confirmTitle}</h1>
+    <p id="status" role="status" tabindex="-1"></p>
+    <button id="retry" class="confirm-button" type="button" hidden>{s.retry}</button>
+    <noscript>
+      <p>{s.noScript.before}<a href={mailto}>{mail}</a>{s.noScript.after}</p>
+    </noscript>
+  </div>
+  <script is:inline define:vars={{ mailto, strings }}>
+    // The click in the mail is the confirmation: the page posts the token by itself once it has loaded.
+    // Scanners that only fetch the HTML confirm nothing. GET never confirms on the server.
+    // The token stays in the fragment. It goes only into the POST body, never into the page or a URL.
+    var token = location.hash.slice(1);
+    var retry = document.getElementById("retry");
+    var statusEl = document.getElementById("status");
+    var INVALID = strings.invalidBefore + '<a href="' + strings.home + '">' + strings.invalidLink + '</a>' + strings.invalidAfter;
+    var FAILED = strings.failedBefore + '<a href="' + mailto + '">' + strings.failedLink + '</a>' + strings.failedAfter;
+
+    function show(html) {
+      statusEl.innerHTML = html;
+      statusEl.focus();
+    }
+
+    function confirmSignup() {
+      retry.hidden = true;
+      statusEl.textContent = strings.waiting;
+      fetch(strings.endpoint, { method: "POST", body: new URLSearchParams({ token: token }) })
+        .then(function (res) {
+          if (res.ok) {
+            // Remove the token from the address bar and the history entry.
+            history.replaceState(null, "", location.pathname);
+            show(strings.done);
+          } else if (res.status === 400) {
+            show(INVALID);
+          } else {
+            throw new Error();
+          }
+        })
+        .catch(function () {
+          statusEl.innerHTML = FAILED;
+          retry.hidden = false;
+          retry.focus();
+        });
+    }
+
+    if (!token) {
+      show(INVALID);
+    } else {
+      retry.addEventListener("click", confirmSignup);
+      confirmSignup();
+    }
+  </script>
+  <style>
+    .confirm-button {
+      box-sizing: border-box;
+      min-height: 48px;
+      padding: 8px 24px;
+      border: 0;
+      background: var(--ink);
+      color: #fff;
+      font-family: var(--slab);
+      font-stretch: var(--wide);
+      font-weight: 700;
+      font-size: 1.125rem;
+      line-height: 1.2;
+      cursor: pointer;
+    }
+    .confirm-button:focus-visible,
+    #status:focus-visible {
+      outline: 3px solid var(--ink);
+      outline-offset: 2px;
+    }
+    #status:focus:not(:focus-visible) {
+      outline: none;
+    }
+  </style>
+</Base>
