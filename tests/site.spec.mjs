@@ -105,18 +105,12 @@ for (const path of [...PAGES, ...PAGES_EN, ...NOINDEX_PAGES]) {
   });
 
   if (lang === "en") continue;
-  test(`${path} has a footer with a black bar, links and columns`, async ({ page }) => {
+  test(`${path} has a footer with three columns and no link bar`, async ({ page }) => {
     await page.goto(path);
     const footer = page.locator("footer");
     await expect(footer).toBeVisible();
-    const bar = footer.locator(".footer-bar");
-    const bg = await bar.evaluate((el) => getComputedStyle(el).backgroundColor);
-    expect(["rgb(17, 17, 17)", "rgb(0, 0, 0)"]).toContain(bg);
-    await expect(bar.getByRole("link", { name: "Veranstaltungen" })).toHaveAttribute("href", "/veranstaltungen/");
-    await expect(bar.getByRole("link", { name: "Kontakt" }))
-      .toHaveAttribute("href", "mailto:info@wohnentscheid-frankfurt.de");
-    await expect(bar.getByRole("link", { name: "Instagram" }))
-      .toHaveAttribute("href", "https://www.instagram.com/wohnentscheidfrankfurt/");
+    await expect(footer.locator("nav")).toHaveCount(0);
+    expect(await footer.evaluate((el) => el.firstElementChild?.className)).toContain("footer-columns");
     for (const name of ["Wohnentscheid Frankfurt", "Mitmachen", "Andere Plattformen"]) {
       await expect(footer.getByRole("heading", { name })).toBeVisible();
     }
@@ -146,21 +140,13 @@ async function expectPlatforms(footer) {
 }
 
 for (const path of [...PAGES_EN, "/en/thanks/", "/en/error/", "/en/confirm/"]) {
-  test(`${path} has an English footer with a black bar, links and columns`, async ({ page }) => {
+  test(`${path} has an English footer with three columns and no link bar`, async ({ page }) => {
     await page.goto(path);
     const footer = page.locator("footer");
     await expect(footer).toBeVisible();
-    const bar = footer.locator(".footer-bar");
-    await expect(bar).toHaveAttribute("aria-label", "Footer");
+    await expect(footer.locator("nav")).toHaveCount(0);
     await expect(page.locator("nav.desktop-nav")).toHaveAttribute("aria-label", "Main menu");
     await expect(page.locator("#menu-close")).toHaveAttribute("aria-label", "Close menu");
-    const bg = await bar.evaluate((el) => getComputedStyle(el).backgroundColor);
-    expect(["rgb(17, 17, 17)", "rgb(0, 0, 0)"]).toContain(bg);
-    await expect(bar.getByRole("link", { name: "Events" })).toHaveAttribute("href", "/en/events/");
-    await expect(bar.getByRole("link", { name: "Contact" }))
-      .toHaveAttribute("href", "mailto:info@wohnentscheid-frankfurt.de");
-    await expect(bar.getByRole("link", { name: "Instagram" }))
-      .toHaveAttribute("href", "https://www.instagram.com/wohnentscheidfrankfurt/");
     for (const name of ["Wohnentscheid Frankfurt", "Get involved", "Other platforms"]) {
       await expect(footer.getByRole("heading", { name })).toBeVisible();
     }
@@ -207,7 +193,7 @@ for (const path of [...PAGES_EN, "/en/thanks/", "/en/error/", "/en/confirm/"]) {
     for (const allowed of LEGAL_EN_ALLOWED[path] ?? []) text = text.replaceAll(allowed, "");
     for (const word of GERMAN_ONLY) expect(text).not.toContain(word);
     const footer = page.locator("footer");
-    const hrefs = await footer.locator(".footer-columns a, .footer-bar a")
+    const hrefs = await footer.locator(".footer-columns a")
       .evaluateAll((els) => els.map((el) => el.getAttribute("href")));
     for (const href of ["/en/events/", "/en/imprint/", "/en/privacy/", "/en/#get-involved"]) {
       expect(hrefs).toContain(href);

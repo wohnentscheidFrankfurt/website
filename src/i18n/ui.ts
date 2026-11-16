@@ -17,9 +17,7 @@ export interface Ui {
     switchVisible: string;
     switchName: string;
     switchPhone: string;
-    footerNav: string;
     footerEvents: string;
-    footerContact: string;
     footerInstagram: string;
     footerHome: string;
     footerImprint: string;
@@ -53,7 +51,6 @@ export interface Ui {
     mailText: string;
     label: string;
     button: string;
-    small1: { before: string; link: string; after: string };
     small2: string;
     signalTitle: string;
     signalText: string;
@@ -101,9 +98,7 @@ const de: Ui = {
     switchVisible: "EN",
     switchName: "EN – Show the English version",
     switchPhone: "Show the English version",
-    footerNav: "Fußleiste",
     footerEvents: "Veranstaltungen",
-    footerContact: "Kontakt",
     footerInstagram: "Instagram",
     footerHome: "Startseite",
     footerImprint: "Impressum",
@@ -144,7 +139,6 @@ const de: Ui = {
     mailText: "Ab und zu ein Newsletter. Kein Spam, jederzeit abmeldbar.",
     label: "Deine Mail-Adresse",
     button: "Eintragen",
-    small1: { before: "Du bekommst eine Mail zum Bestätigen. Mehr dazu im ", link: "Datenschutz", after: "." },
     small2: "Oder schreib an ",
     signalTitle: "Per Signal",
     signalText: "Kurze Infos und Termine in unserer Signal-Gruppe.",
@@ -192,9 +186,7 @@ const en: Ui = {
     switchVisible: "DE",
     switchName: "DE – Deutsche Version anzeigen",
     switchPhone: "Zur deutschen Version",
-    footerNav: "Footer",
     footerEvents: "Events",
-    footerContact: "Contact",
     footerInstagram: "Instagram",
     footerHome: "Home",
     footerImprint: "Imprint",
@@ -235,7 +227,6 @@ const en: Ui = {
     mailText: "A newsletter now and then. No spam. You can unsubscribe at any time.",
     label: "Your email address",
     button: "Sign up",
-    small1: { before: "You will get an email to confirm. More about this under ", link: "Privacy", after: "." },
     small2: "Or write to ",
     signalTitle: "On Signal",
     signalText: "Short news and dates in our Signal group.",

@@ -43,7 +43,7 @@ live only in the archive clone `../website-archiv` (`docs/architecture.md`, Depl
   `src/layouts/Base.astro`: frame of every page (language, meta tags, base styles).
 - `integrations/`: Astro integrations. `map.mjs` checks the map repo `../sozialraum-frankfurt` and copies its HTML
   to `dist/sozialraum-frankfurt/` (the map page, German only, not in `src/pages/`).
-- `src/components/`: header, menu, heart, footer (link bar and columns), event card, flyer with countdown,
+- `src/components/`: header, menu, heart, footer (three columns), event card, flyer with countdown,
   "Mitmachen" (`Join`), language switch (`LangSwitch`), band "Bleib informiert" above the footer (`StayInformed`),
   map teaser on the German start page (`MapTeaser`).
 - `src/content/events/`: one Markdown file per event. `src/lib/events.ts`: date logic.

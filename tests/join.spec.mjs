@@ -140,10 +140,8 @@ for (const path of ["/", "/veranstaltungen/"]) {
         return { bg: s.backgroundColor, color: s.color, marginBottom: s.marginBottom };
       });
       expect(style).toEqual({ bg: "rgb(17, 17, 17)", color: "rgb(255, 255, 255)", marginBottom: "0px" });
-      // It flows into the footer's black bar: no gap.
-      const bandBox = await band(page).boundingBox();
-      const bar = await page.locator("footer .footer-bar").boundingBox();
-      expect(Math.abs(bar.y - (bandBox.y + bandBox.height))).toBeLessThanOrEqual(1);
+      // The footer has no black link bar: its columns follow the band directly.
+      await expect(page.locator("footer nav")).toHaveCount(0);
     });
 
     test("has the texts", async ({ page }) => {
@@ -152,7 +150,6 @@ for (const path of ["/", "/veranstaltungen/"]) {
       await expect(band(page).getByRole("heading", { level: 3 })).toHaveText(["Per Mail", "Per Signal"]);
       await expect(band(page).locator("p")).toHaveText([
         "Ab und zu ein Newsletter. Kein Spam, jederzeit abmeldbar.",
-        "Du bekommst eine Mail zum Bestätigen. Mehr dazu im Datenschutz.",
         `Oder schreib an ${ADDRESS}`,
         "Kurze Infos und Termine in unserer Signal-Gruppe.",
       ]);
@@ -172,8 +169,7 @@ for (const path of ["/", "/veranstaltungen/"]) {
       await expect(field).toHaveAttribute("required", "");
       await expect(field).toBeVisible();
       await expect(band(page).getByRole("button", { name: "Eintragen" })).toBeVisible();
-      const privacy = band(page).getByRole("link", { name: "Datenschutz" });
-      await expect(privacy).toHaveAttribute("href", "/datenschutz/#newsletter");
+      await expect(band(page).getByRole("link", { name: "Datenschutz" })).toHaveCount(0);
       const address = band(page).getByRole("link", { name: ADDRESS });
       await expect(address).toHaveAttribute("href", `mailto:${ADDRESS}`);
       await expect(address).toHaveText(ADDRESS);
@@ -269,7 +265,7 @@ for (const path of ["/", "/veranstaltungen/"]) {
 
     test("focus rings are white on the band", async ({ page }) => {
       await page.goto(path);
-      await expect(band(page).locator("a")).toHaveCount(3);
+      await expect(band(page).locator("a")).toHaveCount(2);
       const field = band(page).getByLabel("Deine Mail-Adresse");
       for (const link of [...(await band(page).locator("a").all()), field, band(page).getByRole("button")]) {
         await link.focus();
@@ -382,7 +378,7 @@ test.describe("English start page: Get involved and Stay informed", () => {
     await expect(button).toHaveAttribute("href", `mailto:${ADDRESS}?subject=Get%20involved`);
   });
 
-  test("the band has English texts, the English form action and privacy link", async ({ page }) => {
+  test("the band has English texts and the English form action", async ({ page }) => {
     await page.goto("/en/");
     await expect(page.locator("#bleib-informiert")).toHaveCount(0);
     await expect(stay(page)).toHaveCount(1);
@@ -394,8 +390,7 @@ test.describe("English start page: Get involved and Stay informed", () => {
     await expect(stay(page).getByRole("button", { name: "Sign up" })).toBeVisible();
     await expect(stay(page).locator("form")).toHaveAttribute("action", "/api/en/signup");
     await expect(stay(page).locator("form")).toHaveAttribute("method", "post");
-    await expect(stay(page).getByText("You will get an email to confirm. More about this under")).toBeVisible();
-    await expect(stay(page).getByRole("link", { name: "Privacy" })).toHaveAttribute("href", "/en/privacy/#newsletter");
+    await expect(stay(page).getByRole("link", { name: "Privacy" })).toHaveCount(0);
     await expect(stay(page).getByText("Or write to")).toBeVisible();
     await expect(stay(page).getByRole("link", { name: ADDRESS })).toHaveAttribute("href", `mailto:${ADDRESS}`);
     await expect(stay(page).getByRole("link", { name: "Join the Signal group" })).toHaveAttribute("href", SIGNAL);

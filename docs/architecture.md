@@ -170,14 +170,14 @@ The link's name is the event title and the date. The image's alt holds the whole
 
 Band "Bleib informiert": black, white text, white buttons, white focus rings. From 900 px three columns
 (heading, mail, Signal), below stacked. The QR code brings its own white quiet zone and shows from 900 px only.
-It flows into the footer's black bar.
+Under the form stands only the line "Oder schreib an …". The privacy page is one short scroll away in the footer.
 
-Footer: a black bar with "Veranstaltungen | Kontakt | Instagram", below three centred columns (stacked under
-720 px). The column "Wohnentscheid Frankfurt" links Startseite, Veranstaltungen, Impressum and Datenschutz.
+Footer: three centred columns (stacked under 720 px). B-side has a black link bar above them.
+We leave it out: the band "Bleib informiert" sits right above, and the bar would only repeat links. The column "Wohnentscheid Frankfurt" links Startseite, Veranstaltungen, Impressum and Datenschutz.
 The column "Andere Plattformen" links Instagram and GitHub (the account `wohnentscheidFrankfurt`), each with its
 icon in front of the name, like b-side. Only the name is underlined.
 All links are plain, nothing loads from outside. "Schreib uns" in the column "Mitmachen" jumps to
-`/#mitmachen`. "Kontakt" in the bar opens a plain mail to info@. `wurzel-band.svg` stays in `src/assets/drawings/`, unused.
+`/#mitmachen`. `wurzel-band.svg` stays in `src/assets/drawings/`, unused.
 
 ## API
 

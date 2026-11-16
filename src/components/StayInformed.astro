@@ -11,7 +11,7 @@
 import qr1x from "../assets/brand/signal-qr-1x.png?url&no-inline";
 import qr2x from "../assets/brand/signal-qr-2x.png?url&no-inline";
 
-import { route, type Lang } from "../i18n/routes";
+import type { Lang } from "../i18n/routes";
 import { ui, ANCHORS } from "../i18n/ui";
 
 interface Props {
@@ -39,7 +39,6 @@ const signal = "https://signal.group/#CjQKIIiNsPhSGdlNpSkehrM5mYB13XqwFJ2rm7IonL
         </div>
         <button class="band-button" type="submit">{t.button}</button>
       </form>
-      <p class="small">{t.small1.before}<a href={`${route(lang, "privacy")}#newsletter`}>{t.small1.link}</a>{t.small1.after}</p>
       <p class="small">{t.small2}<a href={`mailto:${address}`}>{address}</a></p>
     </div>
     <div>
