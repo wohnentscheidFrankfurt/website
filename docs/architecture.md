@@ -155,9 +155,12 @@ The language switch ("EN" or "DE", Archivo wide 700, smaller than the items, 48 
 the right end of the bar on desktop and left of the burger on phones. The phone menu ends with a text link to the
 other language. On phones without JavaScript the switch sits right of the bar, so at 320 px the row is tight.
 The phone menu closes on a click on an item. Otherwise a jump within the page leaves it open.
-The heart is `heart.svg`. It blinks softly three times
-(opacity, 1.6 s each) and then stays, so it stops within 5 seconds (WCAG 2.2.2). Under reduced motion it does not
-blink. No other heart moves.
+The heart is `heart.svg`. It beats twice (scale to 1.2, 1 s each) and then stays.
+So it stops within 5 seconds (WCAG 2.2.2). It beats only on a new visit, on any page.
+A new visit is a plain navigation without a referrer from this site. A click to another page, a reload or back does
+not count. A switch of the browser tab never restarts it. Nothing is stored, so the site still sets no cookie.
+A small inline script in the header decides. Without JavaScript and under reduced motion the heart stands still.
+No other heart moves.
 
 Hero: a big drawing. The red logo (`logo-red.png`, made from `logo.png`) is the h1. Like on b-side it stands in the
 drawing's upper left, half above it and half on it. Its house is smaller than in `logo.png`, its lettering bigger.
@@ -249,7 +252,7 @@ Projects: `desktop-chrome` and `chrome-390` use the system Chrome, `webkit-iphon
   Nothing loads from other origins. Brand fonts: family, case and width; date bars on the events page,
   visible headings only.
 - `tests/menu.spec.mjs`: the heart as brand (links home, size, link name), desktop bar,
-  burger switch at 900 px. Phone menu (open, close, focus), sticky header, blinking header heart.
+  burger switch at 900 px. Phone menu (open, close, focus), sticky header, header heart (beats twice, not again after a page change, reload or back).
   The current item is italic, in the real Archivo italic. Without JavaScript and in the fallback font
   no horizontal scroll at 390 and 320 px, on `/` and `/en/`. The switch: visible, clickable, lands on the
   counterpart at 1400 and 390 px, last link of the phone menu and inside its focus trap.

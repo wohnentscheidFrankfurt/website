@@ -2,7 +2,9 @@
 // Sticky header. Left the red heart of the brand links home, like the heart on b-side.ms.
 // The name stands on the start page: the big red logo (see src/views/Home.astro). The link name keeps it here.
 // From 900 px the desktop bar follows the heart in one line. Below, the roof burger opens the house menu.
-// The heart beats twice and stops (WCAG 2.2.2).
+// The heart beats twice and stops (WCAG 2.2.2). It beats only on a new visit: a plain navigation without a
+// referrer from this site. A click to another page, a reload or back does not count. Nothing is stored, so no cookie.
+// The script is inline, so it runs while the page parses, before the heart moves.
 import Heart from "./Heart.astro";
 import Menu from "./Menu.astro";
 import LangSwitch from "./LangSwitch.astro";
@@ -17,9 +19,21 @@ const { lang } = Astro.props;
 const t = ui[lang].frame;
 ---
 <header>
-  <a class="brand beat" href={route(lang, "home")} aria-label={t.homeLink}>
+  <a class="brand" href={route(lang, "home")} aria-label={t.homeLink}>
     <Heart class="brand-heart" />
   </a>
+  <script is:inline>
+    {
+      const nav = performance.getEntriesByType("navigation")[0];
+      let inner = false;
+      try {
+        inner = new URL(document.referrer).origin === location.origin;
+      } catch {}
+      if (!inner && (!nav || nav.type === "navigate")) {
+        document.currentScript.previousElementSibling.classList.add("beat");
+      }
+    }
+  </script>
   <nav class="desktop-nav" aria-label={t.desktopNav}>
     <ul>
       {navItems(lang).map((item) => (

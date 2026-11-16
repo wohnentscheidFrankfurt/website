@@ -61,6 +61,48 @@ test("header heart stands still with reduced motion", async ({ page }) => {
   expect(await heart.evaluate((el) => getComputedStyle(el).animationName)).toBe("none");
 });
 
+// A new visit beats: no same-origin referrer and a plain navigation. A page change, reload or back does not.
+const heartAnimation = (page) =>
+  page.locator("header .brand .heart").evaluate((el) => getComputedStyle(el).animationName);
+const heartMoves = (page) =>
+  page.locator("header .brand .heart").evaluate((el) => el.getAnimations().length > 0);
+
+async function clickToEvents(page) {
+  await page.locator('a[href="/veranstaltungen/"]:visible').first().click();
+  await page.waitForURL("**/veranstaltungen/");
+}
+
+test("header heart beats on a direct visit to a subpage", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/veranstaltungen/");
+  expect(await heartAnimation(page)).toBe("beat");
+});
+
+test("header heart stands still after a click to another page", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/");
+  await clickToEvents(page);
+  expect(await heartAnimation(page)).toBe("none");
+});
+
+test("header heart stands still after a reload", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/");
+  await page.reload();
+  expect(await heartAnimation(page)).toBe("none");
+});
+
+test("header heart stands still after back", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/");
+  await expect.poll(() => heartMoves(page), { timeout: 4000 }).toBe(false);
+  await clickToEvents(page);
+  await page.goBack();
+  await page.waitForURL((url) => url.pathname === "/");
+  // Not the animation name: bfcache may bring the page back with its class and the finished beat.
+  expect(await heartMoves(page)).toBe(false);
+});
+
 test("desktop shows the bar, not the burger", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== DESKTOP, "desktop width only");
   await page.goto("/");
