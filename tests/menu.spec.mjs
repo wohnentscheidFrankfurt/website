@@ -32,12 +32,13 @@ test("brand is the heart and links home", async ({ page }) => {
   expect(box.x).toBeGreaterThanOrEqual(header.x);
   expect(box.y).toBeGreaterThanOrEqual(header.y);
   expect(box.y + box.height).toBeLessThanOrEqual(header.y + header.height);
-  const heart = await brand.locator(".heart").boundingBox();
-  expect(heart.width).toBeGreaterThanOrEqual(28);
-  expect(heart.width).toBeLessThanOrEqual(40);
+  // The layout width: boundingBox() would include the scale of a running beat.
+  const width = await brand.locator(".heart").evaluate((el) => el.offsetWidth);
+  expect(width).toBeGreaterThanOrEqual(28);
+  expect(width).toBeLessThanOrEqual(40);
 });
 
-test("header heart blinks a few times and stops within 5 seconds", async ({ page }) => {
+test("header heart beats twice and stops within 5 seconds", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");
   const heart = page.locator("header .brand .heart");
@@ -46,10 +47,10 @@ test("header heart blinks a few times and stops within 5 seconds", async ({ page
     const s = getComputedStyle(el);
     return { name: s.animationName, duration: s.animationDuration, count: s.animationIterationCount };
   });
-  expect(style.name).toBe("blink");
-  // WCAG 2.2.2: blinking that starts by itself must stop within 5 seconds, or offer a pause.
+  expect(style.name).toBe("beat");
+  // WCAG 2.2.2: motion that starts by itself must stop within 5 seconds, or offer a pause.
   const count = Number(style.count);
-  expect(count).toBeGreaterThanOrEqual(2);
+  expect(count).toBe(2);
   expect(parseFloat(style.duration) * count).toBeLessThanOrEqual(5);
 });
 

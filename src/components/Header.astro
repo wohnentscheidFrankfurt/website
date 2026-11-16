@@ -2,7 +2,7 @@
 // Sticky header. Left the red heart of the brand links home, like the heart on b-side.ms.
 // The name stands on the start page: the big red logo (see src/views/Home.astro). The link name keeps it here.
 // From 900 px the desktop bar follows the heart in one line. Below, the roof burger opens the house menu.
-// The heart blinks softly three times and stops (WCAG 2.2.2).
+// The heart beats twice and stops (WCAG 2.2.2).
 import Heart from "./Heart.astro";
 import Menu from "./Menu.astro";
 import LangSwitch from "./LangSwitch.astro";
@@ -17,7 +17,7 @@ const { lang } = Astro.props;
 const t = ui[lang].frame;
 ---
 <header>
-  <a class="brand" href={route(lang, "home")} aria-label={t.homeLink}>
+  <a class="brand beat" href={route(lang, "home")} aria-label={t.homeLink}>
     <Heart class="brand-heart" />
   </a>
   <nav class="desktop-nav" aria-label={t.desktopNav}>
@@ -92,22 +92,29 @@ const t = ui[lang].frame;
   .brand :global(.brand-heart) {
     width: 34px;
     height: auto;
-    /* Three soft blinks, then it stays. WCAG 2.2.2: blinking that starts by itself stops within 5 seconds. */
-    animation: blink 1.6s ease-in-out 3;
   }
 
-  @keyframes blink {
+  /* Two beats, then it stays. WCAG 2.2.2: motion that starts by itself stops within 5 seconds.
+     Scale 1.2 keeps the heart inside its 48 px target. transform does not move the layout. */
+  .brand.beat :global(.brand-heart) {
+    animation: beat 1s ease-in-out 2;
+  }
+
+  @keyframes beat {
     0%,
+    28%,
+    70%,
     100% {
-      opacity: 1;
+      transform: scale(1);
     }
-    50% {
-      opacity: 0.3;
+    14%,
+    42% {
+      transform: scale(1.2);
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .brand :global(.brand-heart) {
+    .brand.beat :global(.brand-heart) {
       animation: none;
     }
   }
