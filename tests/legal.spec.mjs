@@ -26,7 +26,7 @@ const PAGES = {
     binding: null,
     title: "Datenschutz – Wohnentscheid Frankfurt",
     h1: "Datenschutz",
-    h2: ["Kurz gesagt", "Verantwortlich", "Server und Protokoll", "Karte „Sozialraum Frankfurt“", "E-Mail", "Newsletter", "Signal und Instagram",
+    h2: ["Kurz gesagt", "Verantwortlich", "Server und Protokoll", "Karte „Sozialraum Frankfurt“", "E-Mail", "Newsletter", "Signal, Instagram und GitHub",
       "Deine Rechte"],
     address: [[...POSTAL, ADDRESS]],
     p: [
@@ -66,8 +66,9 @@ const PAGES = {
       "Du kannst dich jederzeit abmelden: über den Link in jeder Mail oder mit einer Mail an uns. Nach der " +
         "Abmeldung behalten wir deine Adresse mit dem Vermerk „abgemeldet“. So bekommst du nicht aus Versehen " +
         "wieder Post. Rechtsgrundlage dafür ist Art. 6 Abs. 1 lit. f DSGVO.",
-      "Wir verlinken unsere Signal-Gruppe und unser Instagram-Profil. Das sind einfache Links. Erst mit dem Klick " +
-        "verlässt du unsere Website. Dann gelten die Datenschutzregeln von Signal oder Instagram. In der " +
+      "Wir verlinken unsere Signal-Gruppe, unser Instagram-Profil und unser GitHub-Konto. Das sind einfache Links. " +
+        "Erst mit dem Klick verlässt du unsere Website. Dann gelten die Datenschutzregeln von Signal, Instagram " +
+        "oder GitHub. In der " +
         "Signal-Gruppe sehen die anderen Mitglieder deinen Signal-Namen.",
       "Du hast das Recht auf Auskunft, Berichtigung, Löschung und Einschränkung der Verarbeitung. Du hast das " +
         "Recht auf Datenübertragbarkeit (Art. 15 bis 20 DSGVO). Eine Einwilligung kannst du jederzeit für die " +
@@ -103,7 +104,7 @@ const PAGES = {
     binding: { text: "This is a translation. The German version is legally binding: Datenschutz.", href: "/datenschutz/" },
     title: "Privacy – Wohnentscheid Frankfurt",
     h1: "Privacy",
-    h2: ["In short", "Responsible", "Server and log", "Map “Sozialraum Frankfurt”", "Email", "Newsletter", "Signal and Instagram", "Your rights"],
+    h2: ["In short", "Responsible", "Server and log", "Map “Sozialraum Frankfurt”", "Email", "Newsletter", "Signal, Instagram and GitHub", "Your rights"],
     address: [[...POSTAL, ADDRESS]],
     p: [
       "This is a translation. The German version is legally binding: Datenschutz.",
@@ -138,8 +139,9 @@ const PAGES = {
       "You can unsubscribe at any time: with the link in every email or with an email to us. After you " +
         "unsubscribe, we keep your address with the note “unsubscribed”. This way you do not get mail from us " +
         "again by mistake. The legal basis for this is Art. 6(1)(f) GDPR.",
-      "We link to our Signal group and our Instagram profile. These are simple links. You leave our website only " +
-        "when you click. Then the privacy rules of Signal or Instagram apply. In the Signal group, the other " +
+      "We link to our Signal group, our Instagram profile and our GitHub account. These are simple links. You leave " +
+        "our website only when you click. Then the privacy rules of Signal, Instagram or GitHub apply. In the Signal " +
+        "group, the other " +
         "members see your Signal name.",
       "You have the right to access, correction, deletion and restriction of processing. You have the right to " +
         "data portability (Art. 15 to 20 GDPR). You can withdraw your consent at any time for the future. To do " +
