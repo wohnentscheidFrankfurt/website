@@ -52,7 +52,7 @@ const next = upcoming.slice(0, 3);
       <p>{t.start.intro}</p>
     </div>
   </section>
-  <div class="stack-l">
+  <div class:list={["stack-l", { compact: !withFlyer }]}>
   {withFlyer ? (
     <section class="next flyer-next" data-next aria-labelledby="next-title">
       <h2 id="next-title" class="visually-hidden">{t.start.nextOne}</h2>
@@ -198,7 +198,7 @@ const next = upcoming.slice(0, 3);
       align-items: start;
     }
 
-    .stack-l:has(> .next:not(.flyer-next)) {
+    .stack-l.compact {
       margin-top: 24px;
     }
 

@@ -87,7 +87,7 @@
     bottom margin. So a new block fits without new numbers. Inside blocks, spacing is the block's own.
   - Exceptions: the top of a page (32 px from the header to the heading) and the hero, which keeps the next
     events 40 px close.
-  - `tests/spacing.spec.mjs` measures the page end on every page.
+  - `tests/spacing.spec.mjs` measures the page end on every page in `src/pages/`, in both languages.
 - Impressum (`/impressum/`) and Datenschutz (`/datenschutz/`) are plain text pages. They share the class `.prose`
   in `src/styles/global.css`: one left-aligned column of at most 42rem.
   Their texts are legal texts. The checks pin them word for word.
