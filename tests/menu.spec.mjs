@@ -220,6 +220,31 @@ test("desktop bar items turn orange on hover, without underline", async ({ page 
   expect(contrastOnWhite(s.color)).toBeGreaterThanOrEqual(3);
 });
 
+// The heart is an img. On hover it shows its own shape as a mask over an orange background.
+test("header heart turns orange on hover, like on b-side", async ({ page, request }, testInfo) => {
+  test.skip(testInfo.project.name !== DESKTOP, "hover with a mouse");
+  await page.goto("/veranstaltungen/");
+  const heart = page.locator("header .brand .heart");
+  const paint = () =>
+    heart.evaluate((el) => {
+      const s = getComputedStyle(el);
+      return { bg: s.backgroundColor, mask: s.maskImage || s.webkitMaskImage, pos: s.objectPosition };
+    });
+  await page.mouse.move(700, 600);
+  expect((await paint()).mask).toBe("none");
+  await page.locator("header .brand").hover();
+  const s = await paint();
+  expect(s.bg).toBe(ORANGE);
+  // The img content moves out of the box, so only the orange mask shows.
+  expect(s.pos).not.toBe("50% 50%");
+  const url = s.mask.match(/url\("?([^")]+)"?\)/)[1];
+  const svg = await (await request.get(url)).text();
+  const own = await (await request.get(await heart.getAttribute("src"))).text();
+  expect(svg).toBe(own);
+  // A graphic needs 3:1 against white (WCAG 1.4.11).
+  expect(contrastOnWhite(s.bg)).toBeGreaterThanOrEqual(3);
+});
+
 test("current item is ink and upright, without underline", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== DESKTOP, "desktop width only");
   await page.goto("/veranstaltungen/");

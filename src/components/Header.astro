@@ -114,6 +114,16 @@ const t = ui[lang].frame;
     height: auto;
   }
 
+  /* Like b-side: the heart turns orange on hover. The img content moves out of its box. The heart file is a mask
+     over a --hover background, so the shape stays exact. Only with a real hover, so a tap leaves no colour. */
+  @media (hover: hover) {
+    .brand:hover :global(.brand-heart) {
+      object-position: -9999px 0;
+      background: var(--hover);
+      mask: url("../assets/brand/heart.svg") center / contain no-repeat;
+    }
+  }
+
   /* Three beats ("lub-dub", 1 s each), then it stays. WCAG 2.2.2: motion that starts by itself stops within 5 seconds.
      Scale 1.2 keeps the heart inside its 48 px target. transform does not move the layout. */
   .brand.beat :global(.brand-heart) {

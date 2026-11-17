@@ -169,6 +169,8 @@ Header: like b-side, only the black heart links home (34 px in a 48 px target). 
 "Wohnentscheid Frankfurt – Startseite". The name itself stands on the start page, in the red logo.
 From 900 px the menu items follow in one line. Below, the roof burger opens the house menu.
 Like on b-side, an item turns orange (`--hover`) on hover, the language switch a darker orange. Nothing in the bar is underlined.
+The heart turns orange (`--hover`) on hover too, as on b-side. It is an img, so on hover its own file becomes a CSS mask
+over an orange background.
 The current item looks like the others, as on b-side. `aria-current` names it. The hover needs a real hover (`hover: hover`), so a tap leaves no colour.
 Without JavaScript the bar shows at every width and the burger is hidden. Below 900 px the items
 are then smaller and wrap into two lines inside the header. So the row fits at 390 px even in the fallback font.
@@ -284,7 +286,7 @@ Projects: `desktop-chrome` and `chrome-390` use the system Chrome, `webkit-iphon
   visible headings only.
 - `tests/menu.spec.mjs`: the heart as brand (links home, size, link name), desktop bar,
   burger switch at 900 px. Phone menu (open, close, focus), sticky header.
-  Header heart: black, beats three times, not again after a page change, reload or back.
+  Header heart: black, beats three times, not again after a page change, reload or back. Orange on hover.
   Phone menu: the Instagram link (48 px target, before the language link); the whole menu fits at 320×480 and sideways.
   Orange hover without underline (with its contrast), current item ink and upright. Without JavaScript and in the fallback font
   no horizontal scroll at 390 and 320 px, on `/` and `/en/`. The switch: visible, clickable, lands on the
