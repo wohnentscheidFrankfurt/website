@@ -65,13 +65,16 @@
 - Below the flyer a black button shares the flyer image. In the HTML it is a save link ("Flyer speichern") to the
   JPEG, with `download` set to `wohnentscheid-flyer-<id>.jpg` (`-en` for an own English image).
   That is all it does without JavaScript, and in browsers that cannot share files (Firefox, some desktop Chrome).
-  Where `navigator.canShare` accepts the file (phones, Safari on the Mac), the script turns it into "Flyer teilen".
+  Where `navigator.canShare` accepts a JPEG (phones, Safari on the Mac, some desktop browsers), the script turns it
+  into "Flyer teilen". It asks with a one-byte probe first, so other browsers never load the JPEG.
   A click opens the system share sheet with the image only: no text, no link. People write their own words.
   WhatsApp, Signal, Telegram and Mail show in that sheet. Their own web links (`wa.me`, `t.me/share`, `mailto:`)
   carry no file, so there are no app buttons.
-  The script fetches the file before any click: Safari drops the click's gesture after an `await`.
+  The script fetches the file after the page has loaded and before any click: Safari drops the click's gesture
+  after an `await`.
   The label changes only when the file is ready, so it never promises a share it cannot do.
   A closed sheet does nothing. Any other failure downloads the file. A second click while the sheet is open does nothing.
+  Some Android apps never answer the share. When the page shows again, the button works again.
   There is no "copy image": it needed a PNG through a canvas and Safari's own clipboard path, for few browsers.
   Add it if people miss it.
 - Below the flyer the start page shows "Mitmachen" (`src/components/Join.astro`, id `mitmachen`): text and a
@@ -287,7 +290,7 @@ Projects: `desktop-chrome` and `chrome-390` use the system Chrome, `webkit-iphon
 - `tests/legal.spec.mjs`: Impressum, Datenschutz and their English pages: title, headings, texts word for word, addresses, mail and
   authority links, text column, no horizontal scroll at 320 px.
 - `tests/share.spec.mjs`: the share button with a stand-in for the share sheet (only the file, closed sheet, refused
-  share, double tap, file not ready yet), the save link without file sharing and without JavaScript, file name and
+  share, double tap, file not ready yet, page shown again), no JPEG load without file sharing, the save link without file sharing and without JavaScript, file name and
   size, place below the flyer.
 - `tests/home.spec.mjs`: start page: hero layout, flyer or event rows, countdown states (with a fixed clock),
   without JavaScript, hover and reduced motion. The countdown checks weight and width of its numbers,

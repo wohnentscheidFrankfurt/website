@@ -129,6 +129,27 @@ for (const path of PAGES) {
     expect(await shares(page)).toHaveLength(0);
   });
 
+  test(`${path} loads no extra image where files cannot be shared`, async ({ page }) => {
+    await withoutFileSharing(page);
+    const jpegs = [];
+    page.on("request", (r) => { if (/\/_astro\/flyer[^/]*\.jpe?g$/.test(r.url())) jpegs.push(r.url()); });
+    await openStart(page, path);
+    await page.waitForLoadState("load");
+    await page.waitForTimeout(1000);
+    expect(jpegs).toEqual([]);
+  });
+
+  test(`${path} frees the button when the page shows again`, async ({ page }) => {
+    // Some Android apps never settle the share promise. Coming back to the page must not leave a dead button.
+    await stubShare(page, "pending");
+    await openStart(page, path);
+    await expect(shareLink(page)).toHaveAttribute("data-ready", "");
+    await shareLink(page).click();
+    await page.evaluate(() => document.dispatchEvent(new Event("visibilitychange")));
+    await shareLink(page).click();
+    expect(await shares(page)).toHaveLength(2);
+  });
+
   test(`${path} offers the flyer as a download without file sharing`, async ({ page }) => {
     await withoutFileSharing(page);
     await openStart(page, path);

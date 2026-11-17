@@ -85,8 +85,15 @@ const fileName = shareFileName(event.id, lang, lang === "en" && d.en.flyer !== u
   // The save link becomes a share button where the browser can share this file: phones and Safari on the Mac.
   // The file is built before any click. Safari drops the click's gesture after an await, and share() then fails.
   // Until the file is ready, and wherever sharing fails, the link keeps its plain download.
-  for (const link of document.querySelectorAll<HTMLAnchorElement>("[data-share]")) {
-    prepareShare(link).catch(() => {});
+  // A one-byte probe asks first, so browsers that cannot share files never load the JPEG.
+  // The JPEG loads after the page, so it does not compete with the flyer image.
+  const probe = new File([new Uint8Array(1)], "probe.jpg", { type: "image/jpeg" });
+  if (navigator.canShare?.({ files: [probe] })) {
+    for (const link of document.querySelectorAll<HTMLAnchorElement>("[data-share]")) {
+      const start = () => prepareShare(link).catch(() => {});
+      if (document.readyState === "complete") start();
+      else addEventListener("load", start, { once: true });
+    }
   }
 
   async function prepareShare(link: HTMLAnchorElement) {
@@ -115,6 +122,10 @@ const fileName = shareFileName(event.id, lang, lang === "en" && d.en.flyer !== u
         .finally(() => {
           open = false;
         });
+    });
+    // Some Android apps never settle the promise. Back on the page, the button works again.
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") open = false;
     });
     link.textContent = link.dataset.labelShare!;
     link.dataset.ready = "";
