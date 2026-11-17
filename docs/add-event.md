@@ -12,6 +12,7 @@
 6. Optional flyer: set `flyer` and `flyerAlt`, both or none. The build fails if only one is set.
    Put the file in `src/assets/events/<file-name>/flyer.png`. Cut off the white print margin first.
    `flyer` points to it. `flyerAlt` repeats the full text of the flyer.
+   The button below the flyer shares or saves this image. Nothing to do for it.
 7. Add the `en:` block. It is required.
    `title` and `imageAlt` are always needed.
    `subtitle`, `address` and `callout` are optional. Without `en.address` the English page shows `address`.

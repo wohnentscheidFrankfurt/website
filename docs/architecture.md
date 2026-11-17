@@ -40,6 +40,7 @@
   image in `dist/` has EXIF, XMP or IPTC data. SVGs (heart, possibly drawings) are copied as they are.
   A unit check scans every SVG in `dist/` for editor data, embedded images and external links.
   Drawings use `fallbackFormat="webp"`, so no `<img>` points at a raw SVG or PNG.
+  The flyer also goes to `dist/` as a JPEG at its own size, for sharing and saving. A check keeps it under 600 KB.
 - Astro inlines the menu script and the countdown script. There is no CSP today. If a CSP with
   `script-src 'self'` comes, set `vite.build.assetsInlineLimit: 0`.
 - Versions are pinned exactly in `package.json`. Node 24 (`.nvmrc`).
@@ -61,6 +62,18 @@
   Without `end` it hides at the start. The flyer itself stays until the next deploy.
   The clock is in the markup from the start, so the flyer does not shift.
   Without JavaScript the countdown shows the date line with the start time.
+- Below the flyer a black button shares the flyer image. In the HTML it is a save link ("Flyer speichern") to the
+  JPEG, with `download` set to `wohnentscheid-flyer-<id>.jpg` (`-en` for an own English image).
+  That is all it does without JavaScript, and in browsers that cannot share files (Firefox, some desktop Chrome).
+  Where `navigator.canShare` accepts the file (phones, Safari on the Mac), the script turns it into "Flyer teilen".
+  A click opens the system share sheet with the image only: no text, no link. People write their own words.
+  WhatsApp, Signal, Telegram and Mail show in that sheet. Their own web links (`wa.me`, `t.me/share`, `mailto:`)
+  carry no file, so there are no app buttons.
+  The script fetches the file before any click: Safari drops the click's gesture after an `await`.
+  The label changes only when the file is ready, so it never promises a share it cannot do.
+  A closed sheet does nothing. Any other failure downloads the file. A second click while the sheet is open does nothing.
+  There is no "copy image": it needed a PNG through a canvas and Safari's own clipboard path, for few browsers.
+  Add it if people miss it.
 - Below the flyer the start page shows "Mitmachen" (`src/components/Join.astro`, id `mitmachen`): text and a
   black button that opens a mail with subject "Mitmachen". The menu item "Mitmachen" links to `/#mitmachen`.
   It is never marked current. `scroll-margin-top` keeps the heading clear of the sticky header.
@@ -273,6 +286,9 @@ Projects: `desktop-chrome` and `chrome-390` use the system Chrome, `webkit-iphon
   "Bleib informiert" (place, texts, mail subject and body, Signal link, QR code unscaled, columns, focus rings).
 - `tests/legal.spec.mjs`: Impressum, Datenschutz and their English pages: title, headings, texts word for word, addresses, mail and
   authority links, text column, no horizontal scroll at 320 px.
+- `tests/share.spec.mjs`: the share button with a stand-in for the share sheet (only the file, closed sheet, refused
+  share, double tap, file not ready yet), the save link without file sharing and without JavaScript, file name and
+  size, place below the flyer.
 - `tests/home.spec.mjs`: start page: hero layout, flyer or event rows, countdown states (with a fixed clock),
   without JavaScript, hover and reduced motion. The countdown checks weight and width of its numbers,
   of "Läuft gerade" and of the date line. The red logo is the h1, red, and half on the drawing at five widths.

@@ -81,6 +81,44 @@ const fileName = shareFileName(event.id, lang, lang === "en" && d.en.flyer !== u
       if (document.visibilityState === "visible") tick();
     });
   }
+
+  // The save link becomes a share button where the browser can share this file: phones and Safari on the Mac.
+  // The file is built before any click. Safari drops the click's gesture after an await, and share() then fails.
+  // Until the file is ready, and wherever sharing fails, the link keeps its plain download.
+  for (const link of document.querySelectorAll<HTMLAnchorElement>("[data-share]")) {
+    prepareShare(link).catch(() => {});
+  }
+
+  async function prepareShare(link: HTMLAnchorElement) {
+    const res = await fetch(link.href);
+    if (!res.ok) return;
+    const file = new File([await res.blob()], link.download, { type: "image/jpeg" });
+    if (!navigator.canShare?.({ files: [file] })) return;
+    let open = false; // a share sheet is open
+    let fallback = false; // the next click is our own, for the download
+    link.addEventListener("click", (event) => {
+      if (fallback) {
+        fallback = false;
+        return;
+      }
+      event.preventDefault();
+      if (open) return;
+      open = true;
+      // Only the file. People write their own words.
+      navigator
+        .share({ files: [file] })
+        .catch((error: unknown) => {
+          if (error instanceof DOMException && error.name === "AbortError") return; // the sheet was closed
+          fallback = true;
+          link.click();
+        })
+        .finally(() => {
+          open = false;
+        });
+    });
+    link.textContent = link.dataset.labelShare!;
+    link.dataset.ready = "";
+  }
 </script>
 
 <style>
