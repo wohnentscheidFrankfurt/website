@@ -53,6 +53,8 @@
 :root {
   --paper: #fff;
   --ink: #111;
+  /* Hover in the desktop bar, like the orange on b-side. 3.2:1 on white: enough for large text (WCAG 1.4.3). */
+  --hover: #d97706;
   /* --slab: the flyer's bold condensed grotesque for headings, menu, date bars and buttons. Sans for the body.
      Every rule that uses --slab sets a width too: --tight for capitals and numbers, --wide for normal case. */
   --slab: "Archivo", "Arial Narrow", "Archivo Fallback", sans-serif;

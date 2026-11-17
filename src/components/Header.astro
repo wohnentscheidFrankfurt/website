@@ -163,17 +163,17 @@ const t = ui[lang].frame;
     font-weight: 700;
     font-size: 1.375rem;
     text-decoration: none;
-    text-underline-offset: 6px;
-    text-decoration-thickness: 2px;
   }
 
-  .desktop-nav a:hover {
-    text-decoration-line: underline;
+  /* Like b-side: the text turns orange on hover. Only with a real hover, so a tap leaves no colour. */
+  @media (hover: hover) {
+    .desktop-nav a:hover {
+      color: var(--hover);
+    }
   }
 
   .desktop-nav a[aria-current="page"] {
     font-style: italic;
-    text-decoration-line: underline;
   }
 
   #menu-button {

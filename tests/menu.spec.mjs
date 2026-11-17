@@ -199,6 +199,51 @@ test("at 899 px the burger shows, at 900 px the bar", async ({ page }, testInfo)
   expect(reached).not.toContain("menu-button");
 });
 
+// Hover like b-side, in our yellow-orange: the text turns --hover, nothing is underlined.
+const ORANGE = "rgb(217, 119, 6)";
+
+function contrastOnWhite(rgb) {
+  const lin = (v) => (v /= 255) <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+  const [r, g, b] = rgb.match(/\d+/g).map(Number).map(lin);
+  return 1.05 / (0.2126 * r + 0.7152 * g + 0.0722 * b + 0.05);
+}
+
+const look = (loc) =>
+  loc.evaluate((el) => {
+    const s = getComputedStyle(el);
+    return { color: s.color, line: s.textDecorationLine, style: s.fontStyle };
+  });
+
+test("desktop bar items turn orange on hover, without underline", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== DESKTOP, "hover with a mouse");
+  await page.goto("/");
+  const item = page.locator("nav.desktop-nav").getByRole("link", { name: "Veranstaltungen" });
+  await item.hover();
+  const s = await look(item);
+  expect(s.color).toBe(ORANGE);
+  expect(s.line).toBe("none");
+  // The bar text is large (22 px bold): WCAG 1.4.3 needs 3:1.
+  expect(contrastOnWhite(s.color)).toBeGreaterThanOrEqual(3);
+});
+
+test("current item is ink and italic, without underline", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== DESKTOP, "desktop width only");
+  await page.goto("/veranstaltungen/");
+  await page.mouse.move(0, 400);
+  const s = await look(page.locator("nav.desktop-nav a[aria-current]"));
+  expect(s).toEqual({ color: "rgb(17, 17, 17)", line: "none", style: "italic" });
+});
+
+test("language switch turns orange on hover, without underline", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== DESKTOP, "hover with a mouse");
+  await page.goto("/");
+  const link = page.locator("header [data-lang-switch]");
+  await link.hover();
+  const s = await look(link);
+  expect(s.color).toBe(ORANGE);
+  expect(s.line).toBe("none");
+});
+
 // The language switch sits in the header at every width and lands on the other language of the same page.
 const SWITCH_PAIRS = [["/", "/en/"], ["/veranstaltungen/", "/en/events/"],
   ["/impressum/", "/en/imprint/"], ["/datenschutz/", "/en/privacy/"],

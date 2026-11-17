@@ -133,7 +133,8 @@ German is the main language. English is a second version under `/en/`. No Astro 
 
 ## Brand
 
-The look follows b-side.ms. White `#fff`, ink `#111`. Red only in the logo and the drawings. Body: Mulish (400/700).
+The look follows b-side.ms. White `#fff`, ink `#111`. Red only in the logo and the drawings.
+Hover in the desktop bar: `--hover` `#d97706`, 3.2:1 on white (the bar text is large, so 3:1 is enough). Body: Mulish (400/700).
 Headings, menu, date bars and buttons take the flyer's type: Archivo, a bold grotesque with a width axis (`--slab`).
 Every rule with `--slab` sets a width:
 
@@ -149,6 +150,8 @@ Drawings sit on white without blend mode.
 Header: like b-side, only the black heart links home (34 px in a 48 px target). The link name is
 "Wohnentscheid Frankfurt – Startseite". The name itself stands on the start page, in the red logo.
 From 900 px the menu items follow in one line. Below, the roof burger opens the house menu.
+Like on b-side, an item turns orange (`--hover`) on hover, the language switch too. Nothing in the bar is underlined.
+The current item stays ink and italic. The hover needs a real hover (`hover: hover`), so a tap leaves no colour.
 Without JavaScript the bar shows at every width and the burger is hidden. Below 900 px the items
 are then smaller and wrap into two lines inside the header. So the row fits at 390 px even in the fallback font.
 The language switch ("EN" or "DE", Archivo wide 700, smaller than the items, 48 px target, ink focus ring) stands at
@@ -256,6 +259,7 @@ Projects: `desktop-chrome` and `chrome-390` use the system Chrome, `webkit-iphon
 - `tests/menu.spec.mjs`: the heart as brand (links home, size, link name), desktop bar,
   burger switch at 900 px. Phone menu (open, close, focus), sticky header.
   Header heart: black, beats once, not again after a page change, reload or back.
+  Orange hover without underline (with its contrast), current item ink and italic.
   The current item is italic, in the real Archivo italic. Without JavaScript and in the fallback font
   no horizontal scroll at 390 and 320 px, on `/` and `/en/`. The switch: visible, clickable, lands on the
   counterpart at 1400 and 390 px, last link of the phone menu and inside its focus trap.

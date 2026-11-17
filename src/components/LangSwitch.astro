@@ -30,12 +30,13 @@ const t = ui[lang].frame;
     font-weight: 700;
     font-size: 0.875rem;
     text-decoration: none;
-    text-underline-offset: 6px;
-    text-decoration-thickness: 2px;
   }
 
-  .lang-switch:hover {
-    text-decoration-line: underline;
+  /* The same hover as the bar items. */
+  @media (hover: hover) {
+    .lang-switch:hover {
+      color: var(--hover);
+    }
   }
 
   .lang-switch:focus-visible {
