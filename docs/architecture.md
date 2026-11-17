@@ -146,7 +146,7 @@ Every rule with `--slab` sets a width:
 The event rows on the start page are white cards with a soft shadow; their titles are Mulish, as in the b-side list.
 Drawings sit on white without blend mode.
 
-Header: like b-side, only the red heart links home (34 px in a 48 px target). The link name is
+Header: like b-side, only the black heart links home (34 px in a 48 px target). The link name is
 "Wohnentscheid Frankfurt – Startseite". The name itself stands on the start page, in the red logo.
 From 900 px the menu items follow in one line. Below, the roof burger opens the house menu.
 Without JavaScript the bar shows at every width and the burger is hidden. Below 900 px the items
@@ -155,7 +155,7 @@ The language switch ("EN" or "DE", Archivo wide 700, smaller than the items, 48 
 the right end of the bar on desktop and left of the burger on phones. The phone menu ends with a text link to the
 other language. On phones without JavaScript the switch sits right of the bar, so at 320 px the row is tight.
 The phone menu closes on a click on an item. Otherwise a jump within the page leaves it open.
-The heart is `heart.svg`. It beats once ("lub-dub", scale to 1.2, 1 s) and then stays.
+The heart is `heart.svg`, black (ink #111) like on b-side. It beats once ("lub-dub", scale to 1.2, 1 s) and then stays.
 So it stops within 5 seconds (WCAG 2.2.2). It beats only on a new visit, on any page.
 A new visit is a plain navigation without a referrer from this site. A click to another page, a reload or back does
 not count. A switch of the browser tab never restarts it. Nothing is stored, so the site still sets no cookie.
@@ -252,7 +252,8 @@ Projects: `desktop-chrome` and `chrome-390` use the system Chrome, `webkit-iphon
   Nothing loads from other origins. Brand fonts: family, case and width; date bars on the events page,
   visible headings only.
 - `tests/menu.spec.mjs`: the heart as brand (links home, size, link name), desktop bar,
-  burger switch at 900 px. Phone menu (open, close, focus), sticky header, header heart (beats once, not again after a page change, reload or back).
+  burger switch at 900 px. Phone menu (open, close, focus), sticky header.
+  Header heart: black, beats once, not again after a page change, reload or back.
   The current item is italic, in the real Archivo italic. Without JavaScript and in the fallback font
   no horizontal scroll at 390 and 320 px, on `/` and `/en/`. The switch: visible, clickable, lands on the
   counterpart at 1400 and 390 px, last link of the phone menu and inside its focus trap.

@@ -38,6 +38,14 @@ test("brand is the heart and links home", async ({ page }) => {
   expect(width).toBeLessThanOrEqual(40);
 });
 
+test("header heart is black, as on b-side", async ({ page, request }) => {
+  await page.goto("/");
+  const src = await page.locator("header .brand .heart").getAttribute("src");
+  const svg = await (await request.get(src)).text();
+  expect(svg).toContain('fill="#111"');
+  expect(svg).not.toContain("#ea1a1a");
+});
+
 test("header heart beats once and stops within 5 seconds", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");
