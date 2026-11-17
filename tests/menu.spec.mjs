@@ -168,14 +168,8 @@ test("desktop shows the bar, not the burger", async ({ page }, testInfo) => {
   await page.goto("/veranstaltungen/");
   const current = bar.getByRole("link", { name: "Veranstaltungen" });
   await expect(current).toHaveAttribute("aria-current", "page");
-  // The current item is italic, in the real italic face, not a slanted roman.
-  expect(await current.evaluate((el) => getComputedStyle(el).fontStyle)).toBe("italic");
-  const italic = await page.evaluate(async () => {
-    await document.fonts.ready;
-    return [...document.fonts].some((f) =>
-      f.family.replaceAll('"', "") === "Archivo" && f.style === "italic" && f.status === "loaded");
-  });
-  expect(italic).toBe(true);
+  // Like the b-side bar: the current item looks like the others. aria-current names it.
+  expect(await current.evaluate((el) => getComputedStyle(el).fontStyle)).toBe("normal");
 });
 
 test("at 899 px the burger shows, at 900 px the bar", async ({ page }, testInfo) => {
@@ -200,7 +194,7 @@ test("at 899 px the burger shows, at 900 px the bar", async ({ page }, testInfo)
 });
 
 // Hover like b-side, in our yellow-orange: the text turns --hover, nothing is underlined.
-const ORANGE = "rgb(217, 119, 6)";
+const ORANGE = "rgb(224, 112, 16)";
 
 function contrastOnWhite(rgb) {
   const lin = (v) => (v /= 255) <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
@@ -226,12 +220,12 @@ test("desktop bar items turn orange on hover, without underline", async ({ page 
   expect(contrastOnWhite(s.color)).toBeGreaterThanOrEqual(3);
 });
 
-test("current item is ink and italic, without underline", async ({ page }, testInfo) => {
+test("current item is ink and upright, without underline", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== DESKTOP, "desktop width only");
   await page.goto("/veranstaltungen/");
   await page.mouse.move(0, 400);
   const s = await look(page.locator("nav.desktop-nav a[aria-current]"));
-  expect(s).toEqual({ color: "rgb(17, 17, 17)", line: "none", style: "italic" });
+  expect(s).toEqual({ color: "rgb(17, 17, 17)", line: "none", style: "normal" });
 });
 
 test("language switch turns a darker orange on hover, without underline", async ({ page }, testInfo) => {
@@ -240,7 +234,7 @@ test("language switch turns a darker orange on hover, without underline", async 
   const link = page.locator("header [data-lang-switch]");
   await link.hover();
   const s = await look(link);
-  expect(s.color).toBe("rgb(180, 83, 9)");
+  expect(s.color).toBe("rgb(184, 90, 12)");
   expect(s.line).toBe("none");
   // The switch is small text (16 px): WCAG 1.4.3 needs 4.5:1.
   expect(contrastOnWhite(s.color)).toBeGreaterThanOrEqual(4.5);
