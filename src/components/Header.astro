@@ -2,7 +2,7 @@
 // Sticky header. Left the black heart of the brand links home, like the heart on b-side.ms.
 // The name stands on the start page: the big red logo (see src/views/Home.astro). The link name keeps it here.
 // From 900 px the desktop bar follows the heart in one line. Below, the roof burger opens the house menu.
-// The heart beats once and stops (WCAG 2.2.2). It beats only on a new visit: a plain navigation without a
+// The heart beats three times and stops (WCAG 2.2.2). It beats only on a new visit: a plain navigation without a
 // referrer from this site. A click to another page, a reload, back or a restored discarded tab does not count.
 // Nothing is stored, so no cookie. The script is inline, so it runs while the page parses.
 // The beat starts once the heart image is there, and a prerendered page waits until it is shown.
@@ -114,10 +114,10 @@ const t = ui[lang].frame;
     height: auto;
   }
 
-  /* One beat ("lub-dub"), then it stays. WCAG 2.2.2: motion that starts by itself stops within 5 seconds.
+  /* Three beats ("lub-dub", 1 s each), then it stays. WCAG 2.2.2: motion that starts by itself stops within 5 seconds.
      Scale 1.2 keeps the heart inside its 48 px target. transform does not move the layout. */
   .brand.beat :global(.brand-heart) {
-    animation: beat 1s ease-in-out 1;
+    animation: beat 1s ease-in-out 3;
   }
 
   @keyframes beat {
