@@ -510,7 +510,7 @@ test.describe("English start page", () => {
 
 // The German start page promotes the map "Sozialraum Frankfurt". The map is German only, so /en/ has no teaser.
 const MAP = "/sozialraum-frankfurt/";
-const TEASER_TEXT = "Wir haben ein Tool gebaut, um die Gebiete Frankfurts für eine andere Wohn- und Klimapolitik "
+const TEASER_TEXT = "Wir haben eine Karte gebaut, um die Gebiete Frankfurts für eine andere Wohn- und Klimapolitik "
   + "aufzuschlüsseln. Schaut gerne rein, und gewinnt neue Perspektiven!";
 
 test("the German start page promotes the map", async ({ page }) => {
