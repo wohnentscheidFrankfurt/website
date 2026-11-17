@@ -157,7 +157,8 @@ The current item looks like the others, as on b-side. `aria-current` names it. T
 Without JavaScript the bar shows at every width and the burger is hidden. Below 900 px the items
 are then smaller and wrap into two lines inside the header. So the row fits at 390 px even in the fallback font.
 The language switch ("EN" or "DE", Archivo wide 700, smaller than the items, 48 px target, ink focus ring) stands at
-the right end of the bar on desktop and left of the burger on phones. The phone menu ends with a text link to the
+the right end of the bar on desktop and left of the burger on phones. Like on b-side, the phone menu shows the
+white Instagram mark after the items (40 px in a 48 px target, name "Instagram"). It ends with a text link to the
 other language. On phones without JavaScript the switch sits right of the bar, so at 320 px the row is tight.
 The phone menu closes on a click on an item. Otherwise a jump within the page leaves it open.
 The heart is `heart.svg`, black (ink #111) like on b-side. It beats once ("lub-dub", scale to 1.2, 1 s) and then stays.

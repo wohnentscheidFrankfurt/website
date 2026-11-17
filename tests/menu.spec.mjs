@@ -300,6 +300,26 @@ test("the phone menu ends with the text variant of the switch", async ({ page },
   }
 });
 
+test("the phone menu links to Instagram before the language link", async ({ page }, testInfo) => {
+  if (testInfo.project.name === DESKTOP) await page.setViewportSize({ width: 390, height: 844 });
+  for (const [path, switchText] of [["/", "Show the English version"], ["/en/", "Zur deutschen Version"]]) {
+    await page.goto(path);
+    await openMenu(page);
+    const insta = menu(page).getByRole("link", { name: "Instagram", exact: true });
+    await expect(insta).toBeVisible();
+    await expect(insta).toHaveAttribute("href", "https://www.instagram.com/wohnentscheidfrankfurt/");
+    await expect(insta).not.toHaveAttribute("target", /.+/);
+    const box = await insta.boundingBox();
+    expect(box.width).toBeGreaterThanOrEqual(44);
+    expect(box.height).toBeGreaterThanOrEqual(44);
+    expect((await insta.locator("svg").boundingBox()).width).toBe(40);
+    // It stands between the items and the language link, like on b-side.
+    const links = menu(page).locator("a");
+    const names = await links.evaluateAll((els) => els.map((el) => el.getAttribute("aria-label") ?? el.textContent.trim()));
+    expect(names.slice(-2)).toEqual(["Instagram", switchText]);
+  }
+});
+
 test("the focus trap of the phone menu includes the switch link", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== DESKTOP, "runs in desktop Chrome only: WebKit does not tab to links by default");
   await page.setViewportSize({ width: 390, height: 844 });
@@ -320,7 +340,8 @@ test("the phone menu of the English pages is English", async ({ page }, testInfo
   await expect(burger(page)).toHaveAttribute("aria-label", "Open menu");
   await expect(menu(page)).toHaveAttribute("aria-label", "Menu");
   await openMenu(page);
-  await expect(menu(page).locator("a")).toHaveText(["Home", "Events", "Get involved", "Zur deutschen Version"]);
+  // The Instagram link is an icon: it has no text, only its name.
+  await expect(menu(page).locator("a")).toHaveText(["Home", "Events", "Get involved", "", "Zur deutschen Version"]);
   await expect(menu(page).locator("a[aria-current=page]")).toHaveText("Events");
   await expect(page.getByRole("link", { name: "Wohnentscheid Frankfurt – Home" })).toBeVisible();
 });

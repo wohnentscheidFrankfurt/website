@@ -1,9 +1,12 @@
 ---
 // The phone menu: a black house that slides in from the right. The script below opens and closes it.
 // From 900 px the header shows the desktop bar instead, and this menu is not rendered (display: none).
+// Like b-side, the Instagram mark follows the items, before the language link.
 import { navItems, isCurrent } from "../lib/nav";
 import { counterpart, route, type Lang } from "../i18n/routes";
 import { ui } from "../i18n/ui";
+import { INSTAGRAM } from "../lib/social";
+import InstagramIcon from "./InstagramIcon.astro";
 
 interface Props {
   lang: Lang;
@@ -25,6 +28,9 @@ const target: Lang = lang === "de" ? "en" : "de";
         <a href={item.href} aria-current={isCurrent(Astro.url.pathname, item.href) ? "page" : undefined}>{item.label}</a>
       </li>
     ))}
+    <li class="insta-item">
+      <a class="insta-link" href={INSTAGRAM} aria-label={t.footerInstagram}><InstagramIcon size={40} /></a>
+    </li>
     <li class="switch-item">
       <a class="switch-link" data-lang-switch-phone href={counterpart(Astro.url.pathname)} lang={target}
         hreflang={target}>{t.switchPhone}</a>
@@ -206,10 +212,24 @@ const target: Lang = lang === "de" ? "en" : "de";
     text-decoration-thickness: 2px;
   }
 
-  /* The language link: smaller than the items, set apart at the bottom. */
-  .switch-item {
+  /* The Instagram mark: 40 px in a 48 px target, set apart from the items. */
+  .insta-item {
     margin-top: 1rem;
   }
+
+  .insta-link {
+    display: inline-grid;
+    place-items: center;
+    min-width: 48px;
+    min-height: 48px;
+    padding: 0;
+  }
+
+  .insta-link :global(.icon) {
+    display: block;
+  }
+
+  /* The language link: smaller than the items, at the bottom. */
 
   .switch-link {
     font-size: 1.125rem;

@@ -100,7 +100,8 @@ test.describe("Mitmachen", () => {
     await page.locator("#menu-button").click();
     const menu = page.locator("#menu");
     await expect(menu).toBeVisible();
-    await expect(menu.locator("a")).toHaveText(["Startseite", "Veranstaltungen", "Mitmachen", "Show the English version"]);
+    // "" is the Instagram mark: an icon link without text.
+    await expect(menu.locator("a")).toHaveText(["Startseite", "Veranstaltungen", "Mitmachen", "", "Show the English version"]);
     const item = menu.getByRole("link", { name: "Mitmachen" });
     await expect(item).toHaveAttribute("href", "/#mitmachen");
     await expect(item).not.toHaveAttribute("aria-current", /.*/);
