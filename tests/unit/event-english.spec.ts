@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { englishProblems, flyerFor, englishBody, localized } from "../../src/lib/event-english.ts";
+import { englishProblems, flyerFor, englishBody, localized, shareFileName } from "../../src/lib/event-english.ts";
 
 const en = { title: "T", imageAlt: "A" };
 const base = { en };
@@ -88,4 +88,14 @@ test("localized: German returns the German fields", () => {
 test("localized: English address falls back to the German one", () => {
   const d = { title: "t", imageAlt: "i", address: "a", en: { title: "T", imageAlt: "I" } };
   expect(localized(d, "en").address).toBe("a");
+});
+
+test("the shared flyer is named after the event", () => {
+  expect(shareFileName("2026-11-28-get-together", "de", false)).toBe("wohnentscheid-flyer-2026-11-28-get-together.jpg");
+  expect(shareFileName("2026-11-28-get-together", "de", true)).toBe("wohnentscheid-flyer-2026-11-28-get-together.jpg");
+});
+
+test("only an English image gets the English name", () => {
+  expect(shareFileName("x", "en", true)).toBe("wohnentscheid-flyer-x-en.jpg");
+  expect(shareFileName("x", "en", false)).toBe("wohnentscheid-flyer-x.jpg");
 });

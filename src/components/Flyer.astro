@@ -3,10 +3,11 @@
 // The clock is in the markup from the start, so the script does not shift the flyer. It fills it every 30 s.
 // Without JavaScript (scripting: none) the date line shows instead of the clock.
 // role="timer" is not live, so screen readers do not hear every update.
-import { Picture } from "astro:assets";
+// Below the flyer a save link with a JPEG of it. The script makes it a share button where the browser can share files.
+import { Picture, getImage } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
 import { formatDateBar, formatTimeLine } from "../lib/events";
-import { flyerFor, localized } from "../lib/event-english";
+import { flyerFor, localized, shareFileName } from "../lib/event-english";
 import { route, type Lang } from "../i18n/routes";
 import { ui } from "../i18n/ui";
 
@@ -23,6 +24,9 @@ const image = flyerFor(d, lang)!;
 const dateLine = `${formatDateBar(d.start, lang)} · ${formatTimeLine({ start: d.start }, lang)}`;
 // The image's alt is the whole flyer text. The link gets a short name, like the event cards.
 const linkName = `${text.title} – ${formatDateBar(d.start, lang)}`;
+// The shared file: the flyer re-encoded at its own size, without metadata. Under 600 KB for chats.
+const jpeg = await getImage({ src: image.src, format: "jpeg", quality: 80 });
+const fileName = shareFileName(event.id, lang, lang === "en" && d.en.flyer !== undefined);
 ---
 <div class="countdown" role="timer" data-countdown data-start={d.start.toISOString()}
   data-end={d.end?.toISOString()}
@@ -42,6 +46,8 @@ const linkName = `${text.title} – ${formatDateBar(d.start, lang)}`;
   <Picture src={image.src} formats={["avif", "webp"]} fallbackFormat="webp" widths={[440, 880, 1060]}
     sizes="(min-width: 472px) 440px, calc(100vw - 32px)" loading="eager" alt={image.alt} />
 </a>
+<a class="button share" data-share href={jpeg.src} download={fileName}
+  data-label-share={ui[lang].flyer.share}>{ui[lang].flyer.save}</a>
 
 <script>
   import { countdown, plural } from "../lib/events";
@@ -187,6 +193,12 @@ const linkName = `${text.title} – ${formatDateBar(d.start, lang)}`;
       transform: scale(1.05);
       box-shadow: 0 12px 32px rgb(0 0 0 / 0.25);
     }
+  }
+
+  /* 32 px: the flyer grows 16 px at its bottom edge on hover, so it never covers the button. */
+  .share {
+    max-width: 440px;
+    margin: 32px auto 0;
   }
 
   @media (prefers-reduced-motion: reduce) {

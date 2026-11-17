@@ -160,7 +160,8 @@ test("flyer links to its event and has the full text as alt", async ({ page }) =
   const ids = await upcomingIds(page);
   test.skip(!(await showsFlyer(page)), "no upcoming event with a flyer");
   await expect(next(page).getByRole("heading", { name: "Nächste Veranstaltung", exact: true })).toHaveCount(1);
-  await expect(next(page).locator("a")).toHaveCount(1);
+  // The flyer is the only link besides the share button below it (tests/share.spec.mjs).
+  await expect(next(page).locator("a:not([data-share])")).toHaveCount(1);
   const href = await flyer(page).getAttribute("href");
   const id = href.match(/^\/veranstaltungen\/#(.+)$/)[1];
   expect(ids).toContain(id);

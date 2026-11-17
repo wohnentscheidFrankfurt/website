@@ -48,6 +48,11 @@ export function flyerFor<I>(
   return { src: data.en.flyer ?? data.flyer, alt: data.en.flyerAlt ?? "" };
 }
 
+/** Name of the shared and saved flyer file. "-en" only when the English page shows its own English image. */
+export function shareFileName(id: string, lang: Lang, englishImage: boolean): string {
+  return `wohnentscheid-flyer-${id}${lang === "en" && englishImage ? "-en" : ""}.jpg`;
+}
+
 /** Plain paragraphs of `en.body`, split at blank lines. */
 export function englishBody(text: string): string[] {
   return text
