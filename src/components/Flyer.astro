@@ -3,7 +3,8 @@
 // The clock is in the markup from the start, so the script does not shift the flyer. It fills it every 30 s.
 // Without JavaScript (scripting: none) the date line shows instead of the clock.
 // role="timer" is not live, so screen readers do not hear every update.
-// Below the flyer a save link with a JPEG of it. The script makes it a share button where the browser can share files.
+// On the flyer's corner a sticker: a save link to a JPEG of the flyer. The script makes it a share button where the browser
+// can share files.
 import { Picture, getImage } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
 import { formatDateBar, formatTimeLine } from "../lib/events";
@@ -42,12 +43,21 @@ const fileName = shareFileName(event.id, lang, lang === "en" && d.en.flyer !== u
   </p>
   <p class="running" data-running hidden>{c.running}</p>
 </div>
-<a class="flyer" data-flyer href={`${route(lang, "events")}#${event.id}`} aria-label={linkName}>
-  <Picture src={image.src} formats={["avif", "webp"]} fallbackFormat="webp" widths={[440, 880, 1060]}
-    sizes="(min-width: 472px) 440px, calc(100vw - 32px)" loading="eager" alt={image.alt} />
-</a>
-<a class="button share" data-share href={jpeg.src} download={fileName}
-  data-label-share={ui[lang].flyer.share}>{ui[lang].flyer.save}</a>
+<div class="flyer-box">
+  <a class="flyer" data-flyer href={`${route(lang, "events")}#${event.id}`} aria-label={linkName}>
+    <Picture src={image.src} formats={["avif", "webp"]} fallbackFormat="webp" widths={[440, 880, 1060]}
+      sizes="(min-width: 472px) 440px, calc(100vw - 32px)" loading="eager" alt={image.alt} />
+  </a>
+  <!-- A sticker on the flyer's corner. It shows a short word; aria-label says what it does. -->
+  <a class="share" data-share href={jpeg.src} download={fileName} aria-label={ui[lang].flyer.save}
+    data-label-share={ui[lang].flyer.share} data-word-share={ui[lang].flyer.shareWord}>
+    <span class="tilt">
+      <svg class="plane" viewBox="0 0 24 24" aria-hidden="true"><path d="M21.5 2.5 10.5 13.5" /><path d="M21.5 2.5 14.5 21.5l-4-8-8-4z" /></svg>
+      <svg class="down" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7.5 10.5 12 15l4.5-4.5" /><path d="M4 17v3h16v-3" /></svg>
+      <span data-word>{ui[lang].flyer.saveWord}</span>
+    </span>
+  </a>
+</div>
 
 <script>
   import { countdown, plural } from "../lib/events";
@@ -127,7 +137,8 @@ const fileName = shareFileName(event.id, lang, lang === "en" && d.en.flyer !== u
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible") open = false;
     });
-    link.textContent = link.dataset.labelShare!;
+    link.setAttribute("aria-label", link.dataset.labelShare!);
+    link.querySelector("[data-word]")!.textContent = link.dataset.wordShare!;
     link.dataset.ready = "";
   }
 </script>
@@ -244,15 +255,93 @@ const fileName = shareFileName(event.id, lang, lang === "en" && d.en.flyer !== u
     }
   }
 
-  /* 32 px: the flyer grows 16 px at its bottom edge on hover, so it never covers the button. */
-  .share {
+  .flyer-box {
+    position: relative;
     max-width: 440px;
-    margin: 32px auto 0;
+    margin: 0 auto;
+  }
+
+  /* The share sticker: turquoise, the opposite of the flyer's red, so it stands out from the flyer.
+     Black text (9.5:1), a white ring and a black offset shadow like a misprint.
+     Only the icon and the word tilt. A tilted box would grow sideways and make phones scroll.
+     It hangs 8 px over the flyer's right edge: with its shadow and hover scale, that stays inside the 16 px gutter.
+     z-index keeps it above the flyer when the flyer grows on hover. */
+  .share {
+    position: absolute;
+    right: -8px;
+    bottom: -26px;
+    z-index: 1;
+    box-sizing: border-box;
+    display: grid;
+    place-items: center;
+    width: 112px;
+    height: 112px;
+    border: 3px solid var(--paper);
+    border-radius: 50%;
+    background: #16cccc;
+    color: var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    font-family: var(--slab);
+    font-stretch: var(--tight);
+    font-weight: 900;
+    font-size: 1.35rem;
+    line-height: 1;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .tilt {
+    display: grid;
+    justify-items: center;
+    gap: 2px;
+    transform: rotate(-12deg);
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .share svg {
+    width: 34px;
+    height: 34px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* The paper plane once the script can share, the arrow down while it is a download. */
+  .share .plane,
+  .share[data-ready] .down {
+    display: none;
+  }
+
+  .share[data-ready] .plane {
+    display: block;
+  }
+
+  .share:focus-visible {
+    outline: 3px solid var(--ink);
+    outline-offset: 4px;
+  }
+
+  @media (hover: hover) {
+    .share:hover {
+      transform: scale(1.06);
+    }
+
+    .share:hover .tilt {
+      transform: rotate(-4deg);
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .flyer:hover {
+    .flyer:hover,
+    .share:hover {
       transform: none;
+    }
+
+    .share:hover .tilt {
+      transform: rotate(-12deg);
     }
   }
 </style>

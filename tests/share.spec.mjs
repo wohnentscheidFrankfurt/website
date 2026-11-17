@@ -4,8 +4,12 @@ import { test, expect } from "@playwright/test";
 
 const DESKTOP = "desktop-chrome";
 const PAGES = ["/", "/en/"];
-const SAVE = { "/": "Flyer speichern", "/en/": "Save flyer" };
-const SHARE = { "/": "Flyer teilen", "/en/": "Share flyer" };
+// The sticker shows a short word. Its accessible name says what it does.
+const SAVE = { "/": "Sichern", "/en/": "Save" };
+const SHARE = { "/": "Teilen", "/en/": "Share" };
+const SAVE_NAME = { "/": "Flyer speichern", "/en/": "Save flyer" };
+const SHARE_NAME = { "/": "Flyer teilen", "/en/": "Share flyer" };
+const TURQUOISE = "rgb(22, 204, 204)"; // #16cccc, the opposite of the flyer's red
 
 const flyer = (page) => page.locator("main a[data-flyer]");
 const shareLink = (page) => page.locator("main a[data-share]");
@@ -49,6 +53,18 @@ const stubShare = (page, outcome) => page.addInitScript((outcome) => {
 
 const shares = (page) => page.evaluate(() => window.__shares);
 
+// Is the topmost element at the middle of the sticker the sticker itself (or its icon or word)?
+// elementFromPoint sees only the viewport, so scroll the sticker in first.
+const stickerOnTop = async (page) => {
+  await shareLink(page).scrollIntoViewIfNeeded();
+  return stickerHit(page);
+};
+const stickerHit = (page) => page.evaluate(() => {
+  const link = document.querySelector("main a[data-share]");
+  const box = link.getBoundingClientRect();
+  return link.contains(document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2));
+});
+
 // Counts downloads and page errors from now on.
 function watch(page) {
   const seen = { downloads: [], errors: [] };
@@ -65,6 +81,7 @@ for (const path of PAGES) {
     const link = shareLink(page);
     await expect(link).toHaveAttribute("data-ready", "");
     await expect(link).toHaveText(SHARE[path]);
+    await expect(link).toHaveAccessibleName(SHARE_NAME[path]);
     await link.click();
     const [shared] = await shares(page);
     expect(await shares(page)).toHaveLength(1);
@@ -123,6 +140,7 @@ for (const path of PAGES) {
     const link = shareLink(page);
     await expect.poll(() => held).toBe(true);
     await expect(link).toHaveText(SAVE[path]);
+    await expect(link).toHaveAccessibleName(SAVE_NAME[path]);
     await expect(link).not.toHaveAttribute("data-ready");
     const [download] = await Promise.all([page.waitForEvent("download"), link.click()]);
     expect(download.suggestedFilename()).toBe(await expectedName(page, path));
@@ -155,11 +173,7 @@ for (const path of PAGES) {
     await openStart(page, path);
     const link = shareLink(page);
     await expect(link).toHaveText(SAVE[path]);
-    const f = await flyer(page).boundingBox();
-    const l = await link.boundingBox();
-    expect(l.y - (f.y + f.height)).toBeCloseTo(32, 0);
-    expect(l.x).toBeCloseTo(f.x, 0);
-    expect(l.width).toBeCloseTo(f.width, 0);
+    await expect(link).toHaveAccessibleName(SAVE_NAME[path]);
     const [download] = await Promise.all([page.waitForEvent("download"), link.click()]);
     expect(download.suggestedFilename()).toBe(await expectedName(page, path));
   });
@@ -181,16 +195,42 @@ test.describe("without JavaScript", () => {
       await openStart(page, path);
       const link = shareLink(page);
       await expect(link).toHaveText(SAVE[path]);
+      await expect(link).toHaveAccessibleName(SAVE_NAME[path]);
       await expect(link).toHaveAttribute("download", await expectedName(page, path));
     });
   }
 });
 
-test("the hovered flyer does not cover the button", async ({ page }, testInfo) => {
+for (const path of PAGES) {
+  test(`${path} puts a turquoise sticker on the flyer's lower right corner`, async ({ page }) => {
+    await openStart(page, path);
+    const f = await flyer(page).boundingBox();
+    const l = await shareLink(page).boundingBox();
+    // The corner of the flyer lies under the sticker.
+    expect(l.x).toBeLessThan(f.x + f.width);
+    expect(l.x + l.width).toBeGreaterThan(f.x + f.width);
+    expect(l.y).toBeLessThan(f.y + f.height);
+    expect(l.y + l.height).toBeGreaterThan(f.y + f.height);
+    expect(await shareLink(page).evaluate((el) => getComputedStyle(el).backgroundColor)).toBe(TURQUOISE);
+    // A tap on the sticker hits the sticker, not the flyer link below it.
+    expect(await stickerOnTop(page)).toBe(true);
+  });
+}
+
+test("the sticker causes no sideways scroll at 320 px", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 700 });
+  await openStart(page, "/");
+  const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+  expect(scrollWidth).toBeLessThanOrEqual(320);
+});
+
+test("the hovered flyer does not cover the sticker", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== DESKTOP, "hover needs a mouse");
   await openStart(page, "/");
+  // Scroll first, then hover near the flyer's lower left corner, so nothing scrolls the mouse off the flyer.
+  await shareLink(page).scrollIntoViewIfNeeded();
   const rest = await flyer(page).boundingBox();
-  await flyer(page).hover();
+  await flyer(page).hover({ position: { x: 20, y: rest.height - 40 } });
   // Wait until the scale transition has ended: the box is bigger and stays the same over two polls.
   let last = 0;
   await expect.poll(async () => {
@@ -199,7 +239,7 @@ test("the hovered flyer does not cover the button", async ({ page }, testInfo) =
     last = height;
     return done;
   }).toBe(true);
-  const f = await flyer(page).boundingBox();
-  const l = await shareLink(page).boundingBox();
-  expect(f.y + f.height).toBeLessThan(l.y);
+  expect(await stickerHit(page)).toBe(true);
+  // Still hovered: the flyer is scaled while the check ran.
+  expect(await flyer(page).evaluate((el) => getComputedStyle(el).transform)).not.toBe("none");
 });

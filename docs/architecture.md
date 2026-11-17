@@ -62,11 +62,11 @@
   Without `end` it hides at the start. The flyer itself stays until the next deploy.
   The clock is in the markup from the start, so the flyer does not shift.
   Without JavaScript the countdown shows the date line with the start time.
-- Below the flyer a black button shares the flyer image. In the HTML it is a save link ("Flyer speichern") to the
-  JPEG, with `download` set to `wohnentscheid-flyer-<id>.jpg` (`-en` for an own English image).
-  That is all it does without JavaScript, and in browsers that cannot share files (Firefox, some desktop Chrome).
-  Where `navigator.canShare` accepts a JPEG (phones, Safari on the Mac, some desktop browsers), the script turns it
-  into "Flyer teilen". It asks with a one-byte probe first, so other browsers never load the JPEG.
+- A sticker on the flyer's lower right corner shares the flyer image (look: Brand, share sticker). In the HTML it is a save
+  link ("Sichern") to the JPEG, with `download` set to `wohnentscheid-flyer-<id>.jpg` (`-en` for an own English
+  image). That is all it does without JavaScript, and in browsers that cannot share files (Firefox, some others).
+  Where `navigator.canShare` accepts a JPEG (phones, Safari and Chrome on the Mac), the script turns it into "Teilen".
+  It asks with a one-byte probe first, so other browsers never load the JPEG.
   A click opens the system share sheet with the image only: no text, no link. People write their own words.
   WhatsApp, Signal, Telegram and Mail show in that sheet. Their own web links (`wa.me`, `t.me/share`, `mailto:`)
   carry no file, so there are no app buttons.
@@ -195,6 +195,12 @@ stands beside the drawing. The intro's bottom lines up with the drawing's bottom
 Flyer: like the b-side lunch banner. At most 440 px wide, centred, rounded corners. On devices with hover it scales
 to 1.05 with a soft shadow. Under reduced motion it does not scale. The focus ring is ink.
 The link's name is the event title and the date. The image's alt holds the whole flyer text.
+
+Share sticker: a turquoise circle (#16cccc, the opposite of the flyer's red) on the flyer's lower right corner, black
+word and icon (9.5:1), white ring, black offset shadow. Paper plane and "Teilen" when it can share, arrow down and
+"Sichern" when it saves. The word is short to fit the circle; `aria-label` holds "Flyer teilen" or "Flyer speichern".
+Only icon and word tilt: a tilted box would grow sideways and make phones scroll. It hangs 8 px over the flyer's
+edge, inside the 16 px gutter. It covers the end of the flyer's last lines; the shared image is complete.
 
 Band "Bleib informiert": black, white text, white buttons, white focus rings. From 900 px three columns
 (heading, mail, Signal), below stacked. The QR code brings its own white quiet zone and shows from 900 px only.

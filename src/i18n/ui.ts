@@ -44,7 +44,7 @@ export interface Ui {
     minutes: [string, string];
     running: string;
   };
-  flyer: { share: string; save: string };
+  flyer: { share: string; save: string; shareWord: string; saveWord: string };
   join: { title: string; text: string; button: string; mailSubject: string };
   stay: {
     title: string;
@@ -128,7 +128,7 @@ const de: Ui = {
     minutes: ["Minute", "Minuten"],
     running: "Läuft gerade",
   },
-  flyer: { share: "Flyer teilen", save: "Flyer speichern" },
+  flyer: { share: "Flyer teilen", save: "Flyer speichern", shareWord: "Teilen", saveWord: "Sichern" },
   join: {
     title: "Mitmachen",
     text: "Du willst aktiv werden, weißt aber nicht genau, wie Du Dich einbringen kannst? Schreib uns gerne eine Mail, wir nehmen dann Kontakt zu Dir auf :)!",
@@ -217,7 +217,7 @@ const en: Ui = {
     minutes: ["minute", "minutes"],
     running: "Happening now",
   },
-  flyer: { share: "Share flyer", save: "Save flyer" },
+  flyer: { share: "Share flyer", save: "Save flyer", shareWord: "Share", saveWord: "Save" },
   join: {
     title: "Get involved",
     text: "You want to get active, but you are not sure how you can help? Write to us by email, and we will contact you :)!",
