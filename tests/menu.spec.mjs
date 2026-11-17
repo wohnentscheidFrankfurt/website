@@ -86,6 +86,41 @@ test("header heart beats on a direct visit to a subpage", async ({ page }) => {
   expect(await heartAnimation(page)).toBe("beat");
 });
 
+test("header heart beats only once its image is there", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  // A slow phone network: the heart SVG arrives late.
+  await page.route("**/*.svg", async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    await route.continue();
+  });
+  await page.goto("/");
+  const time = await page
+    .locator("header .brand .heart")
+    .evaluate((el) => el.getAnimations().map((a) => a.currentTime)[0] ?? null);
+  expect(time).not.toBeNull();
+  expect(time).toBeLessThan(500);
+});
+
+test("header heart stands still when the browser restores a discarded tab", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.addInitScript(() => {
+    Object.defineProperty(Document.prototype, "wasDiscarded", { configurable: true, get: () => true });
+  });
+  await page.goto("/");
+  expect(await heartAnimation(page)).toBe("none");
+});
+
+test("header heart waits for a prerendered page to be shown", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.addInitScript(() => {
+    Object.defineProperty(Document.prototype, "prerendering", { configurable: true, get: () => true });
+  });
+  await page.goto("/");
+  expect(await heartAnimation(page)).toBe("none");
+  await page.evaluate(() => document.dispatchEvent(new Event("prerenderingchange")));
+  expect(await heartAnimation(page)).toBe("beat");
+});
+
 test("header heart stands still after a click to another page", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");

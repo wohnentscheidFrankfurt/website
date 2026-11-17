@@ -158,7 +158,9 @@ The phone menu closes on a click on an item. Otherwise a jump within the page le
 The heart is `heart.svg`, black (ink #111) like on b-side. It beats once ("lub-dub", scale to 1.2, 1 s) and then stays.
 So it stops within 5 seconds (WCAG 2.2.2). It beats only on a new visit, on any page.
 A new visit is a plain navigation without a referrer from this site. A click to another page, a reload or back does
-not count. A switch of the browser tab never restarts it. Nothing is stored, so the site still sets no cookie.
+not count, nor a tab the browser restores after discarding it (`document.wasDiscarded`).
+A switch of the browser tab does not restart it. The beat waits until the heart image has loaded.
+A page Chrome prerenders waits until it is shown. Nothing is stored, so the site still sets no cookie.
 A small inline script in the header decides. Without JavaScript and under reduced motion the heart stands still.
 No other heart moves.
 

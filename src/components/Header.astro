@@ -3,8 +3,9 @@
 // The name stands on the start page: the big red logo (see src/views/Home.astro). The link name keeps it here.
 // From 900 px the desktop bar follows the heart in one line. Below, the roof burger opens the house menu.
 // The heart beats once and stops (WCAG 2.2.2). It beats only on a new visit: a plain navigation without a
-// referrer from this site. A click to another page, a reload or back does not count. Nothing is stored, so no cookie.
-// The script is inline, so it runs while the page parses, before the heart moves.
+// referrer from this site. A click to another page, a reload, back or a restored discarded tab does not count.
+// Nothing is stored, so no cookie. The script is inline, so it runs while the page parses.
+// The beat starts once the heart image is there, and a prerendered page waits until it is shown.
 import Heart from "./Heart.astro";
 import Menu from "./Menu.astro";
 import LangSwitch from "./LangSwitch.astro";
@@ -24,13 +25,18 @@ const t = ui[lang].frame;
   </a>
   <script is:inline>
     {
+      const brand = document.currentScript.previousElementSibling;
       const nav = performance.getEntriesByType("navigation")[0];
       let inner = false;
       try {
         inner = new URL(document.referrer).origin === location.origin;
       } catch {}
-      if (!inner && (!nav || nav.type === "navigate")) {
-        document.currentScript.previousElementSibling.classList.add("beat");
+      if (!inner && !document.wasDiscarded && (!nav || nav.type === "navigate")) {
+        const img = brand.querySelector("img");
+        const beat = () => brand.classList.add("beat");
+        const ready = () => (img.complete ? beat() : img.addEventListener("load", beat, { once: true }));
+        if (document.prerendering) document.addEventListener("prerenderingchange", ready, { once: true });
+        else ready();
       }
     }
   </script>
