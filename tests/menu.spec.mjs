@@ -234,14 +234,16 @@ test("current item is ink and italic, without underline", async ({ page }, testI
   expect(s).toEqual({ color: "rgb(17, 17, 17)", line: "none", style: "italic" });
 });
 
-test("language switch turns orange on hover, without underline", async ({ page }, testInfo) => {
+test("language switch turns a darker orange on hover, without underline", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== DESKTOP, "hover with a mouse");
   await page.goto("/");
   const link = page.locator("header [data-lang-switch]");
   await link.hover();
   const s = await look(link);
-  expect(s.color).toBe(ORANGE);
+  expect(s.color).toBe("rgb(180, 83, 9)");
   expect(s.line).toBe("none");
+  // The switch is small text (16 px): WCAG 1.4.3 needs 4.5:1.
+  expect(contrastOnWhite(s.color)).toBeGreaterThanOrEqual(4.5);
 });
 
 // The language switch sits in the header at every width and lands on the other language of the same page.

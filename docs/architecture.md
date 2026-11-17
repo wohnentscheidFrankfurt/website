@@ -134,7 +134,8 @@ German is the main language. English is a second version under `/en/`. No Astro 
 ## Brand
 
 The look follows b-side.ms. White `#fff`, ink `#111`. Red only in the logo and the drawings.
-Hover in the desktop bar: `--hover` `#d97706`, 3.2:1 on white (the bar text is large, so 3:1 is enough). Body: Mulish (400/700).
+Hover in the desktop bar: `--hover` `#d97706`, 3.2:1 on white. The items are large text, so 3:1 is enough.
+The language switch is small text and needs 4.5:1. Its hover is `--hover-small` `#b45309`, 5.0:1. Body: Mulish (400/700).
 Headings, menu, date bars and buttons take the flyer's type: Archivo, a bold grotesque with a width axis (`--slab`).
 Every rule with `--slab` sets a width:
 
@@ -150,7 +151,7 @@ Drawings sit on white without blend mode.
 Header: like b-side, only the black heart links home (34 px in a 48 px target). The link name is
 "Wohnentscheid Frankfurt – Startseite". The name itself stands on the start page, in the red logo.
 From 900 px the menu items follow in one line. Below, the roof burger opens the house menu.
-Like on b-side, an item turns orange (`--hover`) on hover, the language switch too. Nothing in the bar is underlined.
+Like on b-side, an item turns orange (`--hover`) on hover, the language switch a darker orange. Nothing in the bar is underlined.
 The current item stays ink and italic. The hover needs a real hover (`hover: hover`), so a tap leaves no colour.
 Without JavaScript the bar shows at every width and the burger is hidden. Below 900 px the items
 are then smaller and wrap into two lines inside the header. So the row fits at 390 px even in the fallback font.
