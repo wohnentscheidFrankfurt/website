@@ -230,11 +230,30 @@ const target: Lang = lang === "de" ? "en" : "de";
   }
 
   /* The language link: smaller than the items, at the bottom. */
-
   .switch-link {
     font-size: 1.125rem;
     text-decoration: underline;
     text-underline-offset: 4px;
+  }
+
+  /* Short screens (small phones with browser bars, phones held sideways): a tighter list, so it all fits. */
+  @media (max-height: 600px) {
+    ul {
+      padding-top: calc(19dvh + 24px);
+      gap: 0.25rem;
+    }
+
+    a {
+      font-size: 1.375rem;
+    }
+
+    .insta-item {
+      margin-top: 0.25rem;
+    }
+
+    .switch-link {
+      font-size: 1rem;
+    }
   }
 
   a[aria-current="page"] {

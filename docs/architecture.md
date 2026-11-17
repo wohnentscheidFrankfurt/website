@@ -160,6 +160,7 @@ The language switch ("EN" or "DE", Archivo wide 700, smaller than the items, 48 
 the right end of the bar on desktop and left of the burger on phones. Like on b-side, the phone menu shows the
 white Instagram mark after the items (40 px in a 48 px target, name "Instagram"). It ends with a text link to the
 other language. On phones without JavaScript the switch sits right of the bar, so at 320 px the row is tight.
+On short screens (up to 600 px high) the menu list is tighter, so it fits on phones held sideways.
 The phone menu closes on a click on an item. Otherwise a jump within the page leaves it open.
 The heart is `heart.svg`, black (ink #111) like on b-side. It beats once ("lub-dub", scale to 1.2, 1 s) and then stays.
 So it stops within 5 seconds (WCAG 2.2.2). It beats only on a new visit, on any page.
@@ -262,6 +263,7 @@ Projects: `desktop-chrome` and `chrome-390` use the system Chrome, `webkit-iphon
 - `tests/menu.spec.mjs`: the heart as brand (links home, size, link name), desktop bar,
   burger switch at 900 px. Phone menu (open, close, focus), sticky header.
   Header heart: black, beats once, not again after a page change, reload or back.
+  Phone menu: the Instagram link (48 px target, before the language link); the whole menu fits at 320×480 and sideways.
   Orange hover without underline (with its contrast), current item ink and upright. Without JavaScript and in the fallback font
   no horizontal scroll at 390 and 320 px, on `/` and `/en/`. The switch: visible, clickable, lands on the
   counterpart at 1400 and 390 px, last link of the phone menu and inside its focus trap.

@@ -320,6 +320,27 @@ test("the phone menu links to Instagram before the language link", async ({ page
   }
 });
 
+// Short screens: a small phone with the browser bars shown, and phones held sideways.
+for (const [width, height] of [[320, 568], [320, 480], [568, 320], [844, 390]]) {
+  test(`the whole phone menu fits on a ${width}×${height} screen`, async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== DESKTOP, "one browser is enough for the layout");
+    await page.setViewportSize({ width, height });
+    for (const path of ["/", "/en/"]) {
+      await page.goto(path);
+      await openMenu(page);
+      // The menu slides in; wait until it stands still.
+      await expect.poll(() => menu(page).evaluate((el) => getComputedStyle(el).transform)).toBe("none");
+      const last = await menu(page).locator("a").last().boundingBox();
+      expect(last.y + last.height).toBeLessThanOrEqual(height);
+      const close = await page.locator("#menu-close").boundingBox();
+      const first = await menu(page).locator("a").first().boundingBox();
+      // The close button and the first item do not overlap.
+      const apart = close.x + close.width <= first.x || close.y + close.height <= first.y || first.y + first.height <= close.y;
+      expect(apart).toBe(true);
+    }
+  });
+}
+
 test("the focus trap of the phone menu includes the switch link", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== DESKTOP, "runs in desktop Chrome only: WebKit does not tab to links by default");
   await page.setViewportSize({ width: 390, height: 844 });
