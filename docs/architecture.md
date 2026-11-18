@@ -180,8 +180,8 @@ white Instagram mark after the items (40 px in a 48 px target, name "Instagram")
 other language. On phones without JavaScript the switch sits right of the bar, so at 320 px the row is tight.
 On short screens (up to 600 px high) the menu list is tighter, so it fits on phones held sideways.
 The phone menu closes on a click on an item. Otherwise a jump within the page leaves it open.
-The heart is `heart.svg`, black (ink #111) like on b-side. It beats three times ("lub-dub", scale to 1.2, 1 s
-each) and then stays. So it stops after 3 seconds, within 5 (WCAG 2.2.2). It beats only on a new visit, on any page.
+The heart is `heart.svg`, black (ink #111) like on b-side. It beats twice ("lub-dub", scale to 1.2, 1 s
+each) and then stays. So it stops after 2 seconds, within 5 (WCAG 2.2.2). It beats only on a new visit, on any page.
 A new visit is a plain navigation without a referrer from this site. A click to another page, a reload or back does
 not count, nor a tab the browser restores after discarding it (`document.wasDiscarded`).
 A switch of the browser tab does not restart it. The beat waits until the heart image has loaded.
@@ -286,7 +286,7 @@ Projects: `desktop-chrome` and `chrome-390` use the system Chrome, `webkit-iphon
   visible headings only.
 - `tests/menu.spec.mjs`: the heart as brand (links home, size, link name), desktop bar,
   burger switch at 900 px. Phone menu (open, close, focus), sticky header.
-  Header heart: black, beats three times, not again after a page change, reload or back. Orange on hover.
+  Header heart: black, beats twice, not again after a page change, reload or back. Orange on hover.
   Phone menu: the Instagram link (48 px target, before the language link); the whole menu fits at 320×480 and sideways.
   Orange hover without underline (with its contrast), current item ink and upright. Without JavaScript and in the fallback font
   no horizontal scroll at 390 and 320 px, on `/` and `/en/`. The switch: visible, clickable, lands on the

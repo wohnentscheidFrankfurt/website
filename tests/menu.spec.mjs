@@ -46,7 +46,7 @@ test("header heart is black, as on b-side", async ({ page, request }) => {
   expect(svg).not.toContain("#ea1a1a");
 });
 
-test("header heart beats three times and stops within 5 seconds", async ({ page }) => {
+test("header heart beats twice and stops within 5 seconds", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("/");
   const heart = page.locator("header .brand .heart");
@@ -58,7 +58,7 @@ test("header heart beats three times and stops within 5 seconds", async ({ page 
   expect(style.name).toBe("beat");
   // WCAG 2.2.2: motion that starts by itself must stop within 5 seconds, or offer a pause.
   const count = Number(style.count);
-  expect(count).toBe(3);
+  expect(count).toBe(2);
   expect(parseFloat(style.duration) * count).toBeLessThanOrEqual(5);
 });
 
