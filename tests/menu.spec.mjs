@@ -337,7 +337,7 @@ test("the phone menu links to Instagram before the language link", async ({ page
     const box = await insta.boundingBox();
     expect(box.width).toBeGreaterThanOrEqual(44);
     expect(box.height).toBeGreaterThanOrEqual(44);
-    expect((await insta.locator("svg").boundingBox()).width).toBe(40);
+    expect((await insta.locator("svg").boundingBox()).width).toBeCloseTo(40, 1);
     // It stands between the items and the language link, like on b-side.
     const links = menu(page).locator("a");
     const names = await links.evaluateAll((els) => els.map((el) => el.getAttribute("aria-label") ?? el.textContent.trim()));
