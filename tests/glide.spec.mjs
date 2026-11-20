@@ -145,6 +145,20 @@ test("back after the anchor glide stays on the page", async ({ page }, testInfo)
   await expectNoReload(page);
 });
 
+// The toolbar's Back fires no key or mouse event. The glide must not drive the page back to the anchor.
+test("back during the glide wins", async ({ page }, testInfo) => {
+  await page.goto("/");
+  await padBottom(page);
+  await mark(page);
+  const item = await mitmachen(page, testInfo);
+  await item.click();
+  await page.waitForTimeout(250);
+  await page.goBack();
+  await page.waitForTimeout(2000);
+  expect(await scrollY(page)).toBe(0);
+  await expectNoReload(page);
+});
+
 test("reduced motion jumps at once", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");

@@ -77,8 +77,9 @@ const target: Lang = lang === "de" ? "en" : "de";
   });
   closeButton.addEventListener("click", () => close());
 
-  // "Mitmachen" jumps within the start page, so no new page closes the menu. Close it before the jump.
-  // No refocus: the jump moves the focus start to the target.
+  // A link to the current page glides (src/lib/glide.ts), so no new page closes the menu. Close it here, before the glide.
+  // This listener must run first and at once: the glide moves the focus to its target, and an inert main takes none.
+  // No refocus: the glide sets the focus.
   menu.querySelectorAll("a[href]").forEach((link) => link.addEventListener("click", () => close(null)));
 
   // Capture phase on document: inert main and footer may change the event target, the document still sees the click.

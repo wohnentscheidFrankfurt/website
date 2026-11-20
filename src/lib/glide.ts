@@ -30,7 +30,8 @@ export function glideTarget(link: URL, page: URL): GlideTarget | null {
 }
 
 // Events by which the user takes over. They stop a running glide where the page stands.
-const STOP_EVENTS = ["wheel", "touchstart", "keydown", "mousedown"] as const;
+// popstate: Back in the toolbar fires no key or mouse event. pushState fires no popstate, so the glide's own entry is safe.
+const STOP_EVENTS = ["wheel", "touchstart", "keydown", "mousedown", "popstate"] as const;
 
 // Stops the running glide. null when none runs.
 let stopRunning: (() => void) | null = null;

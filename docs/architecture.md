@@ -191,10 +191,10 @@ No other heart moves.
 
 Glide: a link to the page you are on does not reload it. The page glides to the top, or to the anchor of a link with
 a hash. The anchor's `scroll-margin-top` counts, so the glide ends where the browser's own jump would end.
-This holds for every link on every page: heart, bar, phone menu, footer, text. One listener on `document` in
+This holds for every link on every page built by Astro (not the map): heart, bar, phone menu, footer, text. One listener on `document` in
 `src/lib/glide.ts` does it. `Base.astro` starts it. Curve and duration are at the top of that file.
 They come from Webflow (easeInOutCubic, about 0.9 s for 300 px, 1.8 s for 3000 px).
-Wheel, touch, a key or a mouse press stops the glide where the page stands. Under reduced motion the page jumps.
+Wheel, touch, a key, a mouse press or Back stops the glide where the page stands. Under reduced motion the page jumps.
 A new URL (`/#mitmachen`) gets a history entry. The same URL gets none, as with a reload.
 The focus moves to the anchor, or to the page start for the top, without a ring. So the next Tab goes on from there.
 The browser keeps these clicks: a modifier key, `target`, `download`, a hash without its element, another query.
@@ -323,7 +323,7 @@ Projects: `desktop-chrome` and `chrome-390` use the system Chrome, `webkit-iphon
   `tests/legal.spec.mjs`.
 - `tests/glide.spec.mjs`: links to the current page glide (top on four pages, heart, "Mitmachen"): no reload, many
   positions in between. The anchor lands at its `scroll-margin-top`, also when content above grows. Back, reduced
-  motion, stop by wheel or key, a second click, the clicks left to the browser, focus, phone menu.
+  motion, stop by wheel, key or Back, a second click, the clicks left to the browser, focus, phone menu.
 - `tests/unit/`: date logic, menu items, glide logic, no EXIF in `dist/` and the server files in `server/`
   (Caddyfile, units, `deploy.sh`).
 - `tests/api/`: token, address check, rate limit, config, mail texts and the routes of the API (`node:test`,
