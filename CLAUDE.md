@@ -48,7 +48,8 @@ live only in the archive clone `../website-archiv` (`docs/architecture.md`, Depl
   map teaser on the German start page (`MapTeaser`), the Instagram mark of footer and phone menu (`InstagramIcon`).
 - `src/content/events/`: one Markdown file per event. `src/lib/events.ts`: date logic.
 - `src/lib/nav.ts`: menu items. The desktop bar and the phone menu both read them. `src/lib/social.ts`: our
-  Instagram and GitHub addresses.
+  Instagram and GitHub addresses. `src/lib/glide.ts`: the glide on links to the current page (curve and duration
+  at the top).
 - `src/assets/`: brand, drawings, event photos and the map teaser image (`map/`). Raster originals are re-encoded at build and never reach `dist/` (except the Signal QR codes). SVGs are copied as they are; a check scans them.
 - `api/`: Node service for the newsletter sign-up (`api/src/`, own `package.json`). `server/`: Caddyfile, systemd
   units and `set-secrets.sh`, the source of the live files.

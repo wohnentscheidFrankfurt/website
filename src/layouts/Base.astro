@@ -39,5 +39,10 @@ const english = lang === "en" ? here : other;
     </main>
     {stayInformed && <StayInformed lang={lang} />}
     <Footer lang={lang} />
+    <script>
+      // Links to the current page glide instead of reloading it (src/lib/glide.ts).
+      import { initGlide } from "../lib/glide";
+      initGlide();
+    </script>
   </body>
 </html>

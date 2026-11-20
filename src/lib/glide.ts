@@ -28,3 +28,83 @@ export function glideTarget(link: URL, page: URL): GlideTarget | null {
     return null;
   }
 }
+
+// Events by which the user takes over. They stop a running glide where the page stands.
+const STOP_EVENTS = ["wheel", "touchstart", "keydown", "mousedown"] as const;
+
+// Stops the running glide. null when none runs.
+let stopRunning: (() => void) | null = null;
+
+// Moves the focus to the target, as the browser's own jump does. tabindex -1 makes any element focusable.
+// data-glide-focus hides the ring (global.css). Both go again when the focus leaves.
+function focusTarget(el: HTMLElement): void {
+  const added = !el.hasAttribute("tabindex");
+  if (added) el.setAttribute("tabindex", "-1");
+  el.setAttribute("data-glide-focus", "");
+  el.addEventListener(
+    "blur",
+    () => {
+      if (added) el.removeAttribute("tabindex");
+      el.removeAttribute("data-glide-focus");
+    },
+    { once: true },
+  );
+  el.focus({ preventScroll: true });
+}
+
+// Where the page stands when the anchor sits at its scroll-margin-top, as after the browser's own jump.
+function anchorY(el: HTMLElement): number {
+  const margin = parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
+  const y = el.getBoundingClientRect().top + window.scrollY - margin;
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  return Math.min(Math.max(y, 0), max);
+}
+
+// Glides to end(). end is measured on every frame, so content that loads above the target does not matter.
+function glide(end: () => number): void {
+  stopRunning?.();
+  const start = window.scrollY;
+  const first = end();
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches || Math.abs(first - start) < 1) {
+    window.scrollTo(0, first);
+    return;
+  }
+  const ms = duration(first - start);
+  const began = performance.now();
+  let frame = 0;
+  const stop = () => {
+    cancelAnimationFrame(frame);
+    for (const type of STOP_EVENTS) window.removeEventListener(type, stop);
+    if (stopRunning === stop) stopRunning = null;
+  };
+  const step = (now: number) => {
+    // The first frame may carry a time from before the click.
+    const t = Math.min(Math.max((now - began) / ms, 0), 1);
+    window.scrollTo(0, start + (end() - start) * ease(t));
+    if (t < 1) frame = requestAnimationFrame(step);
+    else stop();
+  };
+  for (const type of STOP_EVENTS) window.addEventListener(type, stop, { passive: true });
+  stopRunning = stop;
+  frame = requestAnimationFrame(step);
+}
+
+// One listener for every link on the page. It runs after the link's own listeners (the phone menu closes there).
+// Clicks that open a new tab or window, downloads and links to other pages stay with the browser.
+export function initGlide(): void {
+  document.addEventListener("click", (event) => {
+    if (event.defaultPrevented || event.button !== 0) return;
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    const link = (event.target as Element).closest?.("a[href]");
+    if (!(link instanceof HTMLAnchorElement) || link.target || link.hasAttribute("download")) return;
+    const target = glideTarget(new URL(link.href), new URL(location.href));
+    if (!target) return;
+    const el = target.kind === "top" ? document.body : document.getElementById(target.id);
+    if (!el) return;
+    event.preventDefault();
+    // A new URL gets its own history entry, as with the browser's own jump. The same URL gets none, as with a reload.
+    if (link.href !== location.href) history.pushState(null, "", link.href);
+    focusTarget(el);
+    glide(target.kind === "top" ? () => 0 : () => anchorY(el));
+  });
+}

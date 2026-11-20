@@ -179,3 +179,9 @@ h1 {
   outline: 3px solid var(--ink);
   outline-offset: 2px;
 }
+
+/* The glide (src/lib/glide.ts) moves the focus to its target: a section or the page start. That target is not a
+   control, so it shows no ring. */
+[data-glide-focus]:focus {
+  outline: none;
+}
