@@ -132,6 +132,34 @@ test("reduced motion opens without animation", async ({ page }) => {
   expect(await transitionsWhileOpening(page)).toEqual([]);
 });
 
+// On phones people close with Back. The lightbox adds one history entry, and a close by Esc takes it away again.
+test("Back closes the lightbox and stays on the page", async ({ page }) => {
+  await page.goto("/");
+  await open(page, 2);
+  await page.goBack();
+  await expect(lightbox(page)).toHaveCount(0);
+  await expect(page).toHaveURL(/\/veranstaltungen\/$/);
+});
+
+test("after Esc one Back leaves the page", async ({ page }) => {
+  await page.goto("/");
+  await open(page, 2);
+  await page.keyboard.press("Escape");
+  await expect(lightbox(page)).toHaveCount(0);
+  await page.goBack();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page).not.toHaveURL(/veranstaltungen/);
+});
+
+test("a second Back leaves the page", async ({ page }) => {
+  await page.goto("/");
+  await open(page, 2);
+  await page.goBack();
+  await expect(lightbox(page)).toHaveCount(0);
+  await page.goBack();
+  await expect(page).not.toHaveURL(/veranstaltungen/);
+});
+
 test.describe("without JavaScript", () => {
   test.use({ javaScriptEnabled: false });
   test("a link opens the picture", async ({ page }) => {

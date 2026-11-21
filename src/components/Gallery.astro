@@ -83,6 +83,23 @@ const pictures = await Promise.all(items.map(async (item) => {
     lightbox.on("slideInit", ({ slide }) => {
       slide.container.classList.toggle("sepia", slide.data.element?.dataset.kind === "photo");
     });
+    // Back closes the lightbox: phones expect that. Opening adds one history entry.
+    // A close by Esc, button or swipe takes the entry away again, so the next Back leaves the page.
+    let entry = false;
+    lightbox.on("beforeOpen", () => {
+      history.pushState({ gallery: true }, "");
+      entry = true;
+    });
+    addEventListener("popstate", () => {
+      if (!entry) return;
+      entry = false;
+      lightbox.pswp?.close();
+    });
+    lightbox.on("close", () => {
+      if (!entry) return;
+      entry = false;
+      history.back();
+    });
     lightbox.init();
   }
 </script>

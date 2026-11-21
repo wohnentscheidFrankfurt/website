@@ -45,7 +45,8 @@ live only in the archive clone `../website-archiv` (`docs/architecture.md`, Depl
   to `dist/sozialraum-frankfurt/` (the map page, German only, not in `src/pages/`).
 - `src/components/`: header, menu, heart, footer (three columns), event card, flyer with countdown and share sticker,
   "Mitmachen" (`Join`), language switch (`LangSwitch`), band "Bleib informiert" above the footer (`StayInformed`),
-  map teaser on the German start page (`MapTeaser`), the Instagram mark of footer and phone menu (`InstagramIcon`).
+  map teaser on the German start page (`MapTeaser`), the Instagram mark of footer and phone menu (`InstagramIcon`),
+  the event gallery with its PhotoSwipe lightbox (`Gallery`).
 - `src/content/events/`: one Markdown file per event. `src/lib/events.ts`: date logic.
 - `src/lib/nav.ts`: menu items. The desktop bar and the phone menu both read them. `src/lib/social.ts`: our
   Instagram and GitHub addresses. `src/lib/glide.ts`: the glide on links to the current page (curve and duration

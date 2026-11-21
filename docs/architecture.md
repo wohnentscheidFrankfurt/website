@@ -50,7 +50,15 @@
 
 - Events are Markdown files in `src/content/events/`, schema in `src/content.config.ts`. How to add one:
   `add-event.md`.
-- Gallery items have `kind: photo | flipchart`.
+- Gallery items have `kind: photo | flipchart`. A past event shows them in `src/components/Gallery.astro`.
+  A photo spans the grid, flip charts sit 2 per row, 4 from 720 px. The photo is sepia, also in the lightbox.
+  Every picture links to a WebP at the width of its original. The link carries its width and height for the lightbox.
+  Without JavaScript the link opens that image.
+- The lightbox is PhotoSwipe (MIT, no dependencies). Vite bundles it; its core loads on the first click.
+  Swipe, pinch and double tap zoom, swipe down closes. Arrow buttons only with a mouse, arrow keys always.
+  The caption comes from the `figcaption`. Labels and the error text come from `ui.ts`.
+  PhotoSwipe turns off its own animations under reduced motion.
+  Opening adds one history entry, so Back closes the lightbox. Any other close takes the entry away again.
 - "Upcoming" and "past" use the Berlin day of the build (`src/lib/events.ts`). An event moves to the review only
   with the next deploy after its day.
 - The start page shows the flyer of the first upcoming event with a `flyer` (`src/components/Flyer.astro`).
@@ -306,6 +314,9 @@ Projects: `desktop-chrome` and `chrome-390` use the system Chrome, `webkit-iphon
   counterpart at 1400 and 390 px, last link of the phone menu and inside its focus trap.
 - `tests/events.spec.mjs`: events page, date-independent, also the English page (headings, 12 h times, body,
   callout, captions).
+- `tests/gallery.spec.mjs`: the lightbox on the kick-off: opens the clicked picture, keys and buttons, Esc, focus
+  back, focus trap, caption, sepia, colors, labels in both languages, error text, animation and reduced motion, Back,
+  without JavaScript.
 - `tests/join.spec.mjs`: "Mitmachen" (texts, mail link, menu item, jump below the header) and the band
   "Bleib informiert" (place, texts, mail subject and body, Signal link, QR code unscaled, columns, focus rings).
 - `tests/legal.spec.mjs`: Impressum, Datenschutz and their English pages: title, headings, texts word for word, addresses, mail and
