@@ -143,6 +143,9 @@ const pictures = await Promise.all(items.map(async (item) => {
     filter: drop-shadow(0 1px 1.5px rgb(0 0 0 / 0.35));
   }
   li:nth-child(odd).flipchart figcaption { rotate: -2.5deg; }
+  /* The tape is the most obvious thing to tap. The link's hit area spans the whole figure, tape included. */
+  .flipchart figure { position: relative; }
+  .flipchart a::after { content: ""; position: absolute; inset: 0; z-index: 2; }
   .tape {
     display: block; padding: 8px 10px 9px;
     background:

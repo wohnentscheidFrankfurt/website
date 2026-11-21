@@ -271,3 +271,17 @@ test("the tape text is dark on light tape", async ({ page }) => {
   await expect(tape).toHaveCSS("color", "rgb(26, 23, 18)");
   await expect(tape).toHaveCSS("font-weight", "800");
 });
+
+// The tape is the most obvious thing to tap. A tap on it opens the picture.
+// Click where the tape is drawn, like a finger: the link's hit area lies on top of it.
+test("a tap on the tape opens the picture", async ({ page, hasTouch }) => {
+  await page.goto("/veranstaltungen/");
+  const tape = tapes(page).nth(1);
+  await tape.scrollIntoViewIfNeeded();
+  const box = await tape.boundingBox();
+  const [x, y] = [box.x + box.width / 2, box.y + box.height * 0.75];
+  if (hasTouch) await page.touchscreen.tap(x, y);
+  else await page.mouse.click(x, y);
+  await opened(page);
+  await expect(counter(page)).toHaveText("3 / 5");
+});

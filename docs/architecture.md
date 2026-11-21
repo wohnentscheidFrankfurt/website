@@ -53,7 +53,8 @@
   `add-event.md`.
 - Gallery items have `kind: photo | flipchart`. A past event shows them in `src/components/Gallery.astro`.
   A photo spans the grid, flip charts sit 2 per row, 4 from 720 px. The photo is sepia, also in the lightbox.
-  A flip chart's caption is a torn strip of masking tape below the picture, over its bottom edge, tilted ±2° in turns.
+  A flip chart's caption is a torn strip of masking tape below the picture, over its bottom edge, tilted 2° to the
+  right and 2.5° to the left in turns. The link's hit area spans the whole figure, so a tap on the tape opens the picture.
   It is pure CSS: four fixed `clip-path` tears cycle by `:nth-child`, the grain is SVG noise as a `data:` URI.
   The text stays real text in the `figcaption`. The lightbox shows the caption plain.
   Every picture links to a WebP at the width of its original. The link carries its width and height for the lightbox.
@@ -322,7 +323,7 @@ Projects: `desktop-chrome` and `chrome-390` use the system Chrome, `webkit-iphon
   callout, captions).
 - `tests/gallery.spec.mjs`: the lightbox on the kick-off: opens the clicked picture, keys and buttons, Esc, focus
   back, focus trap both ways, caption (place, touches), sepia, colors, labels in both languages, error text, animation and reduced motion, Back,
-  without JavaScript. The tape in the grid: only flip charts, four tears, over the edge, tilt in turns, inside the page.
+  without JavaScript. The tape in the grid: only flip charts, four tears, over the edge, tilt in turns, inside the page, a tap on it opens the picture.
 - `tests/join.spec.mjs`: "Mitmachen" (texts, mail link, menu item, jump below the header) and the band
   "Bleib informiert" (place, texts, mail subject and body, Signal link, QR code unscaled, columns, focus rings).
 - `tests/legal.spec.mjs`: Impressum, Datenschutz and their English pages: title, headings, texts word for word, addresses, mail and
