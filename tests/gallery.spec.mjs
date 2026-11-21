@@ -215,3 +215,59 @@ test.describe("without JavaScript", () => {
     await expect(page).toHaveURL(new RegExp(`${href.replace(/[.]/g, "\\.")}$`));
   });
 });
+
+// Masking tape below the flip charts in the grid. The photo has no caption and so no tape.
+const tapes = (page) => page.locator(`article[data-event="${KICKOFF}"] .gallery li.flipchart figcaption`);
+
+test("only the flip charts carry tape", async ({ page }) => {
+  await page.goto("/veranstaltungen/");
+  await expect(page.locator(`article[data-event="${KICKOFF}"] .gallery li.photo figcaption`)).toHaveCount(0);
+  await expect(tapes(page)).toHaveCount(4);
+  const looks = await tapes(page).evaluateAll((els) => els.map((f) => {
+    const tape = getComputedStyle(f.querySelector(".tape"));
+    return { clip: tape.clipPath, image: tape.backgroundImage, text: getComputedStyle(f).textTransform };
+  }));
+  for (const look of looks) {
+    expect(look.clip).toMatch(/^polygon/);
+    expect(look.image).toContain("data:image/svg+xml");
+    expect(look.text).toBe("uppercase");
+  }
+  // Four different tears.
+  expect(new Set(looks.map((l) => l.clip)).size).toBe(4);
+});
+
+test("the tape overlaps the picture's bottom edge", async ({ page }) => {
+  await page.goto("/veranstaltungen/");
+  const gaps = await tapes(page).evaluateAll((els) => els.map((f) => {
+    const img = f.closest("figure").querySelector("img").getBoundingClientRect();
+    const tape = f.getBoundingClientRect();
+    return { overlap: img.bottom - tape.top, below: tape.bottom - img.bottom };
+  }));
+  for (const gap of gaps) {
+    expect(gap.overlap).toBeGreaterThanOrEqual(8);
+    expect(gap.below).toBeGreaterThan(10);
+  }
+});
+
+test("the tapes tilt in turns", async ({ page }) => {
+  await page.goto("/veranstaltungen/");
+  const angles = await tapes(page).evaluateAll((els) => els.map((f) => parseFloat(getComputedStyle(f).rotate)));
+  for (const a of angles) expect(Math.abs(a)).toBeGreaterThan(1);
+  for (let i = 1; i < angles.length; i++) expect(Math.sign(angles[i])).toBe(-Math.sign(angles[i - 1]));
+});
+
+test("the tape stays inside the page", async ({ page }) => {
+  await page.goto("/veranstaltungen/");
+  const width = await page.evaluate(() => document.documentElement.clientWidth);
+  for (const box of await tapes(page).evaluateAll((els) => els.map((f) => f.getBoundingClientRect().toJSON()))) {
+    expect(box.left).toBeGreaterThanOrEqual(0);
+    expect(box.right).toBeLessThanOrEqual(width);
+  }
+});
+
+test("the tape text is dark on light tape", async ({ page }) => {
+  await page.goto("/veranstaltungen/");
+  const tape = tapes(page).first();
+  await expect(tape).toHaveCSS("color", "rgb(26, 23, 18)");
+  await expect(tape).toHaveCSS("font-weight", "800");
+});

@@ -42,7 +42,8 @@
   Drawings use `fallbackFormat="webp"`, so no `<img>` points at a raw SVG or PNG.
   The flyer also goes to `dist/` as a JPEG at its own size, for sharing and saving. A check keeps it under 600 KB.
 - Astro inlines the menu script and the countdown script. There is no CSP today. If a CSP with
-  `script-src 'self'` comes, set `vite.build.assetsInlineLimit: 0`.
+  `script-src 'self'` comes, set `vite.build.assetsInlineLimit: 0`. Its `img-src` must allow `data:`:
+  the grain of the gallery tape is a `data:` SVG. Without it the tape stays, only plainer.
 - Versions are pinned exactly in `package.json`. Node 24 (`.nvmrc`).
 - Astro telemetry is off (`ASTRO_TELEMETRY_DISABLED=1` in the npm scripts).
 
@@ -52,6 +53,9 @@
   `add-event.md`.
 - Gallery items have `kind: photo | flipchart`. A past event shows them in `src/components/Gallery.astro`.
   A photo spans the grid, flip charts sit 2 per row, 4 from 720 px. The photo is sepia, also in the lightbox.
+  A flip chart's caption is a torn strip of masking tape below the picture, over its bottom edge, tilted ±2° in turns.
+  It is pure CSS: four fixed `clip-path` tears cycle by `:nth-child`, the grain is SVG noise as a `data:` URI.
+  The text stays real text in the `figcaption`. The lightbox shows the caption plain.
   Every picture links to a WebP at the width of its original. The link carries its width and height for the lightbox.
   Without JavaScript the link opens that image.
 - The lightbox is PhotoSwipe (MIT, no dependencies). Vite bundles it; its core loads on the first click.
@@ -318,7 +322,7 @@ Projects: `desktop-chrome` and `chrome-390` use the system Chrome, `webkit-iphon
   callout, captions).
 - `tests/gallery.spec.mjs`: the lightbox on the kick-off: opens the clicked picture, keys and buttons, Esc, focus
   back, focus trap both ways, caption (place, touches), sepia, colors, labels in both languages, error text, animation and reduced motion, Back,
-  without JavaScript.
+  without JavaScript. The tape in the grid: only flip charts, four tears, over the edge, tilt in turns, inside the page.
 - `tests/join.spec.mjs`: "Mitmachen" (texts, mail link, menu item, jump below the header) and the band
   "Bleib informiert" (place, texts, mail subject and body, Signal link, QR code unscaled, columns, focus rings).
 - `tests/legal.spec.mjs`: Impressum, Datenschutz and their English pages: title, headings, texts word for word, addresses, mail and
