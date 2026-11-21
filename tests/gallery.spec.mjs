@@ -53,10 +53,27 @@ test("with the keyboard the focus returns to the picture", async ({ page }) => {
   await expect(links(page).nth(2)).toBeFocused();
 });
 
-test("Tab stays in the lightbox", async ({ page }) => {
+// Tab and Shift+Tab cycle over the visible buttons. Focus never leaves, not even for a moment.
+const focusedButton = (page) => page.evaluate(() => {
+  const el = document.activeElement;
+  return el?.matches(".pswp button") ? el.title : null;
+});
+test("Tab and Shift+Tab stay in the lightbox", async ({ page }) => {
   await open(page, 2);
-  for (let i = 0; i < 6; i++) await page.keyboard.press("Tab");
-  expect(await page.evaluate(() => !!document.activeElement?.closest(".pswp"))).toBe(true);
+  const buttons = await page.locator(".pswp button:visible").count();
+  expect(buttons).toBeGreaterThan(1);
+  const seen = new Set();
+  for (let i = 0; i < buttons + 2; i++) {
+    await page.keyboard.press("Tab");
+    const title = await focusedButton(page);
+    expect(title).not.toBeNull();
+    seen.add(title);
+  }
+  expect(seen.size).toBe(buttons);
+  for (let i = 0; i < buttons + 2; i++) {
+    await page.keyboard.press("Shift+Tab");
+    expect(await focusedButton(page)).not.toBeNull();
+  }
 });
 
 test("the caption shows below the picture", async ({ page }) => {
@@ -65,6 +82,25 @@ test("the caption shows below the picture", async ({ page }) => {
   await page.keyboard.press("ArrowLeft");
   await expect(counter(page)).toHaveText("1 / 5");
   await expect(page.locator(".pswp__caption")).toBeHidden();
+});
+
+test("the caption does not cover the picture", async ({ page }) => {
+  for (const n of [2, 3]) {
+    await open(page, n);
+    await expect(current(page)).toBeVisible();
+    const img = await current(page).boundingBox();
+    const caption = await page.locator(".pswp__caption").boundingBox();
+    expect(img.y + img.height).toBeLessThanOrEqual(caption.y + 0.5);
+  }
+});
+
+// The caption lies over the gesture area. Swipe and pinch that start on it must reach PhotoSwipe.
+test("touches on the caption reach the picture", async ({ page }) => {
+  await open(page, 2);
+  const box = await page.locator(".pswp__caption").boundingBox();
+  const hit = await page.evaluate(([x, y]) => !!document.elementFromPoint(x, y)?.closest(".pswp__caption"),
+    [box.x + box.width / 2, box.y + box.height / 2]);
+  expect(hit).toBe(false);
 });
 
 test("the photo is sepia in the lightbox, the flip charts are not", async ({ page }) => {
@@ -136,6 +172,16 @@ test("reduced motion opens without animation", async ({ page }) => {
 test("Back closes the lightbox and stays on the page", async ({ page }) => {
   await page.goto("/");
   await open(page, 2);
+  await page.goBack();
+  await expect(lightbox(page)).toHaveCount(0);
+  await expect(page).toHaveURL(/\/veranstaltungen\/$/);
+});
+
+test("Back during the opening animation closes the lightbox", async ({ page }) => {
+  await page.goto("/");
+  await page.goto("/veranstaltungen/");
+  await links(page).nth(1).click();
+  await page.waitForFunction(() => history.state?.gallery);
   await page.goBack();
   await expect(lightbox(page)).toHaveCount(0);
   await expect(page).toHaveURL(/\/veranstaltungen\/$/);

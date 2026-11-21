@@ -49,6 +49,10 @@ const pictures = await Promise.all(items.map(async (item) => {
   import PhotoSwipeLightbox from "photoswipe/lightbox";
   import "photoswipe/style.css";
 
+  // Height kept free below a picture with a caption: two lines of caption bar.
+  const CAPTION_SPACE = 72;
+  const captionOf = (link?: HTMLElement) => link?.closest("figure")?.querySelector("figcaption")?.textContent ?? "";
+
   for (const gallery of document.querySelectorAll<HTMLElement>("[data-gallery]")) {
     const labels = gallery.dataset;
     const lightbox = new PhotoSwipeLightbox({
@@ -62,6 +66,8 @@ const pictures = await Promise.all(items.map(async (item) => {
       arrowPrevTitle: labels.prev,
       arrowNextTitle: labels.next,
       errorMsg: labels.error,
+      // The caption sits below the picture, not on it. Fit and pan keep this space free.
+      paddingFn: (_viewport, item) => ({ top: 0, left: 0, right: 0, bottom: captionOf(item.element) ? CAPTION_SPACE : 0 }),
       // PhotoSwipe itself turns off its animations under prefers-reduced-motion.
     });
     // The caption of the picture in view, from its figcaption. Hidden when it has none.
@@ -71,8 +77,7 @@ const pictures = await Promise.all(items.map(async (item) => {
         appendTo: "root",
         onInit: (el, pswp) => {
           pswp.on("change", () => {
-            const link = pswp.currSlide?.data.element;
-            const text = link?.closest("figure")?.querySelector("figcaption")?.textContent ?? "";
+            const text = captionOf(pswp.currSlide?.data.element);
             el.textContent = text;
             el.hidden = !text;
           });
@@ -82,6 +87,18 @@ const pictures = await Promise.all(items.map(async (item) => {
     // The photo stays sepia, as in the grid. Each slide has its own container.
     lightbox.on("slideInit", ({ slide }) => {
       slide.container.classList.toggle("sepia", slide.data.element?.dataset.kind === "photo");
+    });
+    // Tab and Shift+Tab cycle over the visible buttons. PhotoSwipe alone lets the focus slip out for a moment.
+    lightbox.on("keydown", (event) => {
+      const key = event.originalEvent;
+      if (key.key !== "Tab" || !lightbox.pswp?.element) return;
+      const buttons = [...lightbox.pswp.element.querySelectorAll("button")].filter((b) => b.getClientRects().length > 0);
+      if (buttons.length === 0) return;
+      const i = buttons.indexOf(document.activeElement as HTMLButtonElement);
+      const next = key.shiftKey ? (i <= 0 ? buttons.length - 1 : i - 1) : (i + 1) % buttons.length;
+      buttons[next].focus();
+      key.preventDefault();
+      event.preventDefault();
     });
     // Back closes the lightbox: phones expect that. Opening adds one history entry.
     // A close by Esc, button or swipe takes the entry away again, so the next Back leaves the page.
@@ -93,7 +110,10 @@ const pictures = await Promise.all(items.map(async (item) => {
     addEventListener("popstate", () => {
       if (!entry) return;
       entry = false;
-      lightbox.pswp?.close();
+      const pswp = lightbox.pswp;
+      // During the opening animation close() does nothing. Close when it ends.
+      if (pswp?.opener.isOpen) pswp.close();
+      else pswp?.on("openingAnimationEnd", () => pswp.close());
     });
     lightbox.on("close", () => {
       if (!entry) return;
@@ -135,4 +155,6 @@ const pictures = await Promise.all(items.map(async (item) => {
     background: rgb(17 17 17 / 0.75);
   }
   .pswp__caption[hidden] { display: none; }
+  /* Swipe and pinch that start on the caption reach the picture below. */
+  .pswp--ui-visible .pswp__caption { pointer-events: none; }
 </style>

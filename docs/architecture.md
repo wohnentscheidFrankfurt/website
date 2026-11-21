@@ -56,9 +56,11 @@
   Without JavaScript the link opens that image.
 - The lightbox is PhotoSwipe (MIT, no dependencies). Vite bundles it; its core loads on the first click.
   Swipe, pinch and double tap zoom, swipe down closes. Arrow buttons only with a mouse, arrow keys always.
-  The caption comes from the `figcaption`. Labels and the error text come from `ui.ts`.
-  PhotoSwipe turns off its own animations under reduced motion.
-  Opening adds one history entry, so Back closes the lightbox. Any other close takes the entry away again.
+  The caption comes from the `figcaption`. It sits below the picture: fit and pan keep 72 px free for it.
+  Touches on it reach the picture. Labels and the error text come from `ui.ts`.
+  PhotoSwipe turns off its own animations under reduced motion. Tab and Shift+Tab cycle over the visible buttons.
+  Opening adds one history entry, so Back closes the lightbox, also during the opening animation.
+  Any other close takes the entry away again.
 - "Upcoming" and "past" use the Berlin day of the build (`src/lib/events.ts`). An event moves to the review only
   with the next deploy after its day.
 - The start page shows the flyer of the first upcoming event with a `flyer` (`src/components/Flyer.astro`).
@@ -315,7 +317,7 @@ Projects: `desktop-chrome` and `chrome-390` use the system Chrome, `webkit-iphon
 - `tests/events.spec.mjs`: events page, date-independent, also the English page (headings, 12 h times, body,
   callout, captions).
 - `tests/gallery.spec.mjs`: the lightbox on the kick-off: opens the clicked picture, keys and buttons, Esc, focus
-  back, focus trap, caption, sepia, colors, labels in both languages, error text, animation and reduced motion, Back,
+  back, focus trap both ways, caption (place, touches), sepia, colors, labels in both languages, error text, animation and reduced motion, Back,
   without JavaScript.
 - `tests/join.spec.mjs`: "Mitmachen" (texts, mail link, menu item, jump below the header) and the band
   "Bleib informiert" (place, texts, mail subject and body, Signal link, QR code unscaled, columns, focus rings).
