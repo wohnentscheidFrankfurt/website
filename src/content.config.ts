@@ -27,6 +27,7 @@ const events = defineCollection({
         title: z.string(),
         subtitle: z.string().optional(),
         address: z.string().optional(),
+        image: image().optional(),
         imageAlt: z.string(),
         callout: z.string().optional(),
         review: z.string().optional(),

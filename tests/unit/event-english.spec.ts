@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { englishProblems, flyerFor, englishBody, localized, shareFileName } from "../../src/lib/event-english.ts";
+import { englishProblems, flyerFor, imageFor, englishBody, localized, shareFileName } from "../../src/lib/event-english.ts";
 
 const en = { title: "T", imageAlt: "A" };
 const base = { en };
@@ -61,6 +61,21 @@ test("flyerFor: English without en.flyer uses the German image and the English a
 test("flyerFor: no flyer gives undefined", () => {
   expect(flyerFor({ en: {} }, "de")).toBeUndefined();
   expect(flyerFor({ en: {} }, "en")).toBeUndefined();
+});
+
+test("imageFor: German uses image and imageAlt", () => {
+  const d = { image: "de.png", imageAlt: "de", en: { image: "en.png", imageAlt: "en" } };
+  expect(imageFor(d, "de")).toEqual({ src: "de.png", alt: "de" });
+});
+
+test("imageFor: English uses en.image", () => {
+  const d = { image: "de.png", imageAlt: "de", en: { image: "en.png", imageAlt: "en" } };
+  expect(imageFor(d, "en")).toEqual({ src: "en.png", alt: "en" });
+});
+
+test("imageFor: English without en.image uses the German image and the English alt", () => {
+  const d = { image: "de.png", imageAlt: "de", en: { imageAlt: "en" } };
+  expect(imageFor(d, "en")).toEqual({ src: "de.png", alt: "en" });
 });
 
 test("englishBody splits at blank lines and trims", () => {

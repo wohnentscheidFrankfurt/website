@@ -5,6 +5,7 @@ export interface EnglishFields {
   title: string;
   subtitle?: string;
   address?: string;
+  image?: unknown;
   imageAlt: string;
   callout?: string;
   review?: string;
@@ -46,6 +47,15 @@ export function flyerFor<I>(
   if (data.flyer === undefined) return undefined;
   if (lang === "de") return { src: data.flyer, alt: data.flyerAlt ?? "" };
   return { src: data.en.flyer ?? data.flyer, alt: data.en.flyerAlt ?? "" };
+}
+
+/** Main image and alt text for a language. English falls back to the German image. */
+export function imageFor<I>(
+  data: { image: I; imageAlt: string; en: { image?: I; imageAlt: string } },
+  lang: Lang,
+): { src: I; alt: string } {
+  if (lang === "de") return { src: data.image, alt: data.imageAlt };
+  return { src: data.en.image ?? data.image, alt: data.en.imageAlt };
 }
 
 /** Name of the shared and saved flyer file. "-en" only when the English page shows its own English image. */

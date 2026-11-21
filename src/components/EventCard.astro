@@ -2,12 +2,12 @@
 import { Picture, getImage } from "astro:assets";
 import { render, type CollectionEntry } from "astro:content";
 import { berlinDay, formatDateBar, formatTimeLine } from "../lib/events";
-import { englishBody, localized } from "../lib/event-english";
+import { englishBody, imageFor, localized } from "../lib/event-english";
 import { route, type Lang } from "../i18n/routes";
 
 // Variants: "upcoming" and "past" on /veranstaltungen/ (each article is an anchor, id = event id).
 // "compact" on the start page: one row per event, the whole card links to that anchor.
-// Its thumbnail has an empty alt: the title names the link, the events page shows the drawing with its text.
+// Its thumbnail has an empty alt: the title names the link, the events page shows the picture with its text.
 interface Props {
   event: CollectionEntry<"events">;
   variant: "upcoming" | "past" | "compact";
@@ -16,6 +16,8 @@ interface Props {
 const { event, variant, lang } = Astro.props;
 const d = event.data;
 const text = localized(d, lang);
+// The square share picture. English shows en.image, else the German one.
+const picture = imageFor(d, lang);
 // German: the Markdown body. English: the paragraphs of en.body. A German body needs an English one.
 if (lang === "en" && event.body?.trim() && !d.en.body?.trim()) {
   throw new Error(`Event ${event.id} has a German body but no en.body`);
@@ -38,7 +40,7 @@ const gallery = await Promise.all(
     <p class="bar" id={`${event.id}-date`}>{formatDateBar(d.start, lang)}</p>
     <a class="card" href={`${events}#${event.id}`} aria-labelledby={`${event.id}-title ${event.id}-date`}>
       <span class="thumb">
-        <Picture src={d.image} formats={["avif", "webp"]} fallbackFormat="webp" widths={[240, 480, 720]}
+        <Picture src={picture.src} formats={["avif", "webp"]} fallbackFormat="webp" widths={[240, 480, 720]}
           sizes="(min-width: 600px) 225px, 180px" alt="" loading="lazy" />
       </span>
       <div class="text">
@@ -56,10 +58,10 @@ const gallery = await Promise.all(
 <article id={event.id} data-event={event.id} data-day={berlinDay(d.start)} class:list={["event", variant]}>
   <p class="bar">{formatDateBar(d.start, lang)}</p>
   <div class="card">
-    <div class="drawing">
-      <Picture src={d.image} formats={["avif", "webp"]} fallbackFormat="webp" widths={[480, 960, 1440]}
+    <div class="picture">
+      <Picture src={picture.src} formats={["avif", "webp"]} fallbackFormat="webp" widths={[480, 960, 1440]}
         sizes="(min-width: 720px) 45vw, 100vw"
-        alt={text.imageAlt} loading="lazy" />
+        alt={picture.alt} loading="lazy" />
     </div>
     <div class="text">
       <h3>{text.title}</h3>
@@ -111,7 +113,7 @@ const gallery = await Promise.all(
     text-transform: uppercase; letter-spacing: 0.02em;
   }
   .card { display: grid; gap: 16px; padding: 16px 0; }
-  .drawing :global(img) { display: block; width: 100%; height: auto; }
+  .picture :global(img) { display: block; width: 100%; height: auto; }
   h3 {
     margin: 0; font-family: var(--slab); font-stretch: var(--wide); line-height: 1.1; font-weight: 700;
     font-size: clamp(1.75rem, 4vw, 2.25rem);

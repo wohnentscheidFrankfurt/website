@@ -116,6 +116,34 @@ test("all event images have German alt texts", async ({ page }) => {
   for (const alt of alts) expect(alt?.trim().length).toBeGreaterThan(0);
 });
 
+// The main image of each card is a square share picture, at least 1440 px wide.
+// Astro does not upscale: a smaller original has no 1440w entry.
+for (const path of ["/veranstaltungen/", "/en/events/"]) test(`card pictures are square and large enough on ${path}`, async ({ page }) => {
+  await page.goto(path);
+  const pictures = await page.locator("article.event .picture img").evaluateAll((els) =>
+    els.map((e) => ({ w: e.getBoundingClientRect().width, h: e.getBoundingClientRect().height, srcset: e.srcset })));
+  expect(pictures.length).toBeGreaterThan(1);
+  for (const p of pictures) {
+    expect(p.w).toBeGreaterThan(0);
+    expect(Math.abs(p.w - p.h)).toBeLessThanOrEqual(1);
+    expect(p.srcset).toContain(" 1440w");
+  }
+});
+
+// Both events have an English picture (en.image). The English page shows it, not the German one.
+test("the English page shows the English pictures", async ({ page }) => {
+  const sources = async (path) => {
+    await page.goto(path);
+    return Promise.all([GET_TOGETHER, KICKOFF].map((id) => article(page, id).locator(".picture img").getAttribute("src")));
+  };
+  const german = await sources("/veranstaltungen/");
+  const english = await sources("/en/events/");
+  for (const [i, src] of english.entries()) {
+    expect(src).toMatch(/sharepic-en\./);
+    expect(german[i]).toMatch(/sharepic\./);
+  }
+});
+
 test.describe("English events page", () => {
   test("has English headings and the Get Together card", async ({ page }) => {
     await page.goto("/en/events/");

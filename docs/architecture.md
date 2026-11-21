@@ -136,9 +136,9 @@ German is the main language. English is a second version under `/en/`. No Astro 
 - Anchors: German `mitmachen` and `bleib-informiert`, English `get-involved` and `stay-informed` (`ANCHORS` in
   `ui.ts`). Scripts and CSS select the band by `[data-band]`, never by id.
 - Events: every event has an `en:` block (how: `add-event.md`). It has the same fields as the German text, plus
-  `body` (plain paragraphs split at blank lines), `flyer` and `flyerAlt`. The English address falls back to the
+  `body` (plain paragraphs split at blank lines), `image`, `flyer` and `flyerAlt`. The English address falls back to the
   German one. The English gallery has only `alt` and `caption`: the images come from the German gallery by index.
-  The English flyer falls back to the German image. The build throws when an event has a German body but no `en.body`.
+  The English picture and flyer fall back to the German image. The build throws when an event has a German body but no `en.body`.
 - Countdown: the labels come from `ui` through `data-` attributes. One script serves both languages.
 - Times: German 24 h ("14:00 Uhr"). English 12 h, lower case: "2 pm", "5:30 pm", "12 pm" (noon), "12 am" (midnight).
   English dates in British order: "Sat 28 November 2026".
@@ -163,7 +163,8 @@ Every rule with `--slab` sets a width:
 - The callout's separators "|" get extra air. Screen readers skip them.
 
 The event rows on the start page are white cards with a soft shadow; their titles are Mulish, as in the b-side list.
-Drawings sit on white without blend mode.
+The hero drawing sits on white without blend mode.
+Each event card shows a square share picture (rules: `add-event.md`). On the start page it is the thumbnail.
 
 Header: like b-side, only the black heart links home (34 px in a 48 px target). The link name is
 "Wohnentscheid Frankfurt – Startseite". The name itself stands on the start page, in the red logo.
@@ -224,7 +225,8 @@ We leave it out: the band "Bleib informiert" sits right above, and the bar would
 The column "Andere Plattformen" links Instagram and GitHub (the account `wohnentscheidFrankfurt`), each with its
 icon in front of the name, like b-side. Only the name is underlined.
 All links are plain, nothing loads from outside. "Schreib uns" in the column "Mitmachen" jumps to
-`/#mitmachen`. `wurzel-band.svg` stays in `src/assets/drawings/`, unused.
+`/#mitmachen`. `wurzel-band.svg`, `dondorf-druckerei.svg` and `villa-gruendergeist.svg` stay in
+`src/assets/drawings/`, unused.
 
 ## API
 

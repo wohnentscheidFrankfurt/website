@@ -1,11 +1,17 @@
 # Add an event
 
 1. Copy an event file in `src/content/events/`. Name it `YYYY-MM-DD-slug.md`.
-2. Set the fields: `title`, `start`, `place`, `imageAlt` (describes the drawing).
+2. Set the fields: `title`, `start`, `place`, `imageAlt` (repeats the full text of the picture).
    Optional: `subtitle`, `end`, `doors`, `address`, `callout`.
    `callout` is one line. It shows on the events page while the event is upcoming.
    `start`, `end` and `doors` need the offset: `+01:00` in winter, `+02:00` in summer. Without it the time is read as UTC.
-3. Put the drawing in `src/assets/drawings/`. White background, 3:2, SVG or PNG. Point `image` to it.
+3. Put the share picture in `src/assets/events/<file-name>/sharepic.jpg`. Point `image` to it.
+   The picture is square, 2160 × 2160 px (at least 1440), sRGB, no transparency, no SVG.
+   Save it as JPEG, quality about 90: a PNG of this size weighs 4 MB in Git. The tests check square and size.
+   Title and date must still read at 120 px, the size of the start page thumbnail: one big motif, few big words.
+   Keep about 5 % free of text at the edges. No white print margin.
+   Text in the picture comes in German and English (step 7). The English one uses British dates and times:
+   "Sat 3 October", "28 NOV", "4 pm".
 4. Write the German text below the fields.
 5. After the event, add the optional fields `review` (text) and `gallery` (`kind: photo` or `flipchart`, `src`, `alt`,
    `caption`). Photos go in `src/assets/events/<file-name>/`.
@@ -15,6 +21,7 @@
    The sticker on the flyer shares or saves this image. Nothing to do for it.
 7. Add the `en:` block. It is required.
    `title` and `imageAlt` are always needed.
+   `en.image` is optional: the English picture, `sharepic-en.jpg`. Without it the English page shows the German one.
    `subtitle`, `address` and `callout` are optional. Without `en.address` the English page shows `address`.
    `en.callout` is needed when `callout` is set. `en.review` is needed when `review` is set.
    `en.gallery` has one entry (`alt`, optional `caption`) per `gallery` entry, in the same order.
@@ -26,6 +33,6 @@
 8. Run `npm run build && npm test`, then `./deploy.sh`.
 
 The start page shows the flyer of the first upcoming event that has one. A countdown sits above it. The flyer links
-to the event. Without such a flyer the start page lists the next three upcoming events in short rows: date, drawing,
+to the event. Without such a flyer the start page lists the next three upcoming events in short rows: date, picture,
 title, subtitle, time, place. Without upcoming events it says "Neue Termine folgen bald."
 The event moves to the review only with the first deploy after its day.
