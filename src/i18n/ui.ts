@@ -45,6 +45,8 @@ export interface Ui {
     running: string;
   };
   flyer: { share: string; save: string; shareWord: string; saveWord: string };
+  // Labels of the lightbox buttons and its error text.
+  gallery: { close: string; zoom: string; prev: string; next: string; error: string };
   join: { title: string; text: string; button: string; mailSubject: string };
   stay: {
     title: string;
@@ -129,6 +131,10 @@ const de: Ui = {
     running: "Läuft gerade",
   },
   flyer: { share: "Flyer teilen", save: "Flyer speichern", shareWord: "Teilen", saveWord: "Sichern" },
+  gallery: {
+    close: "Schließen", zoom: "Zoomen", prev: "Vorheriges Bild", next: "Nächstes Bild",
+    error: "Das Bild ließ sich nicht laden.",
+  },
   join: {
     title: "Mitmachen",
     text: "Du willst aktiv werden, weißt aber nicht genau, wie Du Dich einbringen kannst? Schreib uns gerne eine Mail, wir nehmen dann Kontakt zu Dir auf :)!",
@@ -218,6 +224,10 @@ const en: Ui = {
     running: "Happening now",
   },
   flyer: { share: "Share flyer", save: "Save flyer", shareWord: "Share", saveWord: "Save" },
+  gallery: {
+    close: "Close", zoom: "Zoom", prev: "Previous picture", next: "Next picture",
+    error: "The picture could not be loaded.",
+  },
   join: {
     title: "Get involved",
     text: "You want to get active, but you are not sure how you can help? Write to us by email, and we will contact you :)!",
