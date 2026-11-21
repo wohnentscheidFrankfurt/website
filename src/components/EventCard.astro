@@ -1,9 +1,10 @@
 ---
-import { Picture, getImage } from "astro:assets";
+import { Picture } from "astro:assets";
 import { render, type CollectionEntry } from "astro:content";
 import { berlinDay, formatDateBar, formatTimeLine } from "../lib/events";
 import { englishBody, imageFor, localized } from "../lib/event-english";
 import { route, type Lang } from "../i18n/routes";
+import Gallery from "./Gallery.astro";
 
 // Variants: "upcoming" and "past" on /veranstaltungen/ (each article is an anchor, id = event id).
 // "compact" on the start page: one row per event, the whole card links to that anchor.
@@ -25,15 +26,11 @@ if (lang === "en" && event.body?.trim() && !d.en.body?.trim()) {
 const { Content } = variant === "upcoming" && lang === "de" ? await render(event) : { Content: null };
 const paragraphs = variant === "upcoming" && lang === "en" ? englishBody(d.en.body ?? "") : [];
 const events = route(lang, "events");
-const gallery = await Promise.all(
-  (variant === "past" ? (d.gallery ?? []) : []).map(async (item, i) => ({
-    ...item,
-    alt: text.gallery[i].alt,
-    caption: text.gallery[i].caption,
-    // Do not read item.src.src: it would copy the original JPEG with EXIF into dist.
-    large: item.kind === "photo" ? null : (await getImage({ src: item.src, format: "webp", width: 1600 })).src,
-  })),
-);
+const gallery = (variant === "past" ? (d.gallery ?? []) : []).map((item, i) => ({
+  ...item,
+  alt: text.gallery[i].alt,
+  caption: text.gallery[i].caption,
+}));
 ---
 {variant === "compact" ? (
   <article data-event={event.id} data-day={berlinDay(d.start)} class="event compact">
@@ -78,26 +75,7 @@ const gallery = await Promise.all(
         </p>
       )}
       {variant === "past" && text.review && <p class="review">{text.review}</p>}
-      {gallery.length > 0 && (
-        <ul class="gallery">
-          {gallery.map((item) => (
-            <li class={item.kind}>
-              <figure>
-                {item.kind === "flipchart" ? (
-                  <a href={item.large!}>
-                    <Picture src={item.src} formats={["avif", "webp"]} widths={[240, 480]}
-                      sizes="(min-width: 720px) 20vw, 45vw" alt={item.alt} loading="lazy" />
-                  </a>
-                ) : (
-                  <Picture src={item.src} formats={["avif", "webp"]} widths={[480, 960]}
-                    sizes="(min-width: 720px) 90vw, 100vw" alt={item.alt} loading="lazy" />
-                )}
-                {item.caption && <figcaption>{item.caption}</figcaption>}
-              </figure>
-            </li>
-          ))}
-        </ul>
-      )}
+      {gallery.length > 0 && <Gallery items={gallery} lang={lang} />}
     </div>
   </div>
 </article>
@@ -129,13 +107,6 @@ const gallery = await Promise.all(
   }
   /* More air around the separators "|" than a space gives. */
   .callout .sep { margin: 0 0.2em; }
-  .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 24px 0 0; padding: 0; list-style: none; }
-  .gallery li.photo { grid-column: 1 / -1; }
-  .gallery figure { margin: 0; }
-  .gallery :global(img) { display: block; width: 100%; height: auto; }
-  .photo :global(img) { filter: sepia(0.35); }
-  .gallery a { display: block; }
-  figcaption { margin-top: 4px; font-size: 0.9375rem; line-height: 1.3; }
   /* Compact rows on the start page, like the b-side list: a white card with a soft shadow,
      a square thumbnail on the left, the chevron on the right. */
   .compact .card {
@@ -165,6 +136,5 @@ const gallery = await Promise.all(
   @media (min-width: 720px) {
     .upcoming .bar, .past .bar { font-size: 1.5rem; }
     .upcoming .card, .past .card { grid-template-columns: 5fr 6fr; gap: 32px; padding: 24px 0; }
-    .gallery { grid-template-columns: repeat(4, 1fr); }
   }
 </style>

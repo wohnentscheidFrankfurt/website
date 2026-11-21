@@ -85,17 +85,21 @@ test("upcoming cards show the invitation, past cards the review", async ({ page 
   await expect(past.getByText("Zum Auftakt kamen viele Menschen")).toBeVisible();
 });
 
-test("kick-off gallery opens large images", async ({ page, request }) => {
+// Every picture links to its large image, at the size of the original. PhotoSwipe needs width and height.
+test("kick-off gallery links every picture to its large image", async ({ page, request }) => {
   await page.goto("/veranstaltungen/");
   const gallery = article(page, KICKOFF).locator(".gallery");
   await expect(gallery.locator("li.photo img")).toHaveCount(1);
   await expect(gallery.locator("li.flipchart img")).toHaveCount(4);
-  await expect(gallery.locator("li.photo a")).toHaveCount(0);
-  const links = gallery.locator("li.flipchart a");
-  await expect(links).toHaveCount(4);
-  for (const href of await links.evaluateAll((els) => els.map((e) => e.getAttribute("href")))) {
-    expect(href).toMatch(/\.webp$/);
-    expect((await request.get(href)).status()).toBe(200);
+  const links = await gallery.locator("li a").evaluateAll((els) => els.map((e) => ({
+    kind: e.closest("li").className, href: e.getAttribute("href"),
+    width: e.dataset.pswpWidth, height: e.dataset.pswpHeight,
+  })));
+  expect(links.map((l) => l.kind)).toEqual(["photo", "flipchart", "flipchart", "flipchart", "flipchart"]);
+  for (const link of links) {
+    expect(link.href).toMatch(/^\/_astro\/.*\.webp$/);
+    expect((await request.get(link.href)).status()).toBe(200);
+    expect([link.width, link.height]).toEqual(link.kind === "photo" ? ["2048", "1536"] : ["1536", "2048"]);
   }
 });
 
