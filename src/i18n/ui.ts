@@ -245,7 +245,7 @@ const en: Ui = {
     mailSubject: "Get involved",
   },
   mapTeaser: {
-    imageAlt: "Map of Frankfurt: share of the dwellings of ABG and Nassauische Heimstätte per quarter, in shades of red",
+    imageAlt: "Map of Frankfurt: share of the dwellings of ABG and Nassauische Heimstätte per district, in shades of red",
     creditBefore: "Background: © ",
     creditAfter: " / BKG, CC BY 4.0",
     text: "We've built a map to break down Frankfurt's districts for a different housing and climate policy. Feel free to take a look and gain some new perspectives!",

@@ -528,7 +528,7 @@ const TEASERS = {
       + "Feel free to take a look and gain some new perspectives!",
     button: "Open the map",
     credit: "Background: © basemap.de / BKG, CC BY 4.0",
-    alt: "Map of Frankfurt: share of the dwellings of ABG and Nassauische Heimstätte per quarter, in shades of red",
+    alt: "Map of Frankfurt: share of the dwellings of ABG and Nassauische Heimstätte per district, in shades of red",
     join: "get-involved",
     band: "#stay-informed",
   },
