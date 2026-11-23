@@ -22,12 +22,11 @@
 - Pages read the state from the virtual module `virtual:map` of the integration: `englishMap` (true when online)
   and `englishTeaser` (the English teaser image, else `null`). The English image is imported only while online:
   an image that is imported but never rendered reaches `dist/` as its original.
-- `MAP_REPO` points the build at another map repo. Use it to try the English map before it is online: a Git repo
+- `MAP_REPO` points the build at another map repo. Use it to try another state of the map: a Git repo
   with the two files of `output/online/` (built by `tests/browser/tools/build_online_maps.py` in the map repo) in
   `output/`, newer than its HEAD, and `interim/check_report.md`. Then `MAP_REPO=<that repo> npm run build && npm test`.
   `deploy.sh` refuses to run while `MAP_REPO` is set.
-- Before `ENGLISH_ONLINE` goes on, the user approves the sentence on the English map path in `/datenschutz/` and
-  `/en/privacy/`. `mapTeaser` in `ui.ts` is approved. Refresh `teaser-en.png` when the English map texts change.
+- Refresh `teaser-en.png` when the English map texts change.
 - In `astro dev` and `astro preview` there is no Caddy. A Vite proxy in `astro.config.mjs` forwards the tile requests
   to the BKG, with the browser's headers. It is for development only.
   `astro preview` serves `/sozialraum-frankfurt` without the slash. Live, Caddy's `file_server` redirects to
