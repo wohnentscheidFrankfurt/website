@@ -1,6 +1,7 @@
 // Checks of the start page. They do not depend on the day the site is built.
 import { readFileSync } from "node:fs";
 import { test, expect } from "@playwright/test";
+import { ENGLISH_MAP } from "./english-map.mjs";
 
 const DESKTOP = "desktop-chrome";
 const hero = (page) => page.locator("[data-hero]");
@@ -508,39 +509,66 @@ test.describe("English start page", () => {
   });
 });
 
-// The German start page promotes the map "Sozialraum Frankfurt". The map is German only, so /en/ has no teaser.
-const MAP = "/sozialraum-frankfurt/";
-const TEASER_TEXT = "Wir haben eine Karte gebaut, um die Gebiete Frankfurts für eine andere Wohn- und Klimapolitik "
-  + "aufzuschlüsseln. Schaut gerne rein, und gewinnt neue Perspektiven!";
+// The start page promotes the map "Sozialraum Frankfurt". The English start page does so only while the
+// English map is online (ENGLISH_MAP). The German start page always does.
+const TEASERS = {
+  "/": {
+    map: "/sozialraum-frankfurt/",
+    text: "Wir haben eine Karte gebaut, um die Gebiete Frankfurts für eine andere Wohn- und Klimapolitik "
+      + "aufzuschlüsseln. Schaut gerne rein, und gewinnt neue Perspektiven!",
+    button: "Zur Karte",
+    credit: "Hintergrund: © basemap.de / BKG, CC BY 4.0",
+    alt: "Karte von Frankfurt: Anteil der Wohnungen von ABG und Nassauischer Heimstätte je Stadtteil, in Rottönen",
+    join: "mitmachen",
+    band: "#bleib-informiert",
+  },
+  "/en/": {
+    map: "/en/sozialraum-frankfurt/",
+    text: "We built a map to analyse the areas of Frankfurt for a different housing and climate policy. "
+      + "Feel free to explore it, and gain new perspectives!",
+    button: "Open the map",
+    credit: "Background: © basemap.de / BKG, CC BY 4.0",
+    alt: "Map of Frankfurt: share of the dwellings of ABG and Nassauische Heimstätte per quarter, in shades of red",
+    join: "get-involved",
+    band: "#stay-informed",
+  },
+};
+const promoted = (home) => home === "/" || ENGLISH_MAP;
 
-test("the German start page promotes the map", async ({ page }) => {
-  await page.goto("/");
-  const teaser = page.locator("section.map-teaser");
-  await expect(teaser).toBeVisible();
-  await expect(teaser.getByRole("heading", { level: 2 })).toHaveText("Sozialraum Frankfurt");
-  await expect(teaser.getByText(TEASER_TEXT, { exact: true })).toBeVisible();
-  const button = teaser.getByRole("link", { name: "Zur Karte", exact: true });
-  await expect(button).toHaveAttribute("href", MAP);
-  await expect(teaser.locator(`a[href="${MAP}"] img`)).toBeVisible();
-  await expect(teaser.getByText("Hintergrund: © basemap.de / BKG, CC BY 4.0", { exact: true })).toBeVisible();
-  await expect(teaser.getByRole("link", { name: "basemap.de" })).toHaveAttribute("href", "https://basemap.de");
-  // Order: next events, then "Mitmachen", then the teaser as the last block of the stack, the last block of main.
-  const order = await page.evaluate(() => {
-    const teaser = document.querySelector("section.map-teaser");
-    return {
-      afterJoin: teaser.previousElementSibling?.id === "mitmachen",
-      last: !teaser.nextElementSibling && teaser.parentElement === document.querySelector("main").lastElementChild,
-    };
+for (const [home, spec] of Object.entries(TEASERS)) {
+  test(`the start page ${home} ${promoted(home) ? "promotes" : "does not promote"} the map`, async ({ page }) => {
+    await page.goto(home);
+    const teaser = page.locator("section.map-teaser");
+    if (!promoted(home)) {
+      await expect(teaser).toHaveCount(0);
+      await expect(page.locator('a[href*="sozialraum-frankfurt"]')).toHaveCount(0);
+      return;
+    }
+    await expect(teaser).toBeVisible();
+    await expect(teaser.getByRole("heading", { level: 2 })).toHaveText("Sozialraum Frankfurt");
+    await expect(teaser.getByText(spec.text, { exact: true })).toBeVisible();
+    const button = teaser.getByRole("link", { name: spec.button, exact: true });
+    await expect(button).toHaveAttribute("href", spec.map);
+    await expect(teaser.locator(`a[href="${spec.map}"] img`)).toBeVisible();
+    await expect(teaser.locator("img")).toHaveAttribute("alt", spec.alt);
+    await expect(teaser.getByText(spec.credit, { exact: true })).toBeVisible();
+    await expect(teaser.getByRole("link", { name: "basemap.de" })).toHaveAttribute("href", "https://basemap.de");
+    // Order: next events, then "Mitmachen", then the teaser as the last block of the stack, the last block of main.
+    const order = await page.evaluate((join) => {
+      const teaser = document.querySelector("section.map-teaser");
+      return {
+        afterJoin: teaser.previousElementSibling?.id === join,
+        last: !teaser.nextElementSibling && teaser.parentElement === document.querySelector("main").lastElementChild,
+      };
+    }, spec.join);
+    expect(order).toEqual({ afterJoin: true, last: true });
   });
-  expect(order).toEqual({ afterJoin: true, last: true });
-});
+}
 
 // The blocks of the start page below the flyer stand --space-l apart: clamp(96px, 12vw, 160px).
 // It also holds before the band.
-for (const [home, blocks] of [
-  ["/", ["[data-next]", "#mitmachen", "section.map-teaser", "#bleib-informiert"]],
-  ["/en/", ["[data-next]", "#get-involved", "#stay-informed"]],
-]) {
+for (const [home, spec] of Object.entries(TEASERS)) {
+  const blocks = ["[data-next]", `#${spec.join}`, ...(promoted(home) ? ["section.map-teaser"] : []), spec.band];
   test(`the blocks of ${home} stand --space-l apart`, async ({ page }) => {
     await page.goto(home);
     const { width, gaps } = await page.evaluate((sels) => {
@@ -551,9 +579,3 @@ for (const [home, blocks] of [
     for (const gap of gaps) expect(gap).toBeCloseTo(space, 0);
   });
 }
-
-test("the English start page has no map teaser", async ({ page }) => {
-  await page.goto("/en/");
-  await expect(page.locator(".map-teaser")).toHaveCount(0);
-  await expect(page.locator(`a[href="${MAP}"]`)).toHaveCount(0);
-});

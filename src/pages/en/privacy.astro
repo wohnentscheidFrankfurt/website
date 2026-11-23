@@ -1,6 +1,8 @@
 ---
 import Base from "../../layouts/Base.astro";
 import { ui } from "../../i18n/ui";
+// True when the English map is online. Then the map section names its path too.
+import { englishMap } from "virtual:map";
 
 const mail = "info@wohnentscheid-frankfurt.de";
 ---
@@ -41,7 +43,9 @@ const mail = "info@wohnentscheid-frankfurt.de";
 
     <h2>Map “Sozialraum Frankfurt”</h2>
     <p>
-      At wohnentscheid-frankfurt.de/sozialraum-frankfurt/ we show a map. The background map comes from basemap.de.
+      At wohnentscheid-frankfurt.de/sozialraum-frankfurt/ we show a map.{englishMap &&
+      " The English version is at wohnentscheid-frankfurt.de/en/sozialraum-frankfurt/."} The background map comes from
+      basemap.de.
       This is a service of the Federal Agency for Cartography and Geodesy (Bundesamt für Kartographie und Geodäsie,
       BKG). Your browser loads the tiles of the background map from our server. Our server fetches them from the
       BKG. The BKG only sees our server. It gets neither your IP address nor details about your browser. We do not

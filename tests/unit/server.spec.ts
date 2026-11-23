@@ -110,3 +110,14 @@ test("deploy.sh names the map commit in the deploy tag", () => {
   expect(d).toContain("git -C ../sozialraum-frankfurt rev-parse --short HEAD");
   expect(d).toMatch(/git tag -a "\$tag" -m "[^"]*\$map_commit[^"]*"/);
 });
+
+// MAP_REPO points the build at another map repo (docs/architecture.md, Build). A deploy must use the sibling repo:
+// its commit goes into the tag, and a test repo could put an unproofread English map online.
+// Static check: running deploy.sh would upload.
+test("deploy.sh refuses MAP_REPO before it builds anything", () => {
+  const d = read("deploy.sh");
+  const guard = d.indexOf('if [[ -n "${MAP_REPO:-}" ]]; then');
+  expect(guard).toBeGreaterThan(-1);
+  expect(guard).toBeLessThan(d.indexOf("npm ci"));
+  expect(d.slice(guard, d.indexOf("fi", guard))).toContain("exit 1");
+});

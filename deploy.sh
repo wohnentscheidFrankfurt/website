@@ -11,6 +11,12 @@ API_TARGET=wohnentscheid-deploy-api:/
 TARGET=wohnentscheid-deploy:/
 URL=https://wohnentscheid-frankfurt.de
 
+# MAP_REPO would build from another map repo, but the tag names the commit of ../sozialraum-frankfurt.
+if [[ -n "${MAP_REPO:-}" ]]; then
+  echo "MAP_REPO is set. Unset it: a deploy builds the map of ../sozialraum-frankfurt." >&2
+  exit 1
+fi
+
 if [[ -n "$(git status --porcelain)" ]]; then
   echo "Working tree is not clean. Commit first, so the tag matches what goes online." >&2
   exit 1

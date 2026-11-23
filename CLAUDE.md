@@ -42,16 +42,17 @@ live only in the archive clone `../website-archiv` (`docs/architecture.md`, Depl
   `src/i18n/`: route table (`routes.ts`) and dictionary (`ui.ts`).
   `src/layouts/Base.astro`: frame of every page (language, meta tags, base styles).
 - `integrations/`: Astro integrations. `map.mjs` checks the map repo `../sozialraum-frankfurt` and copies its HTML
-  to `dist/sozialraum-frankfurt/` (the map page, German only, not in `src/pages/`).
+  to `dist/sozialraum-frankfurt/`, the English map to `dist/en/sozialraum-frankfurt/` once the map repo puts it
+  online (the map pages, not in `src/pages/`). Pages read that state from `virtual:map`.
 - `src/components/`: header, menu, heart, footer (three columns), event card, flyer with countdown and share sticker,
   "Mitmachen" (`Join`), language switch (`LangSwitch`), band "Bleib informiert" above the footer (`StayInformed`),
-  map teaser on the German start page (`MapTeaser`), the Instagram mark of footer and phone menu (`InstagramIcon`),
+  map teaser on the start page (`MapTeaser`; English only while the English map is online), the Instagram mark of footer and phone menu (`InstagramIcon`),
   the event gallery with its PhotoSwipe lightbox (`Gallery`).
 - `src/content/events/`: one Markdown file per event. `src/lib/events.ts`: date logic.
 - `src/lib/nav.ts`: menu items. The desktop bar and the phone menu both read them. `src/lib/social.ts`: our
   Instagram and GitHub addresses. `src/lib/glide.ts`: the glide on links to the current page (curve and duration
   at the top).
-- `src/assets/`: brand, drawings, event photos and share pictures, the map teaser image (`map/`). Raster originals are re-encoded at build and never reach `dist/` (except the Signal QR codes). SVGs are copied as they are; a check scans them.
+- `src/assets/`: brand, drawings, event photos and share pictures, the map teaser images (`map/`). Raster originals are re-encoded at build and never reach `dist/` (except the Signal QR codes). SVGs are copied as they are; a check scans them.
 - `api/`: Node service for the newsletter sign-up (`api/src/`, own `package.json`). `server/`: Caddyfile, systemd
   units and `set-secrets.sh`, the source of the live files.
 - `tests/`: Playwright checks (desktop Chrome, Chrome at 390 px with touch, iPhone in WebKit). `tests/api/`: `node:test` checks of the API.

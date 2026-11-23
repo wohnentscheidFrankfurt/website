@@ -1,5 +1,6 @@
 // Checks of "Mitmachen" on the start page and the band "Bleib informiert" above the footer on every page.
 import { test, expect } from "@playwright/test";
+import { ENGLISH_MAP } from "./english-map.mjs";
 
 const DESKTOP = "desktop-chrome";
 const ADDRESS = "info@wohnentscheid-frankfurt.de";
@@ -28,8 +29,8 @@ async function expectBelowHeader(page) {
 test.describe("Mitmachen", () => {
   // Directly after the flyer (or the event rows). On "/" the map teaser follows as the last block.
   // The blocks sit in one stack, the last element of main.
-  // "/en/" has no teaser, so there "Get involved" is the last block.
-  for (const [home, last] of [["/", false], ["/en/", true]]) {
+  // "/en/" has the teaser only while the English map is online. Without it "Get involved" is the last block.
+  for (const [home, last] of [["/", false], ["/en/", !ENGLISH_MAP]]) {
     test(`sits on ${home} directly after the next events${last ? ", as the last block" : ""}`, async ({ page }) => {
       await page.goto(home);
       const section = page.locator(`main section#${home === "/" ? "mitmachen" : "get-involved"}`);
