@@ -524,7 +524,7 @@ const TEASERS = {
   },
   "/en/": {
     map: "/en/sozialraum-frankfurt/",
-    text: "We've created a map to break down Frankfurt's districts for a different housing and climate policy. "
+    text: "We've built a map to break down Frankfurt's districts for a different housing and climate policy. "
       + "Feel free to take a look and gain some new perspectives!",
     button: "Open the map",
     credit: "Background: © basemap.de / BKG, CC BY 4.0",
