@@ -1,5 +1,6 @@
 // Checks of the imprint and the privacy page. The texts are legal texts: the checks pin them word for word.
 import { test, expect } from "@playwright/test";
+import { ENGLISH_MAP } from "./english-map.mjs";
 
 const ADDRESS = "info@wohnentscheid-frankfurt.de";
 const POSTAL = ["Sven Nagel", "Ostendstraße 9", "60314 Frankfurt am Main"];
@@ -42,8 +43,9 @@ const PAGES = {
       "Wir brauchen das Protokoll, um Fehler und Angriffe zu erkennen. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f " +
         "DSGVO. Unser berechtigtes Interesse ist ein sicherer Betrieb. Nach spätestens sieben Tagen löscht der " +
         "Server die Einträge.",
-      "Unter wohnentscheid-frankfurt.de/sozialraum-frankfurt/ zeigen wir eine Karte. Die " +
-        "Hintergrundkarte kommt von basemap.de. Das ist ein Dienst des Bundesamts für Kartographie " +
+      "Unter wohnentscheid-frankfurt.de/sozialraum-frankfurt/ zeigen wir eine Karte. " +
+        (ENGLISH_MAP ? "Auf Englisch steht sie unter wohnentscheid-frankfurt.de/en/sozialraum-frankfurt/. " : "") +
+        "Die Hintergrundkarte kommt von basemap.de. Das ist ein Dienst des Bundesamts für Kartographie " +
         "und Geodäsie (BKG). Dein Browser lädt die Kacheln der Hintergrundkarte von unserem Server. " +
         "Unser Server holt sie beim BKG ab. Das BKG sieht dabei nur unseren Server. Es bekommt weder " +
         "deine IP-Adresse noch Angaben über deinen Browser. Die Abrufe der Kacheln schreiben wir " +
@@ -118,7 +120,9 @@ const PAGES = {
         "save your browser or the page you came from.",
       "We need the log to find errors and attacks. The legal basis is Art. 6(1)(f) GDPR. Our legitimate interest " +
         "is a safe operation. The server deletes the entries after seven days at the latest.",
-      "At wohnentscheid-frankfurt.de/sozialraum-frankfurt/ we show a map. The background map comes " +
+      "At wohnentscheid-frankfurt.de/sozialraum-frankfurt/ we show a map. " +
+        (ENGLISH_MAP ? "The English version is at wohnentscheid-frankfurt.de/en/sozialraum-frankfurt/. " : "") +
+        "The background map comes " +
         "from basemap.de. This is a service of the Federal Agency for Cartography and Geodesy " +
         "(Bundesamt für Kartographie und Geodäsie, BKG). Your browser loads the tiles of the " +
         "background map from our server. Our server fetches them from the BKG. The BKG only sees our " +

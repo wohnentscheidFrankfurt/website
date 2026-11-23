@@ -2,7 +2,7 @@
 // Start page like the b-side start: the red logo half on a big drawing, the intro lower right beside it.
 // Below it the flyer of the next event with a countdown. Without a flyer the next events as compact cards.
 // Then "Mitmachen", the target of the menu item.
-// Then, on the German page only, the teaser of the map "Sozialraum Frankfurt".
+// Then the teaser of the map "Sozialraum Frankfurt". The English page shows it only while the English map is online.
 // The blocks below the hero stand --space-l apart, and --space-l before the band (the stack and Base's space="l").
 import { Picture } from "astro:assets";
 import { getCollection } from "astro:content";
@@ -11,6 +11,8 @@ import EventCard from "../components/EventCard.astro";
 import Flyer from "../components/Flyer.astro";
 import Join from "../components/Join.astro";
 import MapTeaser from "../components/MapTeaser.astro";
+// True when the map repo puts the English map online (integrations/map.mjs).
+import { englishMap } from "virtual:map";
 import { berlinDay, splitEvents } from "../lib/events";
 import { flyerFor } from "../lib/event-english";
 import { route, type Lang } from "../i18n/routes";
@@ -75,7 +77,7 @@ const next = upcoming.slice(0, 3);
     </section>
   )}
   <Join lang={lang} />
-  {lang === "de" && <MapTeaser />}
+  {(lang === "de" || englishMap) && <MapTeaser lang={lang} />}
   </div>
 </Base>
 

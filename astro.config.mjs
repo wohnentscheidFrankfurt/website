@@ -6,7 +6,9 @@ export default defineConfig({
   site: "https://wohnentscheid-frankfurt.de",
   output: "static",
   image: { dangerouslyProcessSVG: true }, // rasterise the SVG drawings at build time
-  integrations: [mapIntegration()], // checks ../sozialraum-frankfurt and copies the map to dist/sozialraum-frankfurt/
+  // Checks ../sozialraum-frankfurt and copies the map to dist/sozialraum-frankfurt/ (English: dist/en/…, once online).
+  // MAP_REPO points the build at another map repo, for example a copy with the English map online.
+  integrations: [mapIntegration({ repo: process.env.MAP_REPO })],
   devToolbar: { enabled: false },
   // `astro dev` and `astro preview` forward /api to the sign-up service (the live Caddy does the same).
   vite: {

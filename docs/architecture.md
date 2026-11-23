@@ -6,13 +6,24 @@
   The site has no CMS. The only server code is the sign-up API in `api/` (see API).
   One `vite.server.proxy` in `astro.config.mjs` forwards `/api` for `astro dev` and `astro preview`, as Caddy
   does live. It keeps the `Origin` header. `API_URL` picks the API's address (default `127.0.0.1:8787`).
-- The map "Sozialraum Frankfurt" lives in the sibling repo `../sozialraum-frankfurt`. It is a single HTML file with
-  its own scripts and data, built there. It stays out of Astro: Astro would bundle and rewrite it.
+- The map "Sozialraum Frankfurt" lives in the sibling repo `../sozialraum-frankfurt`. It is one HTML file per
+  language with its own scripts and data, built there. It stays out of Astro: Astro would bundle and rewrite it.
   The integration `integrations/map.mjs` (`checkMap`, `mapIntegration`, registered in `astro.config.mjs`) runs
   after the build and copies `output/sozialraum-frankfurt.html` unchanged to `dist/sozialraum-frankfurt/index.html`.
   The build fails in five cases: the file is missing, the check report has a `| WARN` or `| FAIL` line, the map
   repo is dirty, the file is older than the repo's HEAD commit, or it contains `/Users/`.
-  The map is not in the menu and not in the route table. It has German text only, so no English twin.
+  The map is not in the menu and not in the route table. Its language switch is its own, not `LangSwitch`.
+- The English map `output/sozialraum-frankfurt.en.html` goes online when the map repo says so: `ENGLISH_ONLINE` in
+  its `pipeline/config.py`. Then the German map links it with `hreflang="en"`. The integration reads that link
+  (`englishOnline`). Only then it checks the English file by the same five rules and copies it to
+  `dist/en/sozialraum-frankfurt/index.html`. Why the link and not a setting here: one switch, in the repo that
+  decides about the proofreading. Turning it on needs a map build and a website deploy.
+- Pages read the state from the virtual module `virtual:map` of the integration: `englishMap` (true when online)
+  and `englishTeaser` (the English teaser image, else `null`). The English image is imported only while online:
+  an image that is imported but never rendered reaches `dist/` as its original.
+- `MAP_REPO` points the build at another map repo. Use it to try the English map before it is online: a Git repo
+  with the two files of `output/online/` (built by `tests/browser/tools/build_online_maps.py` in the map repo) in
+  `output/`, newer than its HEAD, and `interim/check_report.md`. Then `MAP_REPO=<that repo> npm run build && npm test`.
 - In `astro dev` and `astro preview` there is no Caddy. A Vite proxy in `astro.config.mjs` forwards the tile requests
   to the BKG, with the browser's headers. It is for development only.
   `astro preview` serves `/sozialraum-frankfurt` without the slash. Live, Caddy's `file_server` redirects to
@@ -103,11 +114,12 @@
   The QR codes `src/assets/brand/signal-qr-1x.png` and `-2x.png` encode the Signal link. A new link needs new ones.
   They were redrawn from Signal's export: module grid read from the finder patterns, 2 or 4 px per module,
   two-colour palette PNG of about 1 KB. They are served unscaled, so the modules stay sharp.
-- The German start page shows a teaser for the map (`src/components/MapTeaser.astro`) below "Mitmachen", as the
-  last block. It has no English twin, because the map is German only. It links to `/sozialraum-frankfurt/`.
-  The image `src/assets/map/teaser.png` is a screenshot of the map. To refresh it, run
-  `tests/browser/tools/teaser_image.mjs` in the map repo and copy the result to `src/assets/map/teaser.png`.
-  The tool needs network: it loads tiles from basemap.de.
+- The start page shows a teaser for the map (`src/components/MapTeaser.astro`) below "Mitmachen", as the
+  last block. It links to the map of its language. The English start page shows it only while the English map is
+  online. Its texts are in `ui.ts` (`mapTeaser`), the heading is the map's name in both languages.
+  The images `src/assets/map/teaser.png` and `teaser-en.png` are screenshots of the maps. To refresh one, run
+  `tests/browser/tools/teaser_image.mjs <map file> <png>` in the map repo and copy the result here. For the English
+  image take `output/online/sozialraum-frankfurt.en.html`. The tool needs network: it loads tiles from basemap.de.
 - Spacing: one scale with two steps in `src/styles/global.css`. The frame sets the space, not the block.
   - `--space-l: clamp(96px, 12vw, 160px)`: the start page. Its blocks below the hero stand this far apart
     (`.stack-l`), and it ends this far before the band (`Base` prop `space="l"`). Landing pages leave much air
@@ -126,6 +138,7 @@
   version is legally binding." Its link to the German page carries `hreflang="de"` and `lang="de"`.
   The checks pin both versions word for word. If the privacy text changes, change both.
 - The privacy page describes the server log, the mailbox, the sign-up form, the newsletter list, the map and the tile proxy.
+  While the English map is online, its map section names the English path too.
   If the server log, the mailbox, the API, the newsletter or the tile proxy changes, update the privacy page.
 
 ## Languages
@@ -335,7 +348,10 @@ Projects: `desktop-chrome` and `chrome-390` use the system Chrome, `webkit-iphon
   without JavaScript, hover and reduced motion. The countdown checks weight and width of its numbers,
   of "Läuft gerade" and of the date line. The red logo is the h1, red, and half on the drawing at five widths.
 - `tests/map.spec.mjs`: the map page is served, has no robots meta and loads nothing from other origins.
-  Tiles come from a `page.route` stub.
+  Tiles come from a `page.route` stub. Once online the same for the English map, plus the `hreflang` pair;
+  before, `/en/sozialraum-frankfurt/` is a 404.
+- Checks that depend on the English map read `ENGLISH_MAP` from `tests/english-map.mjs`: true when `dist/` holds the
+  English map. So `npm test` checks the state that was built. The teaser, "Mitmachen" and the privacy texts follow it.
 - `tests/unit/map.spec.ts`: the integration's checks. `tests/unit/tiles-proxy.spec.ts`: starts a real Caddy with
   `server/Caddyfile` against an echo server and checks what reaches upstream (needs Caddy: `brew install caddy`).
   The teaser, its place and the space between the start page blocks are checked in `tests/home.spec.mjs`,
@@ -344,7 +360,7 @@ Projects: `desktop-chrome` and `chrome-390` use the system Chrome, `webkit-iphon
 - `tests/glide.spec.mjs`: links to the current page glide (top on four pages, heart, "Mitmachen"): no reload, many
   positions in between. The anchor lands at its `scroll-margin-top`, also when content above grows. Back, reduced
   motion, stop by wheel, key or Back, a second click, the clicks left to the browser, focus, phone menu.
-- `tests/unit/`: date logic, menu items, glide logic, no EXIF in `dist/` and the server files in `server/`
+- `tests/unit/`: date logic, menu items, glide logic, no EXIF and no raster original in `dist/` and the server files in `server/`
   (Caddyfile, units, `deploy.sh`).
 - `tests/api/`: token, address check, rate limit, config, mail texts and the routes of the API (`node:test`,
   part of `npm test`).
@@ -377,6 +393,7 @@ Projects: `desktop-chrome` and `chrome-390` use the system Chrome, `webkit-iphon
   (`/api/en/signup`: `/en/error/`).
 - Tile proxy: the map shows background tiles from basemap.de (BKG). The privacy rule says the site loads nothing
   from other origins, so the browser asks `/sozialraum-frankfurt/kacheln/` and Caddy asks the BKG.
+  The English map asks the same path, so the rule serves both maps.
   The BKG then sees the server, never a visitor. Rules in `server/Caddyfile`:
   - Only GET and HEAD of `/<z>/<y>/<x>.png` (digits only) go upstream. Every other path and method answers 404.
   - The query is dropped. `header_up -*` removes every client header, also `If-None-Match` (an ETag could track a
@@ -432,6 +449,7 @@ Deploy tags stay on this Mac; `deploy.sh` does not push them.
 The history starts again on 16.11.2026, when the repo went public.
 Older tags live only in the archive clone `../website-archiv`; deploy them from there.
 Such a tag takes `/sozialraum-frankfurt/` off the server (`rsync --delete`), together with the teaser.
+A tag from before the English map takes `/en/sozialraum-frankfurt/` off the server.
 A tag from before the API rolls back the site only, and the API keeps running.
 The smoke check does not test SMTP.
 After the first deploy, sign up once with a test address of yours, end to end.

@@ -48,6 +48,9 @@ export interface Ui {
   // Labels of the lightbox buttons and its error text.
   gallery: { close: string; zoom: string; prev: string; next: string; error: string };
   join: { title: string; text: string; button: string; mailSubject: string };
+  // Teaser of the map "Sozialraum Frankfurt". The heading is the map's name in both languages.
+  // The credit is split around its link: before, "basemap.de", after.
+  mapTeaser: { imageAlt: string; creditBefore: string; creditAfter: string; text: string; button: string };
   stay: {
     title: string;
     mailTitle: string;
@@ -141,6 +144,13 @@ const de: Ui = {
     button: "Jetzt mitmachen",
     mailSubject: "Mitmachen",
   },
+  mapTeaser: {
+    imageAlt: "Karte von Frankfurt: Anteil der Wohnungen von ABG und Nassauischer Heimstätte je Stadtteil, in Rottönen",
+    creditBefore: "Hintergrund: © ",
+    creditAfter: " / BKG, CC BY 4.0",
+    text: "Wir haben eine Karte gebaut, um die Gebiete Frankfurts für eine andere Wohn- und Klimapolitik aufzuschlüsseln. Schaut gerne rein, und gewinnt neue Perspektiven!",
+    button: "Zur Karte",
+  },
   stay: {
     title: "Bleib informiert",
     mailTitle: "Per Mail",
@@ -233,6 +243,13 @@ const en: Ui = {
     text: "You want to get active, but you are not sure how you can help? Write to us by email, and we will contact you :)!",
     button: "Get involved now",
     mailSubject: "Get involved",
+  },
+  mapTeaser: {
+    imageAlt: "Map of Frankfurt: share of the dwellings of ABG and Nassauische Heimstätte per quarter, in shades of red",
+    creditBefore: "Background: © ",
+    creditAfter: " / BKG, CC BY 4.0",
+    text: "We built a map to analyse the areas of Frankfurt for a different housing and climate policy. Feel free to explore it, and gain new perspectives!",
+    button: "Open the map",
   },
   stay: {
     title: "Stay informed",

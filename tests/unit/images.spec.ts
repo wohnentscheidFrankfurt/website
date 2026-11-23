@@ -41,3 +41,13 @@ test("the Signal QR codes are small palette PNGs", async () => {
     expect(fs.statSync(file).size, file).toBeLessThan(4096);
   }
 });
+
+// Raster originals are re-encoded at build and never reach dist/, except the Signal QR codes.
+// Astro names an original <name>.<8-character hash>.<ext>, a re-encoded image <name>.<hash>_<hash>.<ext>.
+// Trap: an image that is imported but never rendered reaches dist/ as its original.
+test("no raster original reaches dist", () => {
+  const originals = (fs.readdirSync("dist", { recursive: true }) as string[])
+    .map((f) => path.basename(f))
+    .filter((f) => /^[^.]+\.[\w-]{8}\.(png|jpe?g)$/i.test(f) && !f.startsWith("signal-qr"));
+  expect(originals).toEqual([]);
+});
