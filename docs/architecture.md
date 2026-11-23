@@ -11,7 +11,8 @@
   The integration `integrations/map.mjs` (`checkMap`, `mapIntegration`, registered in `astro.config.mjs`) runs
   after the build and copies `output/sozialraum-frankfurt.html` unchanged to `dist/sozialraum-frankfurt/index.html`.
   The build fails in five cases: the file is missing, the check report has a `| WARN` or `| FAIL` line, the map
-  repo is dirty, the file is older than the repo's HEAD commit, or it contains `/Users/`.
+  repo is dirty, the file is older than the repo's HEAD commit, or it contains `/Users/`. It also fails when the
+  English map goes on- or offline during the build.
   The map is not in the menu and not in the route table. Its language switch is its own, not `LangSwitch`.
 - The English map `output/sozialraum-frankfurt.en.html` goes online when the map repo says so: `ENGLISH_ONLINE` in
   its `pipeline/config.py`. Then the German map links it with `hreflang="en"`. The integration reads that link
@@ -24,6 +25,9 @@
 - `MAP_REPO` points the build at another map repo. Use it to try the English map before it is online: a Git repo
   with the two files of `output/online/` (built by `tests/browser/tools/build_online_maps.py` in the map repo) in
   `output/`, newer than its HEAD, and `interim/check_report.md`. Then `MAP_REPO=<that repo> npm run build && npm test`.
+  `deploy.sh` refuses to run while `MAP_REPO` is set.
+- Before `ENGLISH_ONLINE` goes on, the user approves the English texts of the site that come with it: `mapTeaser` in
+  `ui.ts` and the English map sentence of `/en/privacy/`. Refresh `teaser-en.png` after the proofreading.
 - In `astro dev` and `astro preview` there is no Caddy. A Vite proxy in `astro.config.mjs` forwards the tile requests
   to the BKG, with the browser's headers. It is for development only.
   `astro preview` serves `/sozialraum-frankfurt` without the slash. Live, Caddy's `file_server` redirects to
