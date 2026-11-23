@@ -524,8 +524,8 @@ const TEASERS = {
   },
   "/en/": {
     map: "/en/sozialraum-frankfurt/",
-    text: "We built a map to analyse the areas of Frankfurt for a different housing and climate policy. "
-      + "Feel free to explore it, and gain new perspectives!",
+    text: "We've created a map to break down Frankfurt's districts for a different housing and climate policy. "
+      + "Feel free to take a look and gain some new perspectives!",
     button: "Open the map",
     credit: "Background: © basemap.de / BKG, CC BY 4.0",
     alt: "Map of Frankfurt: share of the dwellings of ABG and Nassauische Heimstätte per quarter, in shades of red",
