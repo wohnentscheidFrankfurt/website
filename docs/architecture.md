@@ -26,8 +26,8 @@
   with the two files of `output/online/` (built by `tests/browser/tools/build_online_maps.py` in the map repo) in
   `output/`, newer than its HEAD, and `interim/check_report.md`. Then `MAP_REPO=<that repo> npm run build && npm test`.
   `deploy.sh` refuses to run while `MAP_REPO` is set.
-- Before `ENGLISH_ONLINE` goes on, the user approves the English texts of the site that come with it: `mapTeaser` in
-  `ui.ts` and the English map sentence of `/en/privacy/`. Refresh `teaser-en.png` after the proofreading.
+- Before `ENGLISH_ONLINE` goes on, the user approves the sentence on the English map path in `/datenschutz/` and
+  `/en/privacy/`. `mapTeaser` in `ui.ts` is approved. Refresh `teaser-en.png` when the English map texts change.
 - In `astro dev` and `astro preview` there is no Caddy. A Vite proxy in `astro.config.mjs` forwards the tile requests
   to the BKG, with the browser's headers. It is for development only.
   `astro preview` serves `/sozialraum-frankfurt` without the slash. Live, Caddy's `file_server` redirects to
