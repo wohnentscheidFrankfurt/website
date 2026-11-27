@@ -57,7 +57,7 @@ live only in the archive clone `../website-archiv` (`docs/architecture.md`, Depl
   units and `set-secrets.sh`, the source of the live files.
 - `tests/`: Playwright checks (desktop Chrome, Chrome at 390 px with touch, iPhone in WebKit). `tests/api/`: `node:test` checks of the API.
 - `docs/`: the living docs. They describe the project as it is now; Git keeps the past. `architecture.md`
-  (reference and explanation: build, checks, server, deploy), `add-event.md` (how-to).
+  (reference and explanation: build, checks, server, deploy), `add-event.md` and `newsletter-qr.md` (how-to).
 - `dist/`, `node_modules/`, `test-results/`: not in Git.
 
 ## Way of working (confirmed by the user)

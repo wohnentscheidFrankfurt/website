@@ -357,6 +357,8 @@ Projects: `desktop-chrome` and `chrome-390` use the system Chrome, `webkit-iphon
   English map. So `npm test` checks the state that was built. The teaser, "Mitmachen" and the privacy texts follow it.
 - `tests/unit/map.spec.ts`: the integration's checks. `tests/unit/tiles-proxy.spec.ts`: starts a real Caddy with
   `server/Caddyfile` against an echo server and checks what reaches upstream (needs Caddy: `brew install caddy`).
+  `tests/unit/short-links.spec.ts`: the same with the short addresses. Both use the harness `tests/unit/caddy.ts`.
+  The landing on the redirect targets is checked in `tests/join.spec.mjs`.
   The teaser, its place and the space between the start page blocks are checked in `tests/home.spec.mjs`,
   the place of "Mitmachen" in `tests/join.spec.mjs`, the privacy texts in
   `tests/legal.spec.mjs`.
@@ -394,6 +396,10 @@ Projects: `desktop-chrome` and `chrome-390` use the system Chrome, `webkit-iphon
   `handle /api/*` limits the body to 4 KB and proxies to `127.0.0.1:8787`. A second `handle` serves the site.
   If the API is down, `handle_errors 502 503 504` answers a sign-up POST with 303 to `/fehler/`
   (`/api/en/signup`: `/en/error/`).
+- Short addresses for print: `/newsletter` redirects with 302 to `/#bleib-informiert`, `/en/newsletter` to
+  `/en/#stay-informed`. With or without the slash, in any case (phones capitalize the first letter). The query is
+  dropped. 302, so the target can change without stale browser caches. The flyer QR codes encode these addresses.
+  How to make them: `newsletter-qr.md`.
 - Tile proxy: the map shows background tiles from basemap.de (BKG). The privacy rule says the site loads nothing
   from other origins, so the browser asks `/sozialraum-frankfurt/kacheln/` and Caddy asks the BKG.
   The English map asks the same path, so the rule serves both maps.
@@ -409,6 +415,7 @@ Projects: `desktop-chrome` and `chrome-390` use the system Chrome, `webkit-iphon
 - Rollout order for a changed Caddyfile: Caddyfile to the server first (needs the user's go), then `./deploy.sh`.
   With the old Caddyfile an API outage on the English sign-up ends in an empty 502 instead of `/en/error/`.
   With the old Caddyfile the map loads but has no tiles.
+  With the old Caddyfile `/newsletter` is a 404.
 - The API lives in `/opt/wohnentscheid-api`, owned by `deploy`. Node 24 comes from the NodeSource apt repo
   (key in `/etc/apt/keyrings/`, origin in `Unattended-Upgrade::Origins-Pattern`). Ubuntu's own `nodejs` 22
   cannot run `.ts`.

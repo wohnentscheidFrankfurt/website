@@ -431,3 +431,22 @@ test.describe("English start page: Get involved and Stay informed", () => {
     expect(await page.evaluate(() => document.querySelector("[data-band]").inert)).toBe(false);
   });
 });
+
+// The short addresses /newsletter and /en/newsletter (Caddy, QR code on flyers) redirect to these targets.
+// The redirect itself is checked in tests/unit/short-links.spec.ts. Here: the landing shows the form at once.
+for (const [target, label] of [["/#bleib-informiert", "Deine Mail-Adresse"], ["/en/#stay-informed", "Your email address"]]) {
+  test(`the short address target ${target} shows the mail field below the header`, async ({ page }) => {
+    // The browser's own jump to the fragment, no scroll by the test.
+    await page.goto(target);
+    const field = page.locator("[data-band]").getByLabel(label);
+    await expect(field).toBeVisible();
+    let last;
+    await expect.poll(async () => {
+      const header = await page.locator("header").boundingBox();
+      const box = await field.boundingBox();
+      const still = box.y === last;
+      last = box.y;
+      return still && box.y >= header.y + header.height && box.y + box.height <= page.viewportSize().height;
+    }).toBe(true);
+  });
+}

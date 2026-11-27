@@ -28,6 +28,7 @@ npm test          # API tests, then Playwright checks against dist/ (needs Mailp
 
 - `docs/architecture.md`: build, content, languages, brand, API, checks, server, deploy.
 - `docs/add-event.md`: how to add an event.
+- `docs/newsletter-qr.md`: how to make the newsletter QR codes for flyers.
 
 ## Licence
 

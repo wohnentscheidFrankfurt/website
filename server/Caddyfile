@@ -43,6 +43,12 @@ wohnentscheid-frankfurt.de {
 			respond 404
 		}
 	}
+	# Short addresses for print, e.g. the QR code on a flyer: they lead to the sign-up form in the band.
+	# 302, so the target can change later without stale browser caches. The path matcher ignores case.
+	@newsletter path /newsletter /newsletter/
+	redir @newsletter /#bleib-informiert 302
+	@newsletterEn path /en/newsletter /en/newsletter/
+	redir @newsletterEn /en/#stay-informed 302
 	handle {
 		root * /var/www/wohnentscheid
 		file_server
